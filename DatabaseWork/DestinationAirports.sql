@@ -65,7 +65,7 @@ INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, 
 -- Poland
 INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, DestCity) VALUES ('Warsaw Chopin Airport','WAW','Poland','Warsaw');
 INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, DestCity) VALUES ('Kraków Airport','KRK','Poland','Kraków');
-INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, DestCity) VALUES ('Gdańsk Lech Wałęsa Airport','GDN','Poland','Gdańsk');
+INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, DestCity) VALUES ('Gdansk Lech Watesa Airport','GDN','Poland','Gdansk');
 
 -- Denmark
 INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, DestCity) VALUES ('Copenhagen Airport','CPH','Denmark','Copenhagen');
@@ -88,11 +88,11 @@ INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, 
 INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, DestCity) VALUES ('Budapest','BUD','Hungary','Budapest');
 
 -- Croatia
-INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, DestCity) VALUES ('Franjo Tuđman Airport','ZAG','Croatia','Zagreb');
+INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, DestCity) VALUES ('Franjo Tudman Airport','ZAG','Croatia','Zagreb');
 INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, DestCity) VALUES ('Split Airport','SPU','Croatia','Split');
 INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, DestCity) VALUES ('Dubrovnik Airport','DBV','Croatia','Dubrovnik');
 
--- Croatia
+-- Greece
 INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, DestCity) VALUES ('Athens','ATH','Greece','Athens');
 INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, DestCity) VALUES ('Heraklion','HER','Greece','Heraklion');
 INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, DestCity) VALUES ('Rhodes','RHO','Greece','Rhodes');

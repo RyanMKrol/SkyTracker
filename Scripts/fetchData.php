@@ -60,6 +60,8 @@
   // execute the api request
   $curl_response = curl_exec($curl);
 
+  echo $curl_response;
+
   $conn->close();
 
 ?>
