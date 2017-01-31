@@ -1,6 +1,7 @@
 <?php
 
   include 'credentials.php';
+  include 'httpCodes.php';
 
   // Create connection
   $conn = new mysqli($servername, $username, $password, $database);
@@ -31,14 +32,34 @@
     $destinationsArr[] = $row;
   }
 
+  $departYear = 2017;
+  $departMonth = 2;
+  $returnYear = 2017;
+  $returnMonth = 2;
+  $srcAirport = $sourcesArr[0]["SrcAirportCode"];
+  $destAirport = $destinationsArr[0]["DestAirportCode"];
+
+  $call = "http://partners.api.skyscanner.net/apiservices/browsegrid/v1.0/GB/GBP/en-GB/$srcAirport/$destAirport/$departYear-$departMonth/$returnYear-$returnMonth?apiKey=$apikey";
+
   //looping through to show how i'll get the pairings.
   foreach($sourcesArr as $row){
-      echo "id: " . $row["SrcAirportID"]. " - Name: " . $row["SrcAirportName"] . "\n";
+      // echo "id: " . $row["SrcAirportID"]. " - Name: " . $row["SrcAirportName"] . "\n";
 
       foreach($destinationsArr as $innerRow){
-          echo "id: " . $innerRow["DestAirportID"]. " - Name: " . $innerRow["DestAirportName"] . "\n";
+          // echo "id: " . $innerRow["DestAirportID"]. " - Name: " . $innerRow["DestAirportName"] . "\n";
+
       }
   }
 
+  // initialist the api request
+  $curl = curl_init($call);
+
+  // returns the api request as a string
+  curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+  // execute the api request
+  $curl_response = curl_exec($curl);
+
   $conn->close();
+
 ?>
