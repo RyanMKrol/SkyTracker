@@ -33,11 +33,13 @@
   }
 
   $departYear = 2017;
-  $departMonth = 2;
+  $departMonth = "02";
   $returnYear = 2017;
-  $returnMonth = 2;
+  $returnMonth = "02";
   $srcAirport = $sourcesArr[0]["SrcAirportCode"];
   $destAirport = $destinationsArr[0]["DestAirportCode"];
+
+  //for padding months later: str_pad($input, 10, "-=", STR_PAD_LEFT);
 
   $call = "http://partners.api.skyscanner.net/apiservices/browsegrid/v1.0/GB/GBP/en-GB/$srcAirport/$destAirport/$departYear-$departMonth/$returnYear-$returnMonth?apiKey=$apikey";
 
@@ -60,7 +62,16 @@
   // execute the api request
   $curl_response = curl_exec($curl);
 
-  echo $curl_response;
+  echo $curl_response . "\n";
+  echo $call . "\n";
+
+  switch ($http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE)) {
+    case $httpSuccess:  # OK
+      echo "all good\n";
+      break;
+    default:
+      echo 'Unexpected HTTP code: ', $http_code, "\n";
+  }
 
   $conn->close();
 
