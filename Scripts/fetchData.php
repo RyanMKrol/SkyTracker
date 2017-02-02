@@ -62,11 +62,16 @@
   // execute the api request
   $curl_response = curl_exec($curl);
 
-  echo $curl_response . "\n";
   echo $call . "\n";
 
   switch ($http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE)) {
     case $httpSuccess:  # All's fine
+
+      $data = json_decode($curl_response,true);
+      echo sizeof($data);
+      foreach($data as $key => $val) { //foreach element in $arr
+        echo $key . "\n";
+      }
       echo "all good\n";
       break;
     case $httpExcess:  # Using too much
