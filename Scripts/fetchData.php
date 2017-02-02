@@ -65,17 +65,22 @@
   echo $call . "\n";
 
   switch ($http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE)) {
+
     case $httpSuccess:  # All's fine
 
       $data = json_decode($curl_response,true);
-      echo sizeof($data);
-      foreach($data as $key => $val) { //foreach element in $arr
-        echo $key . "\n";
+      foreach($data["Dates"] as $key => $val) { //foreach element in $arr
+        foreach($val as $inKey => $inVal) { //foreach element in $arr
+          if(isset($inVal['MinPrice'])){
+            echo $inVal['MinPrice'] . "\n";
+          }
+        }
       }
       echo "all good\n";
       break;
+
     case $httpExcess:  # Using too much
-      echo "all good\n";
+      echo "all NOT GOOD\n";
       break;
     default:
       echo 'Unexpected HTTP code: ', $http_code, "\n";
