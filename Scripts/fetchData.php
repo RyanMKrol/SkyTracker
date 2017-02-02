@@ -66,7 +66,10 @@
   echo $call . "\n";
 
   switch ($http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE)) {
-    case $httpSuccess:  # OK
+    case $httpSuccess:  # All's fine
+      echo "all good\n";
+      break;
+    case $httpExcess:  # Using too much
       echo "all good\n";
       break;
     default:
