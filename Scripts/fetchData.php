@@ -2,6 +2,7 @@
 
   include 'credentials.php';
   include 'httpCodes.php';
+  include 'functions.php';
 
   // Create connection
   $conn = new mysqli($servername, $username, $password, $database);
@@ -32,6 +33,7 @@
     $destinationsArr[] = $row;
   }
 
+  //this is going to have to be replaced very soon
   $departYear = 2017;
   $departMonth = "02";
   $returnYear = 2017;
@@ -42,16 +44,6 @@
   //for padding months later: str_pad($input, 10, "-=", STR_PAD_LEFT);
 
   $call = "http://partners.api.skyscanner.net/apiservices/browsegrid/v1.0/GB/GBP/en-GB/$srcAirport/$destAirport/$departYear-$departMonth/$returnYear-$returnMonth?apiKey=$apikey";
-
-  //looping through to show how i'll get the pairings.
-  foreach($sourcesArr as $row){
-      // echo "id: " . $row["SrcAirportID"]. " - Name: " . $row["SrcAirportName"] . "\n";
-
-      foreach($destinationsArr as $innerRow){
-          // echo "id: " . $innerRow["DestAirportID"]. " - Name: " . $innerRow["DestAirportName"] . "\n";
-
-      }
-  }
 
   // initialist the api request
   $curl = curl_init($call);
@@ -64,17 +56,30 @@
 
   echo $call . "\n";
 
+  //i think that we're going to build the table files in the thread, and then use a shell command to execute it
+  //mysql -D"SkyTracker" -p"$password" < testSCRIPT.sql
+
   switch ($http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE)) {
 
     case $httpSuccess:  # All's fine
 
       $data = json_decode($curl_response,true);
+      $outerDay = 0;
+      $innerDay = 0;
+
+      //found in functions.php
+      createMySQLFile($srcAirport, $destAirport);
+
       foreach($data["Dates"] as $key => $val) { //foreach element in $arr
+
         foreach($val as $inKey => $inVal) { //foreach element in $arr
           if(isset($inVal['MinPrice'])){
             echo $inVal['MinPrice'] . "\n";
           }
         }
+
+        $day++;
+
       }
       echo "all good\n";
       break;
