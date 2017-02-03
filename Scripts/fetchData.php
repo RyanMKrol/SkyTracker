@@ -64,8 +64,8 @@
     case $httpSuccess:  # All's fine
 
       $data = json_decode($curl_response,true);
-      $outerDay = 0;
-      $innerDay = 0;
+      $outboundDay = 0;
+      $inboundDay = 1;
 
       //found in functions.php
       createMySQLFile($srcAirport, $destAirport);
@@ -74,11 +74,19 @@
 
         foreach($val as $inKey => $inVal) { //foreach element in $arr
           if(isset($inVal['MinPrice'])){
-            echo $inVal['MinPrice'] . "\n";
+
+            //this isn't right just yet, fix this.
+            // echo "flying out on day $outboundDay, and coming back on $inboundDay\n";
+
+            // echo $inVal['MinPrice'] . "\n";
+            // echo $inVal['QuoteDateTime'] . "\n";
           }
+
+          $inboundDay++;
         }
 
-        $day++;
+        $outboundDay++;
+        $inboundDay = 1;
 
       }
       echo "all good\n";

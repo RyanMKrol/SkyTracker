@@ -3,7 +3,7 @@
 //fucntion to create a .sql file for the table we want to store the data in
 function createMySQLFile($srcAirport, $destAirport) {
 
-  $myfile = fopen("${srcAirport}_${destAirport}.sql", "w");
+  $myfile = fopen("../Data/${srcAirport}_${destAirport}.sql", "w");
 
   fwrite($myfile, "DROP TABLE ${srcAirport}_${destAirport};\n\n");
   fwrite($myfile, "CREATE TABLE ${srcAirport}_${destAirport} (\n");
