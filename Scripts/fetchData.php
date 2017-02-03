@@ -65,7 +65,7 @@
 
       $data = json_decode($curl_response,true);
       $outboundDay = 0;
-      $inboundDay = 1;
+      $inboundDay = 0;
 
       //found in functions.php
       createMySQLFile($srcAirport, $destAirport);
@@ -76,17 +76,17 @@
           if(isset($inVal['MinPrice'])){
 
             //this isn't right just yet, fix this.
-            // echo "flying out on day $outboundDay, and coming back on $inboundDay\n";
+            echo "flying out on day $outboundDay, and coming back on $inboundDay\n";
 
-            // echo $inVal['MinPrice'] . "\n";
-            // echo $inVal['QuoteDateTime'] . "\n";
+            echo $inVal['MinPrice'] . "\n";
+            echo $inVal['QuoteDateTime'] . "\n";
           }
 
-          $inboundDay++;
+          $outboundDay++;
         }
 
-        $outboundDay++;
-        $inboundDay = 1;
+        $inboundDay++;
+        $outboundDay = 0;
 
       }
       echo "all good\n";
