@@ -20,6 +20,8 @@
   $sqlDestinations = "SELECT * FROM DestinationAirports;";
   $destinations = $conn->query($sqlDestinations);
 
+  $conn->close();
+
   //where i'll store the data
   $sourcesArr = array();
   $destinationsArr = array();
@@ -41,64 +43,7 @@
   $srcAirport = $sourcesArr[0]["SrcAirportCode"];
   $destAirport = $destinationsArr[0]["DestAirportCode"];
 
+  getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYear, $returnMonth);
   //for padding months later: str_pad($input, 10, "-=", STR_PAD_LEFT);
-
-  $call = "http://partners.api.skyscanner.net/apiservices/browsegrid/v1.0/GB/GBP/en-GB/$srcAirport/$destAirport/$departYear-$departMonth/$returnYear-$returnMonth?apiKey=$apikey";
-
-  // initialist the api request
-  $curl = curl_init($call);
-
-  // returns the api request as a string
-  curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-
-  // execute the api request
-  $curl_response = curl_exec($curl);
-
-  echo $call . "\n";
-
-  //i think that we're going to build the table files in the thread, and then use a shell command to execute it
-  //mysql -D"SkyTracker" -p"$password" < testSCRIPT.sql
-
-  switch ($http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE)) {
-
-    case $httpSuccess:  # All's fine
-
-      $data = json_decode($curl_response,true);
-      $outboundDay = 0;
-      $inboundDay = 0;
-
-      //found in functions.php
-      createMySQLFile($srcAirport, $destAirport);
-
-      foreach($data["Dates"] as $key => $val) { //foreach element in $arr
-
-        foreach($val as $inKey => $inVal) { //foreach element in $arr
-          if(isset($inVal['MinPrice'])){
-
-            //this isn't right just yet, fix this.
-            echo "flying out on day $outboundDay, and coming back on $inboundDay\n";
-
-            echo $inVal['MinPrice'] . "\n";
-            echo $inVal['QuoteDateTime'] . "\n";
-          }
-
-          $outboundDay++;
-        }
-
-        $inboundDay++;
-        $outboundDay = 0;
-
-      }
-      echo "all good\n";
-      break;
-
-    case $httpExcess:  # Using too much
-      echo "all NOT GOOD\n";
-      break;
-    default:
-      echo 'Unexpected HTTP code: ', $http_code, "\n";
-  }
-
-  $conn->close();
 
 ?>
