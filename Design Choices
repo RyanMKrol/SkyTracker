@@ -1,0 +1,5 @@
+Design Choices
+
+I think I'm going to allow for a maximum trip of 6 weeks so that I only ever have to get 2 months worth of data
+
+The front end will eventually allow people to choose their trip length, and the cost, the rest I can sort out.
