@@ -51,11 +51,11 @@
     $data = getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYear, $returnMonth);
 
     if(!is_null($data)){
-        writeData($data);
+        writeData($data, $mysqlFile, $srcAirport, $destAirport, $departYear, $departMonth, $returnYear, $returnMonth);
     } else {
         //have to decide on functionality for this later
     }
-    
+
     //for padding months later: str_pad($input, 10, "-=", STR_PAD_LEFT);
 
     fclose($mysqlFile);

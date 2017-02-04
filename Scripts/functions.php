@@ -9,12 +9,13 @@ function createMySQLFile($srcAirport, $destAirport) {
   fwrite($myfile, "CREATE TABLE ${srcAirport}_${destAirport} (\n");
   fwrite($myfile, "\tTripID int NOT NULL AUTO_INCREMENT,\n");
   fwrite($myfile, "\tSourcePort varchar(255) NOT NULL,\n");
-  fwrite($myfile, "\testPort varchar(255) NOT NULL,\n");
-  fwrite($myfile, "\tDepartDate DATE NOT NULL UNIQUE,\n");
-  fwrite($myfile, "\tReturnDate DATE NOT NULL UNIQUE,\n");
+  fwrite($myfile, "\tDestPort varchar(255) NOT NULL,\n");
+  fwrite($myfile, "\tDepartDate DATE NOT NULL,\n");
+  fwrite($myfile, "\tReturnDate DATE NOT NULL,\n");
   fwrite($myfile, "\tPrice int NOT NULL,\n");
-  fwrite($myfile, "\tPRIMARY KEY(TripID)\n");
-  fwrite($myfile, ");\n");
+  fwrite($myfile, "\tPRIMARY KEY(TripID),\n");
+  fwrite($myfile, "\tCONSTRAINT uc_date_pair UNIQUE (DepartDate, ReturnDate)\n");
+  fwrite($myfile, ");\n\n");
 
   return $myfile;
 
@@ -60,38 +61,35 @@ function getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYe
   }
 }
 
-function writeData($data){
+function writeData($data, $file, $srcAirport, $destAirport, $departYear, $departMonth, $returnYear, $returnMonth){
 
-  
+  $outboundDay = 0;
+  $inboundDay = 0;
 
-}
+  foreach($data["Dates"] as $key => $val) { //foreach element in $arr
 
-/*
+    foreach($val as $inKey => $inVal) { //foreach element in $arr
+      if(isset($inVal['MinPrice'])){
 
-$outboundDay = 0;
-$inboundDay = 0;
+        //this isn't right just yet, fix this.
+        echo "flying out on day $outboundDay, and coming back on $inboundDay\n";
 
-foreach($data["Dates"] as $key => $val) { //foreach element in $arr
+        echo $inVal['MinPrice'] . "\n";
+        echo $inVal['QuoteDateTime'] . "\n";
 
-  foreach($val as $inKey => $inVal) { //foreach element in $arr
-    if(isset($inVal['MinPrice'])){
+        $minPrice = $inVal['MinPrice'];
 
-      //this isn't right just yet, fix this.
-      echo "flying out on day $outboundDay, and coming back on $inboundDay\n";
+        fwrite($file, "INSERT INTO ${srcAirport}_${destAirport} (SourcePort, DestPort, DepartDate, ReturnDate, Price) VALUES ('$srcAirport', '$destAirport', '$departYear-$departMonth-$outboundDay', '$returnYear-$returnMonth-$inboundDay', $minPrice);\n");
+      }
 
-      echo $inVal['MinPrice'] . "\n";
-      echo $inVal['QuoteDateTime'] . "\n";
+      $outboundDay++;
     }
 
-    $outboundDay++;
+    $inboundDay++;
+    $outboundDay = 0;
+
   }
 
-  $inboundDay++;
-  $outboundDay = 0;
-
 }
-echo "all good\n";
-
-*/
 
 ?>
