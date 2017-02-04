@@ -11,53 +11,40 @@
       die("Connection failed: " . $conn->connect_error);
   }
 
-  $sources = $conn->query("SELECT * FROM SourceAirports;");
-  $destinations = $conn->query("SELECT * FROM DestinationAirports;");
+  //this is basic setup stuff for getting the source and destination airports
+  {
+    $sources = $conn->query("SELECT * FROM SourceAirports;");
+    $destinations = $conn->query("SELECT * FROM DestinationAirports;");
 
-  //where i'll store the data
-  $sourcesArr = array();
-  $destinationsArr = array();
+    //where i'll store the data
+    $sourcesArr = array();
+    $destinationsArr = array();
 
-  //storing the query results in more permanent storage
-  while($row = mysqli_fetch_array($sources)){
-    $sourcesArr[] = $row;
-  }
-
-  while($row = mysqli_fetch_array($destinations)){
-    $destinationsArr[] = $row;
-  }
-
-  foreach(range(1,$maxTripLength) as $i){
-
-    $users = $conn->query("SELECT * FROM Users WHERE UserTripLength = $i;");
-
-    $numUsers = mysqli_num_rows($users);
-
-    $usersArray = array();
-
-    if($numUsers > 0){
-
-      while($row = mysqli_fetch_array($users)){
-        $usersArray[] = $row;
-      }
-
-      foreach($sourcesArr as $srcAirport) { //foreach element in $arr
-        foreach($destinationsArr as $destAirport) { //foreach element in $arr
-
-          $src = $srcAirport["SrcAirportCode"];
-          $dest = $destAirport["DestAirportCode"];
-
-          $query = "SELECT * FROM ${src}_${dest} WHERE Price = (SELECT MIN(Price) FROM ${src}_${dest} WHERE DATEDIFF(ReturnDate,DepartDate)=$i) AND DATEDIFF(ReturnDate,DepartDate)=$i;";
-          // $conn->query($query);
-
-          echo "$query\n";
-
-        }
-      }
-
-
+    //storing the query results in more permanent storage
+    while($row = mysqli_fetch_array($sources)){
+      $sourcesArr[] = $row;
     }
 
+    while($row = mysqli_fetch_array($destinations)){
+      $destinationsArr[] = $row;
+    }
+  }
+
+  foreach($sourcesArr as $srcAirport) {
+    foreach($destinationsArr as $destAirport) {
+
+      $src = $srcAirport["SrcAirportCode"];
+      $dest = $destAirport["DestAirportCode"];
+
+      $query = "SELECT * FROM ${src}_${dest} WHERE Price < (0.3 * (SELECT AVG(Price) FROM ${src}_${dest})) AND DATEDIFF(ReturnDate,DepartDate) > 2 AND Price < 150;";
+
+      $price = $conn->query($query);
+
+      while($row = mysqli_fetch_array($price)){
+        echo "Going from " . $row['SourcePort'] . " to " . $row['DestPort'] . " on " . $row['DepartDate'] . " coming back on " . $row['ReturnDate'] . " for the low low price of: " . $row['Price'] . "\n";
+      }
+
+    }
   }
 
   //close connection
