@@ -51,7 +51,13 @@
     $data = getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYear, $returnMonth);
 
     if(!is_null($data)){
+
+        //write the data to the sql file
         writeData($data, $mysqlFile, $srcAirport, $destAirport, $departYear, $departMonth, $returnYear, $returnMonth);
+
+        //update the database
+        exec("mysql -u root -p\"$password\" -f \"SkyTracker\" < ${srcAirport}_${destAirport}.sql");
+
     } else {
         //have to decide on functionality for this later
     }

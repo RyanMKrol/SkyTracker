@@ -38,8 +38,6 @@ function getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYe
   // execute the api request
   $curl_response = curl_exec($curl);
 
-  echo $call . "\n";
-
   //i think that we're going to build the table files in the thread, and then use a shell command to execute it
   //mysql -D"SkyTracker" -p"$password" < testSCRIPT.sql
 
@@ -70,12 +68,6 @@ function writeData($data, $file, $srcAirport, $destAirport, $departYear, $depart
 
     foreach($val as $inKey => $inVal) { //foreach element in $arr
       if(isset($inVal['MinPrice'])){
-
-        //this isn't right just yet, fix this.
-        echo "flying out on day $outboundDay, and coming back on $inboundDay\n";
-
-        echo $inVal['MinPrice'] . "\n";
-        echo $inVal['QuoteDateTime'] . "\n";
 
         $minPrice = $inVal['MinPrice'];
 
