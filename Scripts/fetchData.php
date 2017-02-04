@@ -20,6 +20,7 @@
   $sqlDestinations = "SELECT * FROM DestinationAirports;";
   $destinations = $conn->query($sqlDestinations);
 
+  //close connection
   $conn->close();
 
   //where i'll store the data
@@ -35,36 +36,43 @@
     $destinationsArr[] = $row;
   }
 
-  //all of this is going to be sent into separate threads
-  {
-    //this is going to have to be replaced very soon
-    $departYear = 2017;
-    $departMonth = "02";
-    $returnYear = 2017;
-    $returnMonth = "02";
-    $srcAirport = $sourcesArr[0]["SrcAirportCode"];
-    $destAirport = $destinationsArr[0]["DestAirportCode"];
+  foreach($sourcesArr as $srcAirport) { //foreach element in $arr
+    foreach($destinationsArr as $destAirport) { //foreach element in $arr
 
-    //found in functions.php
-    $mysqlFile = createMySQLFile($srcAirport, $destAirport);
+      echo $srcAirport["SrcAirportCode"] . "\n";
+      echo $destAirport["DestAirportCode"] . "\n";
+      //this is going to have to be replaced very soon
 
-    $data = getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYear, $returnMonth);
+      $departYear = 2017;
+      $departMonth = "02";
+      $returnYear = 2017;
+      $returnMonth = "02";
+      $src = $srcAirport["SrcAirportCode"];
+      $dest = $destAirport["DestAirportCode"];
 
-    if(!is_null($data)){
 
-        //write the data to the sql file
-        writeData($data, $mysqlFile, $srcAirport, $destAirport, $departYear, $departMonth, $returnYear, $returnMonth);
+      //found in functions.php
+      $mysqlFile = createMySQLFile($src, $dest);
 
-        //update the database
-        exec("mysql -u root -p\"$password\" -f \"SkyTracker\" < ${srcAirport}_${destAirport}.sql");
+      $data = getData($src, $dest, $departYear, $departMonth, $returnYear, $returnMonth);
 
-    } else {
-        //have to decide on functionality for this later
+      if(!is_null($data)){
+
+          //write the data to the sql file
+          writeData($data, $mysqlFile, $src, $dest, $departYear, $departMonth, $returnYear, $returnMonth);
+
+          //update the database
+          exec("mysql -u root -p\"$password\" -f \"SkyTracker\" < ${src}_${dest}.sql");
+
+      } else {
+          //have to decide on functionality for this later
+      }
+
+      //for padding months later: str_pad($input, 10, "-=", STR_PAD_LEFT);
+
+      fclose($mysqlFile);
+
+
     }
-
-    //for padding months later: str_pad($input, 10, "-=", STR_PAD_LEFT);
-
-    fclose($mysqlFile);
-
   }
 ?>

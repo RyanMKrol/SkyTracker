@@ -5,6 +5,8 @@ function createMySQLFile($srcAirport, $destAirport) {
 
   $myfile = fopen("../Data/${srcAirport}_${destAirport}.sql", "w+");
 
+  echo "Creating ../Data/${srcAirport}_${destAirport}.sql\n";
+
   fwrite($myfile, "DROP TABLE ${srcAirport}_${destAirport};\n\n");
   fwrite($myfile, "CREATE TABLE ${srcAirport}_${destAirport} (\n");
   fwrite($myfile, "\tTripID int NOT NULL AUTO_INCREMENT,\n");
@@ -38,9 +40,7 @@ function getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYe
   // execute the api request
   $curl_response = curl_exec($curl);
 
-  //i think that we're going to build the table files in the thread, and then use a shell command to execute it
-  //mysql -D"SkyTracker" -p"$password" < testSCRIPT.sql
-
+  //there are several possible HTTP response code, I'll be using the following
   switch ($http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE)) {
 
     case $httpSuccess:  # All's fine
@@ -55,10 +55,13 @@ function getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYe
       break;
 
     default:
-      echo 'Unexpected HTTP code: ', $http_code, "\n";
+      echo '************************************************************************Unexpected HTTP code: ', $http_code, "\n";
+      echo "$call\n"
   }
 }
 
+//this function is responsible for parsing and writing the data we have to a valid .sql file, which will then be used
+// to update our data store.
 function writeData($data, $file, $srcAirport, $destAirport, $departYear, $departMonth, $returnYear, $returnMonth){
 
   $outboundDay = 0;
@@ -81,7 +84,6 @@ function writeData($data, $file, $srcAirport, $destAirport, $departYear, $depart
     $outboundDay = 0;
 
   }
-
 }
 
 ?>
