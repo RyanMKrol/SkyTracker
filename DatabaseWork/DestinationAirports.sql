@@ -78,7 +78,7 @@ INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, 
 
 -- Norway
 INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, DestCity) VALUES ('Oslo Airport, Gardermoen','OSL','Norway','Oslo');
-INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, DestCity) VALUES ('Bergen Airport Flesland','GBO','Norway','Bergen');
+INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, DestCity) VALUES ('Bergen Airport Flesland','BGO','Norway','Bergen');
 
 -- Sweden
 INSERT INTO DestinationAirports (DestAirportName, DestAirportCode, DestCountry, DestCity) VALUES ('Stockholm Arlanda Airport','ARN','Sweden','Stockholm');

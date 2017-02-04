@@ -51,12 +51,13 @@ function getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYe
 
     case $httpExcess:  # Using too much
       sleep(1);
+      echo '*********************************************************************** TOO MANY CALLS, LETS WAIT AND TRY AGAIN';
       return getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYear, $returnMonth);
       break;
 
     default:
       echo '************************************************************************Unexpected HTTP code: ', $http_code, "\n";
-      echo "$call\n"
+      echo "$call\n";
   }
 }
 
