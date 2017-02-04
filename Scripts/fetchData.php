@@ -35,15 +35,23 @@
     $destinationsArr[] = $row;
   }
 
-  //this is going to have to be replaced very soon
-  $departYear = 2017;
-  $departMonth = "02";
-  $returnYear = 2017;
-  $returnMonth = "02";
-  $srcAirport = $sourcesArr[0]["SrcAirportCode"];
-  $destAirport = $destinationsArr[0]["DestAirportCode"];
+  //all of this is going to be sent into separate threads
+  {
+    //this is going to have to be replaced very soon
+    $departYear = 2017;
+    $departMonth = "02";
+    $returnYear = 2017;
+    $returnMonth = "02";
+    $srcAirport = $sourcesArr[0]["SrcAirportCode"];
+    $destAirport = $destinationsArr[0]["DestAirportCode"];
 
-  getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYear, $returnMonth);
-  //for padding months later: str_pad($input, 10, "-=", STR_PAD_LEFT);
+    //found in functions.php
+    $mysqlFile = createMySQLFile($srcAirport, $destAirport);
 
+    getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYear, $returnMonth);
+    //for padding months later: str_pad($input, 10, "-=", STR_PAD_LEFT);
+
+    fclose($mysqlFile);
+
+  }
 ?>

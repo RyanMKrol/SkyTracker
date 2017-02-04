@@ -3,7 +3,7 @@
 //fucntion to create a .sql file for the table we want to store the data in
 function createMySQLFile($srcAirport, $destAirport) {
 
-  $myfile = fopen("../Data/${srcAirport}_${destAirport}.sql", "w");
+  $myfile = fopen("../Data/${srcAirport}_${destAirport}.sql", "w+");
 
   fwrite($myfile, "DROP TABLE ${srcAirport}_${destAirport};\n\n");
   fwrite($myfile, "CREATE TABLE ${srcAirport}_${destAirport} (\n");
@@ -15,6 +15,8 @@ function createMySQLFile($srcAirport, $destAirport) {
   fwrite($myfile, "\tPrice int NOT NULL,\n");
   fwrite($myfile, "\tPRIMARY KEY(TripID)\n");
   fwrite($myfile, ");\n");
+
+  return $myfile;
 
 }
 
@@ -45,40 +47,45 @@ function getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYe
     case $httpSuccess:  # All's fine
 
       $data = json_decode($curl_response,true);
-      $outboundDay = 0;
-      $inboundDay = 0;
-
-      //found in functions.php
-      createMySQLFile($srcAirport, $destAirport);
-
-      foreach($data["Dates"] as $key => $val) { //foreach element in $arr
-
-        foreach($val as $inKey => $inVal) { //foreach element in $arr
-          if(isset($inVal['MinPrice'])){
-
-            //this isn't right just yet, fix this.
-            echo "flying out on day $outboundDay, and coming back on $inboundDay\n";
-
-            echo $inVal['MinPrice'] . "\n";
-            echo $inVal['QuoteDateTime'] . "\n";
-          }
-
-          $outboundDay++;
-        }
-
-        $inboundDay++;
-        $outboundDay = 0;
-
-      }
-      echo "all good\n";
+      return $data
       break;
 
     case $httpExcess:  # Using too much
-      echo "all NOT GOOD\n";
+      sleep(1);
+      return getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYear, $returnMonth);
       break;
+      
     default:
       echo 'Unexpected HTTP code: ', $http_code, "\n";
   }
 }
+
+/*
+
+$outboundDay = 0;
+$inboundDay = 0;
+
+foreach($data["Dates"] as $key => $val) { //foreach element in $arr
+
+  foreach($val as $inKey => $inVal) { //foreach element in $arr
+    if(isset($inVal['MinPrice'])){
+
+      //this isn't right just yet, fix this.
+      echo "flying out on day $outboundDay, and coming back on $inboundDay\n";
+
+      echo $inVal['MinPrice'] . "\n";
+      echo $inVal['QuoteDateTime'] . "\n";
+    }
+
+    $outboundDay++;
+  }
+
+  $inboundDay++;
+  $outboundDay = 0;
+
+}
+echo "all good\n";
+
+*/
 
 ?>
