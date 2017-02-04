@@ -48,7 +48,14 @@
     //found in functions.php
     $mysqlFile = createMySQLFile($srcAirport, $destAirport);
 
-    getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYear, $returnMonth);
+    $data = getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYear, $returnMonth);
+
+    if(!is_null($data)){
+        writeData($data);
+    } else {
+        //have to decide on functionality for this later
+    }
+    
     //for padding months later: str_pad($input, 10, "-=", STR_PAD_LEFT);
 
     fclose($mysqlFile);

@@ -47,17 +47,23 @@ function getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYe
     case $httpSuccess:  # All's fine
 
       $data = json_decode($curl_response,true);
-      return $data
+      return $data;
       break;
 
     case $httpExcess:  # Using too much
       sleep(1);
       return getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYear, $returnMonth);
       break;
-      
+
     default:
       echo 'Unexpected HTTP code: ', $http_code, "\n";
   }
+}
+
+function writeData($data){
+
+  
+
 }
 
 /*
