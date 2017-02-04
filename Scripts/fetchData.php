@@ -36,43 +36,65 @@
     $destinationsArr[] = $row;
   }
 
+  //creates date from the current date
+  $srcDate = date_create();
+  $destDate = date_create();
+
+  $monthsNeeded = 2;
+
+  if($srcDate->format('d') >= 14){
+    $monthsNeeded = 3;
+  }
+
   foreach($sourcesArr as $srcAirport) { //foreach element in $arr
     foreach($destinationsArr as $destAirport) { //foreach element in $arr
 
-      echo $srcAirport["SrcAirportCode"] . "\n";
-      echo $destAirport["DestAirportCode"] . "\n";
-      //this is going to have to be replaced very soon
-
-      $departYear = 2017;
-      $departMonth = "02";
-      $returnYear = 2017;
-      $returnMonth = "02";
       $src = $srcAirport["SrcAirportCode"];
       $dest = $destAirport["DestAirportCode"];
-
 
       //found in functions.php
       $mysqlFile = createMySQLFile($src, $dest);
 
-      $data = getData($src, $dest, $departYear, $departMonth, $returnYear, $returnMonth);
+      //we can depart within the next 6 months
+      foreach(range(1,6) as $j){
 
-      if(!is_null($data)){
+        //and we can come back within #monthsNeeded months of the set-off date
+        foreach(range(1,$monthsNeeded) as $i){
 
-          //write the data to the sql file
-          writeData($data, $mysqlFile, $src, $dest, $departYear, $departMonth, $returnYear, $returnMonth);
+          $departYear = $srcDate->format('Y');
+          $departMonth = $srcDate->format('m');
+          $returnYear = $destDate->format('Y');
+          $returnMonth = $destDate->format('m');
 
-          //update the database
-          exec("mysql -u root -p\"$password\" -f \"SkyTracker\" < ${src}_${dest}.sql");
 
-      } else {
-          //have to decide on functionality for this later
+          $data = getData($src, $dest, $departYear, $departMonth, $returnYear, $returnMonth);
+
+          if(!is_null($data)){
+
+              //write the data to the sql file
+              writeData($data, $mysqlFile, $src, $dest, $departYear, $departMonth, $returnYear, $returnMonth);
+
+          } else {
+              //have to decide on functionality for this later
+          }
+
+          date_add($destDate,date_interval_create_from_date_string("1 month"));
+
+        }
+        date_add($srcDate,date_interval_create_from_date_string("1 month"));
+
+        $destDate = date_create();
+        date_add($destDate,date_interval_create_from_date_string("$j months"));
       }
 
-      //for padding months later: str_pad($input, 10, "-=", STR_PAD_LEFT);
+      $srcDate = date_create();
+      $destDate = date_create();
 
+      //update the database
+      exec("mysql -u root -p\"$password\" -f \"SkyTracker\" < ${src}_${dest}.sql");
+
+      //close file now we're done with the src-dest pair
       fclose($mysqlFile);
-
-
     }
   }
 ?>
