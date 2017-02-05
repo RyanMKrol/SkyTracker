@@ -1,6 +1,8 @@
 <?php
 
   include 'credentials.php';
+  include 'Flight.php';
+
   $maxTripLength = 28;
 
   // Create connection
