@@ -19,7 +19,9 @@
 
   function getFlightsOfInterest($conn,$src,$dest,$bound,$previousPriceCap){
 
-    $query = "SELECT * FROM ${src}_${dest} WHERE Price < ($bound * (SELECT AVG(Price) FROM ${src}_${dest})) AND DATEDIFF(ReturnDate,DepartDate) > $minTripLength AND Price < $hardCap AND Price > $previousPriceCap;";
+    $query = "SELECT * , (Price/(SELECT AVG(Price) FROM ${src}_${dest})) FROM ${src}_${dest} WHERE Price < ($bound * (SELECT AVG(Price) FROM ${src}_${dest})) AND DATEDIFF(ReturnDate,DepartDate) > $minTripLength AND Price < $hardCap AND Price > $previousPriceCap;";
+
+    //COLUMN with percentage of average is called: (Price/(SELECT AVG(Price) from BHX_MAD))
 
     $pricesArray = arraySetup($conn,$query);
 
