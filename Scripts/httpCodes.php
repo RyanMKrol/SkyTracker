@@ -5,5 +5,5 @@
   $httpForbidden = 403;
   $httpExcess = 429;
   $httpErr = 500;
-  
+
 ?>

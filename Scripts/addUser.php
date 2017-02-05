@@ -1,6 +1,12 @@
 <?php
 
+  //globals and includes
   include 'credentials.php';
+
+?>
+<?php
+
+  //main
 
   $email = $_POST['addr'];
 

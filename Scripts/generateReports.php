@@ -1,7 +1,9 @@
 <?php
 
-  // i'm using this space to store my global variables. I'm not sure what the official way of doing this in php is,
-  // but this will work well for me organising everything
+  //globals and includes
+
+  include 'credentials.php';
+  include 'Flight.php';
 
   $redBound = 0.2;
   $yellowBound = 0.35;
@@ -49,10 +51,7 @@
 ?>
 <?php
 
-  //the bulk of my script will go here!
-
-  include 'credentials.php';
-  include 'Flight.php';
+  //main
 
   // Create connection
   $conn = new mysqli($servername, $username, $password, $database);
