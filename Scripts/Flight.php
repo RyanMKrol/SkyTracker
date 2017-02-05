@@ -1,6 +1,8 @@
 <?php
 
 class Flight {
+
+    //properties
     private $srcAirport;
     private $destAirport;
     private $price;
@@ -9,6 +11,7 @@ class Flight {
     private $destCity;
     private $destCountry;
 
+    //constructor
     function __construct($srcAirport, $destAirport, $price, $srcCity, $srcCountry, $destCity, $destCountry) {
 
       $this->srcAirport = $srcAirport;
@@ -21,10 +24,13 @@ class Flight {
 
     }
 
+    //my getter function
     public function __get($property) {
+
       if (property_exists($this, $property)) {
         return $this->$property;
       }
+
     }
 }
 
