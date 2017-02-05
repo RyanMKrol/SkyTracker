@@ -9,6 +9,7 @@
   $yellowBound = 0.35;
   $greenBound = 0.5;
   $hardCap = 150;
+  $minTripLength = 2;
 
 ?>
 <?php
@@ -16,29 +17,20 @@
   //in this section I'm going to store any and all functions that I want to use, I'm keeping
   // them separate so that I can maintain everything easily
 
-  function getFlightsOfInterest($src,$dest,$bound){
+  function getFlightsOfInterest($conn,$src,$dest,$bound,$previousPriceCap){
 
-    //PUT IN A CONDITION THAT MAKES THE DATE LATER THAN TODAY'S
-    $query = "SELECT * FROM ${src}_${dest} WHERE (Price < (0.3 * (SELECT AVG(Price) FROM ${src}_${dest})) AND DATEDIFF(ReturnDate,DepartDate) > 2 AND Price < 150) OR (Price < 40);";
+    $query = "SELECT * FROM ${src}_${dest} WHERE Price < ($bound * (SELECT AVG(Price) FROM ${src}_${dest})) AND DATEDIFF(ReturnDate,DepartDate) > $minTripLength AND Price < $hardCap AND Price > $previousPriceCap;";
 
-    $price = $conn->query($query);
+    $pricesArray = arraySetup($conn,$query);
 
-    $average = "SELECT AVG(Price) FROM ${src}_${dest};";
-    $avPrice = $conn->query($average);
-
-    $thing = mysqli_fetch_array($avPrice);
-    echo "THE AVERAGE PRICE FOR ${src}_${dest} IS " . $thing['AVG(Price)'] . "\n";
-
-    while($row = mysqli_fetch_array($price)){
-      echo "Going from " . $row['SourcePort'] . " to " . $row['DestPort'] . " on " . $row['DepartDate'] . " coming back on " . $row['ReturnDate'] . " for the low low price of: " . $row['Price'] . "\n";
-    }
+    return $pricesArray;
 
   }
 
   //this function will be used to setup my source and destination airport arrays
-  function arraySetup($conn, $table){
+  function arraySetup($conn, $query){
 
-    $result = $conn->query("SELECT * FROM $table;");
+    $result = $conn->query($query);
 
     $resultArray = array();
 
@@ -61,8 +53,8 @@
       die("Connection failed: " . $conn->connect_error);
   }
 
-  $sourcesArr = arraySetup($conn, 'SourceAirports');
-  $destinationsArr = arraySetup($conn, 'DestinationAirports');
+  $sourcesArr = arraySetup($conn, "SELECT * FROM SourceAirports;");
+  $destinationsArr = arraySetup($conn, "SELECT * FROM DestinationAirports;");
 
   $redAlerts = array();
   $yellowAlerts = array();
@@ -74,9 +66,9 @@
       $src = $srcAirport["SrcAirportCode"];
       $dest = $destAirport["DestAirportCode"];
 
-      array_merge($redAlerts, getFlightsOfInterest($src,$dest,$redBound, $hardCap));
-      array_merge($yellowAlerts, getFlightsOfInterest($src,$dest,$yellowBound, $hardCap));
-      array_merge($greenAlerts, getFlightsOfInterest($src,$dest,$greenBound, $hardCap));
+      array_merge($redAlerts, getFlightsOfInterest($src,$dest,$redBound,$hardCap,0));
+      array_merge($yellowAlerts, getFlightsOfInterest($src,$dest,$yellowBound,$hardCap,$redBound));
+      array_merge($greenAlerts, getFlightsOfInterest($src,$dest,$greenBound,$hardCap,$yellowBound));
 
     }
   }
