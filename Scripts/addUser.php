@@ -3,8 +3,6 @@
   include 'credentials.php';
 
   $email = $_POST['addr'];
-  $tripLength = $_POST['tripLength'];
-  $budget = $_POST['budget'];
 
   // Create connection
   $conn = new mysqli($servername, $username, $password, $database);
@@ -16,9 +14,7 @@
 
   $email = $conn->real_escape_string($email);
 
-  $sql = "INSERT INTO Users (UserEmailAddress, UserBudget, UserTripLength) VALUES ('$email', '$budget', '$tripLength');";
-
-  echo $sql;
+  $sql = "INSERT INTO Users (UserEmailAddress) VALUES ('$email');";
 
   //need to deal with cases here - we can do this later:
   // 1. The record is created successfully, in which case we just welcome the user to the platform
