@@ -40,7 +40,7 @@ fwrite($myfile, "CREATE TABLE Averages (\n");
 fwrite($myfile, "\tAirPortID int NOT NULL AUTO_INCREMENT,\n");
 fwrite($myfile, "\tAirPort varchar(255) NOT NULL,\n");
 fwrite($myfile, "\tAveragePrice int NOT NULL,\n");
-fwrite($myfile, "\tPRIMARY KEY(tAirPortID),\n");
+fwrite($myfile, "\tPRIMARY KEY(AirPortID)\n");
 fwrite($myfile, ");\n\n");
 
 foreach($destinationsArr as $destAirport) { //foreach element in $arr
@@ -62,7 +62,7 @@ foreach($destinationsArr as $destAirport) { //foreach element in $arr
 
   $sum /= count($sourcesArr);
 
-  fwrite($myfile, "INSERT INTO Averages (AirPort, AveragePrice) VALUES ($dest, $sum);\n");
+  fwrite($myfile, "INSERT INTO Averages (AirPort, AveragePrice) VALUES ('$dest', '$sum');\n");
 
 }
 fclose($myfile);
