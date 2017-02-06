@@ -111,7 +111,6 @@
 
 ?>
 <?php
-
   //main
 
   // Create connection
@@ -179,7 +178,7 @@
       $destDate = date_create();
 
       //update the database
-      exec("mysql -u root -p\"$password\" -f \"SkyTracker\" < ${src}_${dest}.sql");
+      exec("mysql -u root -p\"$password\" -f \"SkyTracker\" < ../Data/${src}_${dest}.sql");
 
       //close file now we're done with the src-dest pair
       fclose($mysqlFile);
