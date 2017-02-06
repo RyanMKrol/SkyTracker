@@ -6,7 +6,7 @@
 
 ?>
 <?php
-  //used to separate functions from main code
+  //functions
 
   //this function will be used to setup my source and destination airport arrays
   function arraySetup($conn, $table){
@@ -66,15 +66,16 @@
     //there are several possible HTTP response code, I'll be using the following
     switch ($http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE)) {
 
-      case $httpSuccess:  # All's fine
+      case $httpSuccess:
 
         $data = json_decode($curl_response,true);
         return $data;
         break;
 
-      case $httpExcess:  # Using too much
-        sleep(1);
-        echo '*********************************************************************** TOO MANY CALLS, LETS WAIT AND TRY AGAIN';
+      case $httpExcess:
+      case $httpErr:
+        sleep(60);
+        echo '*********************************************************************** TOO MANY CALLS, LETS WAIT AND TRY AGAIN', $http_code, "\n";
         return getData($srcAirport, $destAirport, $departYear, $departMonth, $returnYear, $returnMonth);
         break;
 
