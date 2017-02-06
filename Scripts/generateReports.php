@@ -19,9 +19,13 @@
 
   function getFlightsOfInterest($conn,$src,$dest,$bound,$previousPriceCap){
 
-    $query = "SELECT * , (Price/(SELECT AVG(Price) FROM Averages)) FROM ${src}_${dest} WHERE Price < ($bound * (SELECT AVG(Price) FROM ${src}_${dest})) AND DATEDIFF(ReturnDate,DepartDate) > $minTripLength AND Price < $hardCap AND Price > $previousPriceCap ORDER BY (Price/(SELECT AVG(Price) FROM ${src}_${dest})) ASC;";
+    global $minTripLength;
+    global $hardCap;
+    $query = "SELECT * , (Price/(SELECT AveragePrice FROM Averages WHERE AirPort = '$dest')) FROM ${src}_${dest} WHERE Price < ($bound * (SELECT AveragePrice FROM Averages WHERE AirPort = '$dest')) AND DATEDIFF(ReturnDate,DepartDate) > $minTripLength AND Price < $hardCap AND Price > $previousPriceCap ORDER BY (Price/(SELECT AveragePrice FROM Averages WHERE AirPort = '$dest')) ASC;";
 
     //COLUMN with percentage of average is called: "(Price/(SELECT AVG(Price) from BHX_MAD))"
+
+    // echo $query . "\n\n\n\n";
 
     $pricesArray = arraySetup($conn,$query);
 
@@ -31,6 +35,8 @@
 
   //this function will be used to setup my source and destination airport arrays
   function arraySetup($conn, $query){
+
+    // echo $query . "\n";
 
     $result = $conn->query($query);
 
@@ -68,9 +74,9 @@
       $src = $srcAirport["SrcAirportCode"];
       $dest = $destAirport["DestAirportCode"];
 
-      array_merge($redAlerts, getFlightsOfInterest($src,$dest,$redBound,$hardCap,0));
-      array_merge($yellowAlerts, getFlightsOfInterest($src,$dest,$yellowBound,$hardCap,$redBound));
-      array_merge($greenAlerts, getFlightsOfInterest($src,$dest,$greenBound,$hardCap,$yellowBound));
+      array_merge($redAlerts, getFlightsOfInterest($conn,$src,$dest,$redBound,$hardCap,0));
+      array_merge($yellowAlerts, getFlightsOfInterest($conn,$src,$dest,$yellowBound,$hardCap,$redBound));
+      array_merge($greenAlerts, getFlightsOfInterest($conn,$src,$dest,$greenBound,$hardCap,$yellowBound));
 
     }
   }
