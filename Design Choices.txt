@@ -7,3 +7,5 @@ The front end will eventually allow people to choose their trip length, and the 
 I’ve gone with a red/yellow/green traffic light system type approach to this problem so far because I think 
 that it will be easier to flag great deals by using tiers as opposed to supporting a whole bunch of individual
 user’s needs
+
+I think Go could be a solid choice for parallelising my solution, I’ll do a bit more reading into it tomorrow.
