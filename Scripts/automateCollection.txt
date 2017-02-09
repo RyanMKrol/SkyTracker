@@ -1,3 +1,3 @@
 0 0 * * * php /var/www/html/skytracker.co/Scripts/fetchData.php
 0 6 * * * php /var/www/html/skytracker.co/Scripts/createAverages.php
-
+0 0 * * * echo $(date) >> /var/www/html/skytracker.co/Scripts/confirmation.txt
