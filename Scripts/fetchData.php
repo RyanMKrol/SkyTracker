@@ -1,6 +1,6 @@
 <?php
-
   //globals and includes
+
   include 'credentials.php';
   include 'httpCodes.php';
 
@@ -53,6 +53,8 @@
     global $httpExcess;
 
     $call = "http://partners.api.skyscanner.net/apiservices/browsegrid/v1.0/GB/GBP/en-GB/$srcAirport/$destAirport/$departYear-$departMonth/$returnYear-$returnMonth?apiKey=$apikey";
+
+    echo $call . "\n";
 
     // initialist the api request
     $curl = curl_init($call);

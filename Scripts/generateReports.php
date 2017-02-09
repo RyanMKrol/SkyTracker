@@ -1,5 +1,4 @@
 <?php
-
   //globals and includes
 
   include 'credentials.php';
@@ -10,22 +9,18 @@
   $greenBound = 0.5;
   $hardCap = 150;
   $minTripLength = 2;
+  $limitSize = 10;
 
 ?>
 <?php
-
-  //in this section I'm going to store any and all functions that I want to use, I'm keeping
-  // them separate so that I can maintain everything easily
+  //functions
 
   function getFlightsOfInterest($conn,$src,$dest,$bound,$previousPriceCap){
 
     global $minTripLength;
     global $hardCap;
-    $query = "SELECT * , (Price/(SELECT AveragePrice FROM Averages WHERE AirPort = '$dest')) FROM ${src}_${dest} WHERE Price < ($bound * (SELECT AveragePrice FROM Averages WHERE AirPort = '$dest')) AND DATEDIFF(ReturnDate,DepartDate) > $minTripLength AND Price < $hardCap AND Price > $previousPriceCap ORDER BY (Price/(SELECT AveragePrice FROM Averages WHERE AirPort = '$dest')) ASC;";
-
-    //COLUMN with percentage of average is called: "(Price/(SELECT AVG(Price) from BHX_MAD))"
-
-    // echo $query . "\n\n\n\n";
+    global $limitSize;
+    $query = "SELECT * , (Price/(SELECT AveragePrice FROM Averages WHERE AirPort = '$dest')) FROM ${src}_${dest} WHERE Price < ($bound * (SELECT AveragePrice FROM Averages WHERE AirPort = '$dest')) AND DATEDIFF(ReturnDate,DepartDate) > $minTripLength AND Price < $hardCap AND Price > $previousPriceCap ORDER BY (Price/(SELECT AveragePrice FROM Averages WHERE AirPort = '$dest')) ASC limit $limitSize;";
 
     $pricesArray = arraySetup($conn,$query);
 
@@ -50,8 +45,11 @@
   }
 ?>
 <?php
-
   //main
+
+  global $redBound;
+  global $yellowBound;
+  global $greenBound;
 
   // Create connection
   $conn = new mysqli($servername, $username, $password, $database);
@@ -79,6 +77,15 @@
       array_merge($greenAlerts, getFlightsOfInterest($conn,$src,$dest,$greenBound,$hardCap,$yellowBound));
 
     }
+  }
+
+  //at this point i'll have an array of red, yellow and green alerts
+  // so i want to send out a total of 15 reports. first priority will go to the red red alerts, then the yellow..
+
+  $reportsArray = array();
+
+  while(count($reportsArray) <15){
+
   }
 
   //close connection

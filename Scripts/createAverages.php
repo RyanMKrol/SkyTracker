@@ -1,5 +1,6 @@
 <?php
   //includes and globals
+  
   include 'credentials.php';
 ?>
 <?php
@@ -9,7 +10,6 @@
 
     $result = $conn->query($query);
 
-    echo "QUERY IS: $query \n";
     $resultArray = array();
 
     while($row = mysqli_fetch_array($result)){
@@ -56,8 +56,6 @@ foreach($destinationsArr as $destAirport) { //foreach element in $arr
     $avgPrice = $avgPrice[0]["AVG(Price)"];
 
     $sum += $avgPrice;
-
-    echo "average price is: $avgPrice \n";
   }
 
   $sum /= count($sourcesArr);
