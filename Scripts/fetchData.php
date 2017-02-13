@@ -25,9 +25,9 @@
   //function to programatically create my .sql files
   function createMySQLFile($srcAirport, $destAirport) {
 
-    $myfile = fopen("../Data/${srcAirport}_${destAirport}.sql", "w+");
+    $myfile = fopen("/var/www/html/skytracker.co/Data/${srcAirport}_${destAirport}.sql", "w+");
 
-    echo "Creating ../Data/${srcAirport}_${destAirport}.sql\n";
+    echo "Creating /var/www/html/skytracker.co/Data/${srcAirport}_${destAirport}.sql\n";
 
     fwrite($myfile, "DROP TABLE ${srcAirport}_${destAirport};\n\n");
     fwrite($myfile, "CREATE TABLE ${srcAirport}_${destAirport} (\n");
@@ -137,6 +137,9 @@
     $monthsNeeded = 3;
   }
 
+  $confirmationFile = fopen("/var/www/html/skytracker.co/confirmationOfRunning.txt", "w");
+  fwrite($confirmationFile, "Program has started successfully\n");
+
   foreach($sourcesArr as $srcAirport) { //foreach element in $arr
     foreach($destinationsArr as $destAirport) { //foreach element in $arr
 
@@ -181,10 +184,13 @@
       $destDate = date_create();
 
       //update the database
-      exec("mysql -u root -p\"$password\" -f \"SkyTracker\" < ../Data/${src}_${dest}.sql");
+      exec("mysql -u root -p\"$password\" -f \"SkyTracker\" < /var/www/html/skytracker.co/Data/${src}_${dest}.sql");
 
       //close file now we're done with the src-dest pair
       fclose($mysqlFile);
     }
   }
+
+  fwrite($confirmationFile, "Program has run successfully\n");
+  fclose($confirmationFile);
 ?>

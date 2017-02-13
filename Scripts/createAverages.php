@@ -1,6 +1,6 @@
 <?php
   //includes and globals
-  
+
   include 'credentials.php';
 ?>
 <?php
@@ -33,7 +33,7 @@ if ($conn->connect_error) {
 $sourcesArr = arraySetup($conn, "SELECT * FROM SourceAirports;");
 $destinationsArr = arraySetup($conn, "SELECT * FROM DestinationAirports;");
 
-$myfile = fopen("../Data/Averages.sql", "w+");
+$myfile = fopen("/var/www/html/skytracker.co/Data/Averages.sql", "w+");
 
 fwrite($myfile, "DROP TABLE Averages;\n\n");
 fwrite($myfile, "CREATE TABLE Averages (\n");
@@ -65,6 +65,6 @@ foreach($destinationsArr as $destAirport) { //foreach element in $arr
 }
 fclose($myfile);
 
-exec("mysql -u root -p\"$password\" -f \"SkyTracker\" < ../Data/Averages.sql");
+exec("mysql -u root -p\"$password\" -f \"SkyTracker\" < /var/www/html/skytracker.co/Data/Averages.sql");
 
 ?>

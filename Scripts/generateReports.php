@@ -84,7 +84,9 @@
 
   $reportsArray = array();
 
-  while(count($reportsArray) <15){
+  while(count($reportsArray) < 15){
+
+    
 
   }
 
