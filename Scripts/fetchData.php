@@ -137,9 +137,6 @@
     $monthsNeeded = 3;
   }
 
-  $confirmationFile = fopen("/var/www/html/skytracker.co/confirmationOfRunning.txt", "w");
-  fwrite($confirmationFile, "Program has started successfully\n");
-
   foreach($sourcesArr as $srcAirport) { //foreach element in $arr
     foreach($destinationsArr as $destAirport) { //foreach element in $arr
 
@@ -191,6 +188,6 @@
     }
   }
 
-  fwrite($confirmationFile, "Program has run successfully\n");
-  fclose($confirmationFile);
+  $conn->close();
+
 ?>
