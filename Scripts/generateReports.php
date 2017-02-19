@@ -86,7 +86,9 @@
 
   while(count($reportsArray) < 15){
 
-    
+    $foreach($redAlerts as $redAlert){
+
+    }
 
   }
 
