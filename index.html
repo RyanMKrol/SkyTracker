@@ -21,13 +21,19 @@
 </head>
 
 <body>
-  <video width="320" height="240" autoplay loop class = "fullscreen">
-  <source src="SkyTrackerCover.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
-  <form action = "Scripts/addUser.php" method = "post">
-    <input type="email" name="addr"></br>
-  </form>
-</body>
 
+  <div class="vid-container">
+  <video class="bgvid" autoplay="autoplay" muted="muted" preload="auto" loop>
+      <source src="SkyTrackerCover.mp4" type="video/mp4">
+  </video>
+  <div class="inner-container">
+    <video class="bgvid inner" autoplay="autoplay" muted="muted" preload="auto" loop>
+      <source src="SkyTrackerCover.mp4" type="video/mp4">
+    </video>
+    <div class="box">
+      <h1>SkyTracker</h1>
+      <input type="email" placeholder="Email"/>
+    </div>
+  </div>
+</div>
 </html>
