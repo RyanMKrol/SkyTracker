@@ -85,6 +85,9 @@
   foreach($destinationsArr as $destAirport) {
     foreach($sourcesArr as $srcAirport) {
 
+      print_r($srcAirport);
+      print_r($destAirport);
+
       $src = $srcAirport["SrcAirportCode"];
       $dest = $destAirport["DestAirportCode"];
 

@@ -4,18 +4,20 @@ CREATE TABLE SourceAirports (
   SrcAirportID int NOT NULL AUTO_INCREMENT,
   SrcAirportName varchar(255) NOT NULL,
   SrcAirportCode varchar(255) NOT NULL UNIQUE,
+  SrcCountry varchar(255) NOT NULL,
+  SrcCity varchar(255) NOT NULL,
   PRIMARY KEY(SrcAirportID)
 );
 
-INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode) VALUES ('London Heathrow','LHR');
-INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode) VALUES ('London Gatwick','LGW');
-INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode) VALUES ('London Luton','LTN');
-INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode) VALUES ('Birmingham International','BHX');
-INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode) VALUES ('Manchester','MAN');
-INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode) VALUES ('Edinburgh','EDI');
-INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode) VALUES ('Glasgow','GLA');
-INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode) VALUES ('East Midlands','EMA');
-INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode) VALUES ('Bristol','BRS');
-INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode) VALUES ('Newcastle','NCL');
+INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('London Heathrow','LHR','United Kingdom','London');
+INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('London Gatwick','LGW','United Kingdom','London');
+INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('London Luton','LTN','United Kingdom','London');
+INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('Birmingham International','BHX','United Kingdom','Birmingham');
+INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('Manchester','MAN','United Kingdom','Manchester');
+INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('Edinburgh','EDI','United Kingdom','Edinburgh');
+INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('Glasgow','GLA','United Kingdom','Glasgow');
+INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('East Midlands','EMA','United Kingdom','East Midlands');
+INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('Bristol','BRS','United Kingdom','Bristol');
+INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('Newcastle','NCL','United Kingdom','Newcastle');
 
 SELECT * FROM SourceAirports;
