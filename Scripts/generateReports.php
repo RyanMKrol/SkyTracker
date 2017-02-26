@@ -4,6 +4,8 @@
   include 'credentials.php';
   include 'Flight.php';
 
+  $currentDate = date_create();
+
   // I don't currently need any of these variables
   // $redBound = 0.2;
   // $yellowBound = 0.35;
@@ -62,6 +64,9 @@
 <?php
   //main
 
+  //date time object used in reports
+  global $currentDate;
+
   // Create connection
   $conn = new mysqli($servername, $username, $password, $database);
 
@@ -101,6 +106,23 @@
     array_push($flightsArray, $minItem);
     $minItem = NULL;
   }
+
+
+  //the report file
+
+
+
+  $myfile = fopen(("/var/www/html/skytracker.co/Reports/Report_" . date_format($currentDate,"d-m-Y")), "w+");
+
+  fwrite($myfile, "SrcAirport\tDestAirport\tDepartDate\tReturnDate\tPrice\tTripLength\n\n");
+
+  foreach($flightsArray as $flight){
+    fwrite($myfile, "${flight['SourcePort']}\t\t${flight['DestPort']}\t\t${flight['DepartDate']}\t${flight['ReturnDate']}\t${flight['Price']}\t${flight['DATEDIFF(ReturnDate, DepartDate)']}\n");
+
+  }
+
+  //closing the file
+  fclose($myfile);
 
   //close connection
   $conn->close();
