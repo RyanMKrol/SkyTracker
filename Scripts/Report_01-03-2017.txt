@@ -1,0 +1,57 @@
+Welcome to your report! I've organised the flights by prices for you to make it all a bit easier.
+
+Flights Under £50:
+Glasgow, GLA		=>	Poland, Gdansk, GDN:		Leaving - 2017-03-06. Returning - 2017-03-28. Trip Length: 22 Days. Cost: £27
+London, LTN		=>	Poland, Warsaw, WAW:		Leaving - 2017-04-23. Returning - 2017-04-24. Trip Length: 1 Days. Cost: £28
+London, LTN		=>	Spain, Barcelona, BCN:		Leaving - 2017-05-07. Returning - 2017-05-18. Trip Length: 11 Days. Cost: £30
+Manchester, MAN		=>	Ireland, Dublin, DUB:		Leaving - 2017-03-25. Returning - 2017-03-27. Trip Length: 2 Days. Cost: £31
+London, LTN		=>	Czech Republic, Prague, PRG:		Leaving - 2017-03-07. Returning - 2017-03-26. Trip Length: 19 Days. Cost: £34
+Manchester, MAN		=>	Portugal, Faro, FAO:		Leaving - 2017-04-18. Returning - 2017-05-03. Trip Length: 15 Days. Cost: £34
+Manchester, MAN		=>	Germany, Hamburg, HAM:		Leaving - 2017-03-30. Returning - 2017-04-03. Trip Length: 4 Days. Cost: £36
+London, LGW		=>	Spain, Palma De Mallorca, PMI:		Leaving - 2017-06-26. Returning - 2017-07-14. Trip Length: 18 Days. Cost: £36
+London, LTN		=>	Spain, M�laga, AGP:		Leaving - 2017-04-25. Returning - 2017-05-04. Trip Length: 9 Days. Cost: £38
+London, LTN		=>	Denmark, Copenhagen, CPH:		Leaving - 2017-03-11. Returning - 2017-03-17. Trip Length: 6 Days. Cost: £39
+London, LGW		=>	France, Marseille, MRS:		Leaving - 2017-04-27. Returning - 2017-04-30. Trip Length: 3 Days. Cost: £39
+London, LTN		=>	Spain, Ibiza, IBZ:		Leaving - 2017-04-30. Returning - 2017-05-06. Trip Length: 6 Days. Cost: £40
+Manchester, MAN		=>	Germany, D�sseldorf, DUS:		Leaving - 2017-04-12. Returning - 2017-05-02. Trip Length: 20 Days. Cost: £40
+Bristol, BRS		=>	Switzerland, Geneva, GVA:		Leaving - 2017-05-12. Returning - 2017-05-15. Trip Length: 3 Days. Cost: £41
+London, LHR		=>	France, Paris, ORY:		Leaving - 2017-04-06. Returning - 2017-04-11. Trip Length: 5 Days. Cost: £42
+Birmingham, BHX		=>	Spain, Madrid, MAD:		Leaving - 2017-06-12. Returning - 2017-06-19. Trip Length: 7 Days. Cost: £43
+London, LTN		=>	Hungary, Budapest, BUD:		Leaving - 2017-04-25. Returning - 2017-05-04. Trip Length: 9 Days. Cost: £43
+London, LTN		=>	Italy, Milan, MXP:		Leaving - 2017-03-19. Returning - 2017-03-22. Trip Length: 3 Days. Cost: £44
+London, LGW		=>	Ireland, Belfast, BFS:		Leaving - 2017-06-14. Returning - 2017-06-16. Trip Length: 2 Days. Cost: £45
+Birmingham, BHX		=>	Spain, Gran Canaria, LPA:		Leaving - 2017-03-27. Returning - 2017-04-03. Trip Length: 7 Days. Cost: £45
+London, LGW		=>	Portugal, Lisbon, LIS:		Leaving - 2017-04-25. Returning - 2017-05-04. Trip Length: 9 Days. Cost: £46
+London, LTN		=>	Portugal, Porto, OPO:		Leaving - 2017-05-20. Returning - 2017-05-21. Trip Length: 1 Days. Cost: £46
+London, LGW		=>	Greece, Corfu, CFU:		Leaving - 2017-03-25. Returning - 2017-04-02. Trip Length: 8 Days. Cost: £47
+London, LTN		=>	The Netherlands, Amsterdam, AMS:		Leaving - 2017-03-14. Returning - 2017-03-22. Trip Length: 8 Days. Cost: £48
+Manchester, MAN		=>	Italy, Venice, VCE:		Leaving - 2017-04-23. Returning - 2017-05-06. Trip Length: 13 Days. Cost: £48
+Manchester, MAN		=>	Sweden, Stockholm, ARN:		Leaving - 2017-08-20. Returning - 2017-09-08. Trip Length: 19 Days. Cost: £48
+Manchester, MAN		=>	France, Lyon, LYS:		Leaving - 2017-05-06. Returning - 2017-05-14. Trip Length: 8 Days. Cost: £48
+London, LTN		=>	Germany, Munich, MUC:		Leaving - 2017-05-22. Returning - 2017-05-25. Trip Length: 3 Days. Cost: £49
+
+Flights Under £100:
+Bristol, BRS		=>	France, Nice, NCE:		Leaving - 2017-05-10. Returning - 2017-05-20. Trip Length: 10 Days. Cost: £50
+London, LTN		=>	Switzerland, Zurich, ZRH:		Leaving - 2017-03-08. Returning - 2017-03-13. Trip Length: 5 Days. Cost: £50
+London, LGW		=>	Croatia, Dubrovnik, DBV:		Leaving - 2017-05-08. Returning - 2017-05-10. Trip Length: 2 Days. Cost: £50
+London, LGW		=>	Croatia, Split, SPU:		Leaving - 2017-04-22. Returning - 2017-04-29. Trip Length: 7 Days. Cost: £51
+London, LGW		=>	France, Paris, CDG:		Leaving - 2017-03-06. Returning - 2017-03-08. Trip Length: 2 Days. Cost: £52
+London, LGW		=>	Iceland, Reykjav�k, KEF:		Leaving - 2017-05-13. Returning - 2017-05-17. Trip Length: 4 Days. Cost: £53
+Manchester, MAN		=>	Italy, Naples, NAP:		Leaving - 2017-05-08. Returning - 2017-05-17. Trip Length: 9 Days. Cost: £55
+Birmingham, BHX		=>	Austria, Vienna, VIE:		Leaving - 2017-07-17. Returning - 2017-08-09. Trip Length: 23 Days. Cost: £56
+London, LGW		=>	Greece, Rhodes, RHO:		Leaving - 2017-08-19. Returning - 2017-09-17. Trip Length: 29 Days. Cost: £56
+London, LGW		=>	Norway, Bergen, BGO:		Leaving - 2017-04-04. Returning - 2017-04-15. Trip Length: 11 Days. Cost: £58
+London, LGW		=>	Germany, Stuttgart, STR:		Leaving - 2017-03-22. Returning - 2017-04-04. Trip Length: 13 Days. Cost: £58
+Manchester, MAN		=>	Croatia, Zagreb, ZAG:		Leaving - 2017-05-20. Returning - 2017-05-22. Trip Length: 2 Days. Cost: £59
+London, LGW		=>	Italy, Rome, FCO:		Leaving - 2017-03-08. Returning - 2017-03-15. Trip Length: 7 Days. Cost: £60
+Manchester, MAN		=>	Poland, Krak�w, KRK:		Leaving - 2017-05-04. Returning - 2017-05-11. Trip Length: 7 Days. Cost: £61
+London, LGW		=>	Norway, Oslo, OSL:		Leaving - 2017-03-28. Returning - 2017-03-28. Trip Length: 0 Days. Cost: £62
+London, LGW		=>	Sweden, Gothenburg, GOT:		Leaving - 2017-03-03. Returning - 2017-03-08. Trip Length: 5 Days. Cost: £62
+London, LGW		=>	Greece, Athens, ATH:		Leaving - 2017-04-26. Returning - 2017-05-05. Trip Length: 9 Days. Cost: £74
+London, LGW		=>	Finland, Helsinki, HEL:		Leaving - 2017-04-21. Returning - 2017-04-22. Trip Length: 1 Days. Cost: £79
+London, LHR		=>	Belgium, Brussels, BRU:		Leaving - 2017-03-30. Returning - 2017-04-01. Trip Length: 2 Days. Cost: £80
+London, LGW		=>	Greece, Heraklion, HER:		Leaving - 2017-03-28. Returning - 2017-04-02. Trip Length: 5 Days. Cost: £83
+London, LHR		=>	Germany, Frankfurt, FRA:		Leaving - 2017-08-03. Returning - 2017-08-16. Trip Length: 13 Days. Cost: £94
+
+Flights Over £100:
+Glasgow, GLA		=>	Greece, Kos, KGS:		Leaving - 2017-04-25. Returning - 2017-04-29. Trip Length: 4 Days. Cost: £113

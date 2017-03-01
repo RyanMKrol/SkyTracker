@@ -60,6 +60,15 @@
 
     return $resultArray;
   }
+
+  //comparator for usort
+  function cmp($a, $b){
+    if ($a['Price'] == $b['Price']) {
+        return 0;
+    }
+    return ($a['Price'] < $b['Price']) ? -1 : 1;
+  }
+
 ?>
 <?php
   //main
@@ -104,6 +113,10 @@
       } else {
         if(isset($potentialMin)){
           $minItem = $potentialMin;
+          $minItem["SrcCity"] = $srcAirport["SrcCity"];
+          $minItem["SrcCountry"] = $srcAirport["SrcCountry"];
+          $minItem["DestCity"] = $destAirport["DestCity"];
+          $minItem["DestCountry"] = $destAirport["DestCountry"];
         }
       }
     }
@@ -115,13 +128,36 @@
 
 
   //the report file
-  $myfile = fopen(("/var/www/html/skytracker.co/Reports/Report_" . date_format($currentDate,"d-m-Y")), "w+");
+  $myfile = fopen(("/var/www/html/skytracker.co/Reports/Report_" . date_format($currentDate,"d-m-Y") . ".txt"), "w+");
 
-  fwrite($myfile, "SrcAirport\tDestAirport\tDepartDate\tReturnDate\tPrice\tTripLength\n\n");
+  fwrite($myfile, "Welcome to your report! I've organised the flights by prices for you to make it all a bit easier.\n");
+
+  usort($flightsArray, "cmp");
+
+  $under50Flag = false;
+  $under100Flag = false;
+  $over100Flag = false;
 
   foreach($flightsArray as $flight){
-    print_r($flight);
-    fwrite($myfile, "${flight['SourcePort']}\t\t${flight['DestPort']}\t\t${flight['DepartDate']}\t${flight['ReturnDate']}\t${flight['Price']}\t${flight['DATEDIFF(ReturnDate, DepartDate)']}\n");
+
+    if($flight['Price'] < 50){
+      if(!$under50Flag){
+        $under50Flag = true;
+        fwrite($myfile, "\nFlights Under £50:\n");
+      }
+    } else if($flight['Price'] < 100){
+      if(!$under100Flag){
+        $under100Flag = true;
+        fwrite($myfile, "\nFlights Under £100:\n");
+      }
+    } else {
+      if(!$over100Flag){
+        $over100Flag = true;
+        fwrite($myfile, "\nFlights Over £100:\n");
+      }
+    }
+
+    fwrite($myfile, "${flight['SrcCity']}, ${flight['SourcePort']}\t\t=>\t${flight['DestCountry']}, ${flight['DestCity']}, ${flight['DestPort']}:\t\tLeaving - ${flight['DepartDate']}. Returning - ${flight['ReturnDate']}. Trip Length: ${flight['DATEDIFF(ReturnDate, DepartDate)']} Days. Cost: £${flight['Price']}\n");
 
   }
 
