@@ -88,12 +88,18 @@
       $src = $srcAirport["SrcAirportCode"];
       $dest = $destAirport["DestAirportCode"];
 
+      // print_r($srcAirport);
+
       $potentialMin = getFlightsOfInterest($conn,$src,$dest);
 
       //checks that the minItem and potentialMin variables aren't null
       if(isset($minItem) && isset($potentialMin)){
         if($potentialMin['Price'] < $minItem['Price']){
           $minItem = $potentialMin;
+          $minItem["SrcCity"] = $srcAirport["SrcCity"];
+          $minItem["SrcCountry"] = $srcAirport["SrcCountry"];
+          $minItem["DestCity"] = $destAirport["DestCity"];
+          $minItem["DestCountry"] = $destAirport["DestCountry"];
         }
       } else {
         if(isset($potentialMin)){
@@ -114,6 +120,7 @@
   fwrite($myfile, "SrcAirport\tDestAirport\tDepartDate\tReturnDate\tPrice\tTripLength\n\n");
 
   foreach($flightsArray as $flight){
+    print_r($flight);
     fwrite($myfile, "${flight['SourcePort']}\t\t${flight['DestPort']}\t\t${flight['DepartDate']}\t${flight['ReturnDate']}\t${flight['Price']}\t${flight['DATEDIFF(ReturnDate, DepartDate)']}\n");
 
   }
