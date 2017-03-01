@@ -97,8 +97,6 @@
       $src = $srcAirport["SrcAirportCode"];
       $dest = $destAirport["DestAirportCode"];
 
-      // print_r($srcAirport);
-
       $potentialMin = getFlightsOfInterest($conn,$src,$dest);
 
       //checks that the minItem and potentialMin variables aren't null
@@ -126,39 +124,19 @@
     $minItem = NULL;
   }
 
-
-  //the report file
-  $myfile = fopen(("/var/www/html/skytracker.co/Reports/Report_" . date_format($currentDate,"d-m-Y") . ".txt"), "w+");
-
-  fwrite($myfile, "Welcome to your report! I've organised the flights by prices for you to make it all a bit easier.\n");
-
   usort($flightsArray, "cmp");
 
-  $under50Flag = false;
-  $under100Flag = false;
-  $over100Flag = false;
+  //the report file
+  $myfile = fopen(("/var/www/html/skytracker.co/Reports/Report_" . date_format($currentDate,"d-m-Y") . ".csv"), "w+");
 
+  //csv headers
+  fwrite($myfile, "From,To,Leaving,Returning,Trip Length,Cost\n");
+
+  //writing out data to the .csv file
   foreach($flightsArray as $flight){
 
-    if($flight['Price'] < 50){
-      if(!$under50Flag){
-        $under50Flag = true;
-        fwrite($myfile, "\nFlights Under £50:\n");
-      }
-    } else if($flight['Price'] < 100){
-      if(!$under100Flag){
-        $under100Flag = true;
-        fwrite($myfile, "\nFlights Under £100:\n");
-      }
-    } else {
-      if(!$over100Flag){
-        $over100Flag = true;
-        fwrite($myfile, "\nFlights Over £100:\n");
-      }
-    }
-
-    fwrite($myfile, "${flight['SrcCity']}, ${flight['SourcePort']}\t\t=>\t${flight['DestCountry']}, ${flight['DestCity']}, ${flight['DestPort']}: Leaving - ${flight['DepartDate']}. Returning - ${flight['ReturnDate']}. Trip Length: ${flight['DATEDIFF(ReturnDate, DepartDate)']} Days. Cost: £${flight['Price']}\n");
-
+    //writing out the information to a .csv file
+    fwrite($myfile, "\"${flight['SrcCity']}, ${flight['SourcePort']}\",\"${flight['DestCountry']}, ${flight['DestCity']}, ${flight['DestPort']}\",${flight['DepartDate']},${flight['ReturnDate']},${flight['DATEDIFF(ReturnDate, DepartDate)']},${flight['Price']}\n");
   }
 
   //closing the file

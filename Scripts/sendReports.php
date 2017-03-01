@@ -24,7 +24,7 @@
 ?>
 <?php
   //main
-
+  
   global $currentDate;
 
   // Create connection
@@ -40,12 +40,11 @@
   //getting a minimum for each destination, from all of the sources
   foreach($emailsArr as $address) {
 
+    $reportName = "/var/www/html/skytracker.co/Reports/Report_" . date_format($currentDate,"d-m-Y") . ".csv";
 
-    $reportName = "/var/www/html/skytracker.co/Reports/Report_" . date_format($currentDate,"d-m-Y");
+    $emailAddress = $address['UserEmailAddress'];
 
-    exec("echo \"Please find attached the report of cheap flights for Europe!\" | mail -A $reportName -s \"Your Daily Cheap Flights Report!\" ryankrol@hotmail.co.uk");
-
-    // exec("mysql -u root -p\"$password\" -f \"SkyTracker\" < /var/www/html/skytracker.co/Data/Averages.sql");
+    exec("echo \"Please find attached the report of cheap flights for Europe!\" | mail -A $reportName -s \"Your Daily Cheap Flights Report!\" $emailAddress");
   }
   //close connection
   $conn->close();

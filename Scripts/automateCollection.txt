@@ -1,3 +1,5 @@
 0 0 * * * /usr/bin/php /var/www/html/skytracker.co/Scripts/fetchData.php
 0 6 * * * /usr/bin/php /var/www/html/skytracker.co/Scripts/createAverages.php
+30 6 * * * /usr/bin/php /var/www/html/skytracker.co/Scripts/generateReports.php
+40 6 * * * /usr/bin/php /var/www/html/skytracker.co/Scripts/sendReports.php
 0 0 * * * echo $(date) >> /var/www/html/skytracker.co/Scripts/confirmation.txt
