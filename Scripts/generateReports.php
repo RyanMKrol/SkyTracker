@@ -33,7 +33,7 @@
 
     //for now i'm going to go with the cheapest flight because it will always return the same numner of flights
 
-    $query = "SELECT *, DATEDIFF(ReturnDate, DepartDate) FROM ${src}_${dest} Where Price = (Select Min(Price) from ${src}_${dest}) limit 1;";
+    $query = "SELECT *, DATEDIFF(ReturnDate, DepartDate) FROM ${src}_${dest} Where Price = (Select Min(Price) from ${src}_${dest}) AND DATEDIFF(ReturnDate, DepartDate) > 2 limit 1;";
 
     $pricesArray = arraySetup($conn,$query);
 
@@ -157,7 +157,7 @@
       }
     }
 
-    fwrite($myfile, "${flight['SrcCity']}, ${flight['SourcePort']}\t\t=>\t${flight['DestCountry']}, ${flight['DestCity']}, ${flight['DestPort']}:\t\tLeaving - ${flight['DepartDate']}. Returning - ${flight['ReturnDate']}. Trip Length: ${flight['DATEDIFF(ReturnDate, DepartDate)']} Days. Cost: £${flight['Price']}\n");
+    fwrite($myfile, "${flight['SrcCity']}, ${flight['SourcePort']}\t\t=>\t${flight['DestCountry']}, ${flight['DestCity']}, ${flight['DestPort']}: Leaving - ${flight['DepartDate']}. Returning - ${flight['ReturnDate']}. Trip Length: ${flight['DATEDIFF(ReturnDate, DepartDate)']} Days. Cost: £${flight['Price']}\n");
 
   }
 
