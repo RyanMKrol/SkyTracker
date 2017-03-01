@@ -85,9 +85,6 @@
   foreach($destinationsArr as $destAirport) {
     foreach($sourcesArr as $srcAirport) {
 
-      print_r($srcAirport);
-      print_r($destAirport);
-
       $src = $srcAirport["SrcAirportCode"];
       $dest = $destAirport["DestAirportCode"];
 
@@ -112,9 +109,6 @@
 
 
   //the report file
-
-
-
   $myfile = fopen(("/var/www/html/skytracker.co/Reports/Report_" . date_format($currentDate,"d-m-Y")), "w+");
 
   fwrite($myfile, "SrcAirport\tDestAirport\tDepartDate\tReturnDate\tPrice\tTripLength\n\n");

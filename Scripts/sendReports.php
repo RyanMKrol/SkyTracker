@@ -2,6 +2,8 @@
   //globals and includes
 
   include 'credentials.php';
+  $currentDate = date_create();
+
 ?>
 <?php
   //functions
@@ -23,6 +25,8 @@
 <?php
   //main
 
+  global $currentDate;
+
   // Create connection
   $conn = new mysqli($servername, $username, $password, $database);
 
@@ -36,9 +40,10 @@
   //getting a minimum for each destination, from all of the sources
   foreach($emailsArr as $address) {
 
-    echo "user\n";
-    echo $address['UserEmailAddress'] . "\n";
-    exec("echo \"This is the body of the email\" | mail -A ./confirmation.txt -s \"This is the subject line\" ryankrol@hotmail.co.uk");
+
+    $reportName = "/var/www/html/skytracker.co/Reports/Report_" . date_format($currentDate,"d-m-Y");
+
+    exec("echo \"Please find attached the report of cheap flights for Europe!\" | mail -A $reportName -s \"Your Daily Cheap Flights Report!\" ryankrol@hotmail.co.uk");
 
     // exec("mysql -u root -p\"$password\" -f \"SkyTracker\" < /var/www/html/skytracker.co/Data/Averages.sql");
   }
