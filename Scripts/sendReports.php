@@ -24,7 +24,7 @@
 ?>
 <?php
   //main
-  
+
   global $currentDate;
 
   // Create connection

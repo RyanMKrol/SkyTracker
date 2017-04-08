@@ -63,7 +63,7 @@
     fwrite($myfile, "INSERT INTO Averages (AirPort, AveragePrice) VALUES ('$dest', '$sum');\n");
 
   }
-  
+
   fclose($myfile);
   $conn->close();
 

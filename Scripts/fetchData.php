@@ -82,7 +82,7 @@
         break;
 
       default:
-        echo '************************************************************************Unexpected HTTP code: ', $http_code, "\n";
+        echo '*********************************************************************** Unexpected HTTP code: ', $http_code, "\n";
         echo "$call\n";
     }
   }
@@ -137,56 +137,51 @@
     $monthsNeeded = 3;
   }
 
-  foreach($sourcesArr as $srcAirport) { //foreach element in $arr
-    foreach($destinationsArr as $destAirport) { //foreach element in $arr
+  $src = $argv[1];
+  $dest = $argv[2];
 
-      $src = $srcAirport["SrcAirportCode"];
-      $dest = $destAirport["DestAirportCode"];
+  //found in functions.php
+  $mysqlFile = createMySQLFile($src, $dest);
 
-      //found in functions.php
-      $mysqlFile = createMySQLFile($src, $dest);
+  //we can depart within the next 6 months
+  foreach(range(1,6) as $j){
 
-      //we can depart within the next 6 months
-      foreach(range(1,6) as $j){
+    //and we can come back within #monthsNeeded months of the set-off date
+    foreach(range(1,$monthsNeeded) as $i){
 
-        //and we can come back within #monthsNeeded months of the set-off date
-        foreach(range(1,$monthsNeeded) as $i){
+      $departYear = $srcDate->format('Y');
+      $departMonth = $srcDate->format('m');
+      $returnYear = $destDate->format('Y');
+      $returnMonth = $destDate->format('m');
 
-          $departYear = $srcDate->format('Y');
-          $departMonth = $srcDate->format('m');
-          $returnYear = $destDate->format('Y');
-          $returnMonth = $destDate->format('m');
+      $data = getData($src, $dest, $departYear, $departMonth, $returnYear, $returnMonth);
 
-          $data = getData($src, $dest, $departYear, $departMonth, $returnYear, $returnMonth);
+      if(!is_null($data)){
 
-          if(!is_null($data)){
+          //write the data to the sql file
+          writeData($data, $mysqlFile, $src, $dest, $departYear, $departMonth, $returnYear, $returnMonth);
 
-              //write the data to the sql file
-              writeData($data, $mysqlFile, $src, $dest, $departYear, $departMonth, $returnYear, $returnMonth);
-
-          } else {
-              //have to decide on functionality for this later
-          }
-
-          date_add($destDate,date_interval_create_from_date_string("1 month"));
-
-        }
-        date_add($srcDate,date_interval_create_from_date_string("1 month"));
-
-        $destDate = date_create();
-        date_add($destDate,date_interval_create_from_date_string("$j months"));
+      } else {
+          //have to decide on functionality for this later
       }
 
-      $srcDate = date_create();
-      $destDate = date_create();
+      date_add($destDate,date_interval_create_from_date_string("1 month"));
 
-      //update the database
-      exec("mysql -u root -p\"$password\" -f \"SkyTracker\" < /var/www/html/skytracker.co/Data/${src}_${dest}.sql");
-
-      //close file now we're done with the src-dest pair
-      fclose($mysqlFile);
     }
+    date_add($srcDate,date_interval_create_from_date_string("1 month"));
+
+    $destDate = date_create();
+    date_add($destDate,date_interval_create_from_date_string("$j months"));
   }
+
+  $srcDate = date_create();
+  $destDate = date_create();
+
+  //update the database
+  exec("mysql -u root -p\"$password\" -f \"SkyTracker\" < /var/www/html/skytracker.co/Data/${src}_${dest}.sql");
+
+  //close file now we're done with the src-dest pair
+  fclose($mysqlFile);
 
   $conn->close();
 

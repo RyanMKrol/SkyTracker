@@ -2,7 +2,6 @@
   //globals and includes
 
   include 'credentials.php';
-  include 'Flight.php';
 
   $currentDate = date_create();
 
