@@ -2,12 +2,15 @@
 package DataUtils
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
 )
+
+const EXCESSIVE_CALLS int = 429
+const GOOD_RESPONSE int = 200
+const SLEEP_TIME time.Duration = 60000
 
 // collects data from a url and returns it, along with the response code
 func Collect(url string) (body []byte) {
@@ -18,17 +21,20 @@ func Collect(url string) (body []byte) {
 	}
 	defer resp.Body.Close()
 
+	// reading data from the response
+	responseCode := resp.StatusCode
+
 	// if the response is 429, we're sending too many requests, so wait a minute and try again
-	if responseCode == 429 {
-		time.Sleep(60000 * time.Millisecond)
+	if responseCode == EXCESSIVE_CALLS {
+		time.Sleep(SLEEP_TIME * time.Millisecond)
 		return Collect(url)
-	} else if responseCode != 200 {
+	} else if responseCode != GOOD_RESPONSE {
 		log.Fatal(err)
 	}
 
+	// parses all data into a byte slice
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("We're about to fail!\n")
 		log.Fatal(err)
 	}
 

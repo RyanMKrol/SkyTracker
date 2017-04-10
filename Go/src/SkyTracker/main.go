@@ -31,14 +31,12 @@ func main() {
 
 	srcAirports, err := db.Query("SELECT * FROM SourceAirports;")
 	if err != nil {
-		fmt.Printf("Tried to read the Source Airport data and failed.")
 		panic(err.Error())
 	}
 	defer srcAirports.Close()
 
 	destAirports, err := db.Query("SELECT * FROM DestinationAirports;")
 	if err != nil {
-		fmt.Printf("Tried to read the Destination Airport data and failed.")
 		panic(err.Error())
 	}
 	defer destAirports.Close()
@@ -47,19 +45,19 @@ func main() {
 	// sending off each thread
 
 	for srcAirports.Next() {
+
 		for destAirports.Next() {
+
 			// adding another thread to wait for
 			wg.Add(1)
 
 			var src, dest, dummy string
 
 			if err := srcAirports.Scan(&dummy, &dummy, &src, &dummy, &dummy); err != nil {
-				fmt.Printf("Tried to read into source airports and shit the bed.")
 				panic(err.Error())
 			}
 
 			if err := destAirports.Scan(&dummy, &dummy, &dest, &dummy, &dummy); err != nil {
-				fmt.Printf("Tried to read into destination airports and shit the bed.")
 				panic(err.Error())
 			}
 
@@ -70,7 +68,6 @@ func main() {
 		// have to reload the result set into destAirports because .Next()
 		destAirports, err = db.Query("SELECT * FROM DestinationAirports;")
 		if err != nil {
-			fmt.Printf("Tried to read the Destination Airport data and failed.")
 			panic(err.Error())
 		}
 
@@ -82,26 +79,26 @@ func main() {
 // this function will be for gathering and persisting data with threads
 func t_DataProcess(src, dest string) {
 
-	// the times to depart and return
-
 	departTime := time.Now()
 	returnTime := time.Now()
 
-	var departDate string
-	var returnDate string
+	// creates the relevant sql file
+	DataUtils.SetupSQL(src,dest)
 
+	// goes through each date and collects data
 	for i := 1; i <= MonthsLookahead; i++ {
 
 		for j := 0; j < MonthsTripDurationMax; j++ {
 
-			departDate = departTime.Format("2006-01")
-			returnDate = returnTime.Format("2006-01")
+			departDate := departTime.Format("2006-01")
+			returnDate := returnTime.Format("2006-01")
 
 			url := fmt.Sprintf("http://partners.api.skyscanner.net/apiservices/browsegrid/v1.0/GB/GBP/en-GB/%s/%s/%s/%s?apiKey=%s",src,dest,departDate,returnDate,Credentials.ApiKey())
 
-			response []byte := DataUtils.Collect(url)
+			response := DataUtils.Collect(url)
 
-			DataUtils.Decode(response)
+			// decodes the response and stores it in the .sql file
+			DataUtils.Decode(response, src, dest, departTime, returnTime)
 
 			returnTime = returnTime.AddDate(0,1,0)
 		}
