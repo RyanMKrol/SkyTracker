@@ -1,16 +1,20 @@
 package main
 
 import (
-	"Credentials"
 	"DataUtils"
+	"Credentials"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"sync"
+	"time"
 )
 
 // this is used to sync up the threads that are doing work before we continue
 var wg sync.WaitGroup
+
+const MonthsLookahead = 6
+const MonthsTripDurationMax = 2
 
 func main() {
 
@@ -39,11 +43,12 @@ func main() {
 	}
 	defer destAirports.Close()
 
+
 	// sending off each thread
 
 	for srcAirports.Next() {
 		for destAirports.Next() {
-			//adding another thread to wait for
+			// adding another thread to wait for
 			wg.Add(1)
 
 			var src, dest, dummy string
@@ -62,8 +67,6 @@ func main() {
 
 		}
 
-		wg.Wait()
-
 		// have to reload the result set into destAirports because .Next()
 		destAirports, err = db.Query("SELECT * FROM DestinationAirports;")
 		if err != nil {
@@ -71,6 +74,7 @@ func main() {
 			panic(err.Error())
 		}
 
+		wg.Wait()
 	}
 
 }
@@ -78,8 +82,36 @@ func main() {
 // this function will be for gathering and persisting data with threads
 func t_DataProcess(src, dest string) {
 
-	// i need to build up the url here and then
-	DataUtils.Collect("http://partners.api.skyscanner.net/apiservices/browsegrid/v1.0/GB/GBP/en-GB/LHR/ORY/2017-08/2017-09?apiKey=na912611636759734898754178423831",count)
+	// the times to depart and return
 
-	defer wg.Done()
+	departTime := time.Now()
+	returnTime := time.Now()
+
+	var departDate string
+	var returnDate string
+
+	for i := 1; i <= MonthsLookahead; i++ {
+
+		for j := 0; j < MonthsTripDurationMax; j++ {
+
+			departDate = departTime.Format("2006-01")
+			returnDate = returnTime.Format("2006-01")
+
+			url := fmt.Sprintf("http://partners.api.skyscanner.net/apiservices/browsegrid/v1.0/GB/GBP/en-GB/%s/%s/%s/%s?apiKey=%s",src,dest,departDate,returnDate,Credentials.ApiKey())
+
+			response []byte := DataUtils.Collect(url)
+
+			DataUtils.Decode(response)
+
+			returnTime = returnTime.AddDate(0,1,0)
+		}
+
+		departTime = departTime.AddDate(0,1,0)
+
+		returnTime = time.Now()
+		returnTime = returnTime.AddDate(0,i,0)
+
+	}
+
+	wg.Done()
 }
