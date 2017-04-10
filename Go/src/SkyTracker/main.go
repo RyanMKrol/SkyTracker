@@ -2,12 +2,11 @@ package main
 
 import (
 	"Credentials"
+	"DataUtils"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"math/rand"
 	"sync"
-	"time"
 )
 
 // this is used to sync up the threads that are doing work before we continue
@@ -43,9 +42,7 @@ func main() {
 	// sending off each thread
 
 	for srcAirports.Next() {
-
 		for destAirports.Next() {
-
 			//adding another thread to wait for
 			wg.Add(1)
 
@@ -61,9 +58,11 @@ func main() {
 				panic(err.Error())
 			}
 
-			go threadedDataProcess(src, dest)
+			go t_DataProcess(src, dest)
 
 		}
+
+		wg.Wait()
 
 		// have to reload the result set into destAirports because .Next()
 		destAirports, err = db.Query("SELECT * FROM DestinationAirports;")
@@ -74,12 +73,13 @@ func main() {
 
 	}
 
-	wg.Wait()
-
 }
 
-func threadedDataProcess(src, dest string) {
-	time.Sleep(time.Duration(rand.Int31n(1000)) * time.Millisecond)
-	fmt.Printf("%s %s\n", src, dest)
+// this function will be for gathering and persisting data with threads
+func t_DataProcess(src, dest string) {
+
+	// i need to build up the url here and then
+	DataUtils.Collect("http://partners.api.skyscanner.net/apiservices/browsegrid/v1.0/GB/GBP/en-GB/LHR/ORY/2017-08/2017-09?apiKey=na912611636759734898754178423831",count)
+
 	defer wg.Done()
 }

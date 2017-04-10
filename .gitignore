@@ -6,3 +6,5 @@ Go/pkg/darwin_amd64/Credentials.a
 Go/pkg/darwin_amd64/github.com/go-sql-driver/mysql.a
 
 Go/src/github.com/go-sql-driver/mysql/
+
+Go/bin/SkyTracker
