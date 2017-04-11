@@ -7,9 +7,6 @@ import (
 	"os"
 )
 
-// this is declared in decode.go
-// const FILE_LOC string = "./../../sql/%s_%s.sql"
-
 // sets up the sql file for further input
 func SetupSQL(src, dest string) {
 
@@ -19,7 +16,8 @@ func SetupSQL(src, dest string) {
 	}
 	defer output.Close()
 
-	output.WriteString(fmt.Sprintf("DROP TABLE %s_%s\n\n", src, dest))
+	output.WriteString(fmt.Sprintf("DROP TABLE %s_%s;\n\n", src, dest))
+	output.WriteString(fmt.Sprintf("CREATE TABLE %s_%s(\n\n", src, dest))
 	output.WriteString("TripID int NOT NULL AUTO_INCREMENT,\n")
 	output.WriteString("SourcePort varchar(255) NOT NULL,\n")
 	output.WriteString("DestPort varchar(255) NOT NULL,\n")

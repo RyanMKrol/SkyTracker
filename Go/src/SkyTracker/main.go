@@ -44,6 +44,9 @@ func main() {
 
 	// sending off each thread
 
+	// DataUtils.PersistData(db,"BHX","MAD")
+
+
 	for srcAirports.Next() {
 
 		for destAirports.Next() {

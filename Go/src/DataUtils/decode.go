@@ -15,7 +15,6 @@ var typeComparator map[string]interface{}
 
 const DATES_ARRAY_ID string = "Dates"
 const MIN_PRICE_ID string = "MinPrice"
-const FILE_LOC string = "./../../sql/%s_%s.sql"
 const QUERY_FORMAT string = "INSERT INTO %s_%s (SourcePort, DestPort, DepartDate, ReturnDate, Price) VALUES ('%s','%s','%s-%02d', '%s-%02d', %d);\n"
 
 // decodes the data into .sql files
