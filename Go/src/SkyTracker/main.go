@@ -24,7 +24,6 @@ func main() {
 	user, password, ip, database := Credentials.User(), Credentials.Password(), Credentials.IPAddress(), Credentials.DatabaseName()
 	conn := fmt.Sprintf("%s:%s@tcp(%s)/%s", user, password, ip, database)
 
-	fmt.Printf("opening database\n");
 	db, err := sql.Open("mysql", conn)
 	if err != nil {
 		panic(err.Error())
@@ -33,14 +32,12 @@ func main() {
 
 	// statements to get the source and destination airport pairs
 
-	fmt.Printf("querying\n");
 	srcAirports, err := db.Query("SELECT * FROM SourceAirports;")
 	if err != nil {
 		panic(err.Error())
 	}
 	defer srcAirports.Close()
 
-	fmt.Printf("querying\n");
 	destAirports, err := db.Query("SELECT * FROM DestinationAirports;")
 	if err != nil {
 		panic(err.Error())

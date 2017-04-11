@@ -1,11 +1,11 @@
-package main
+package Reports
 
 import (
 
 )
 
-func main() {
+func GenerateReport() {
 
-	
+
 
 }
