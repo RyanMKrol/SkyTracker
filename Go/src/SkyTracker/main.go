@@ -15,6 +15,8 @@ const MONTHS_TRIP_MAX = 2
 const URL_FORMAT = "http://partners.api.skyscanner.net/apiservices/browsegrid/v1.0/GB/GBP/en-GB/%s/%s/%s/%s?apiKey=%s"
 const COMPRESS_SOURCE = "./../../sql/raw"
 const COMPRESS_TARGET = "./../../sql/compressed/archive.zip"
+const SELECT_SOURCES = "SELECT * FROM SourceAirports;"
+const SELECT_DESTINATIONS = "SELECT * FROM DestinationAirports;"
 
 // this is used to sync up the threads that are doing work before we continue
 var wg sync.WaitGroup
@@ -32,13 +34,13 @@ func main() {
 
 	// statements to get the source and destination airport pairs
 
-	srcAirports, err := db.Query("SELECT * FROM SourceAirports;")
+	srcAirports, err := db.Query(SELECT_SOURCES)
 	if err != nil {
 		panic(err.Error())
 	}
 	defer srcAirports.Close()
 
-	destAirports, err := db.Query("SELECT * FROM DestinationAirports;")
+	destAirports, err := db.Query(SELECT_DESTINATIONS)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -69,7 +71,7 @@ func main() {
 		}
 
 		// have to reload the result set into destAirports because .Next()
-		destAirports, err = db.Query("SELECT * FROM DestinationAirports;")
+		destAirports, err = db.Query(SELECT_SOURCES)
 		if err != nil {
 			panic(err.Error())
 		}
