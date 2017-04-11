@@ -10,17 +10,21 @@ import (
 	"time"
 )
 
+const MONTHS_LOOKAHEAD = 6
+const MONTHS_TRIP_MAX = 2
+const URL_FORMAT = "http://partners.api.skyscanner.net/apiservices/browsegrid/v1.0/GB/GBP/en-GB/%s/%s/%s/%s?apiKey=%s"
+const COMPRESS_SOURCE = "./../../sql/raw"
+const COMPRESS_TARGET = "./../../sql/compressed/archive.zip"
+
 // this is used to sync up the threads that are doing work before we continue
 var wg sync.WaitGroup
-
-const MonthsLookahead = 6
-const MonthsTripDurationMax = 2
 
 func main() {
 
 	user, password, ip, database := Credentials.User(), Credentials.Password(), Credentials.IPAddress(), Credentials.DatabaseName()
 	conn := fmt.Sprintf("%s:%s@tcp(%s)/%s", user, password, ip, database)
 
+	fmt.Printf("opening database\n");
 	db, err := sql.Open("mysql", conn)
 	if err != nil {
 		panic(err.Error())
@@ -29,12 +33,14 @@ func main() {
 
 	// statements to get the source and destination airport pairs
 
+	fmt.Printf("querying\n");
 	srcAirports, err := db.Query("SELECT * FROM SourceAirports;")
 	if err != nil {
 		panic(err.Error())
 	}
 	defer srcAirports.Close()
 
+	fmt.Printf("querying\n");
 	destAirports, err := db.Query("SELECT * FROM DestinationAirports;")
 	if err != nil {
 		panic(err.Error())
@@ -43,9 +49,6 @@ func main() {
 
 
 	// sending off each thread
-
-	// DataUtils.PersistData(db,"BHX","MAD")
-
 
 	for srcAirports.Next() {
 
@@ -77,6 +80,9 @@ func main() {
 		wg.Wait()
 	}
 
+	// at this point all of the files will be setup, now I need to persist it with the server
+
+
 }
 
 // this function will be for gathering and persisting data with threads
@@ -89,14 +95,14 @@ func t_DataProcess(src, dest string) {
 	DataUtils.SetupSQL(src,dest)
 
 	// goes through each date and collects data
-	for i := 1; i <= MonthsLookahead; i++ {
+	for i := 1; i <= MONTHS_LOOKAHEAD; i++ {
 
-		for j := 0; j < MonthsTripDurationMax; j++ {
+		for j := 0; j < MONTHS_TRIP_MAX; j++ {
 
 			departDate := departTime.Format("2006-01")
 			returnDate := returnTime.Format("2006-01")
 
-			url := fmt.Sprintf("http://partners.api.skyscanner.net/apiservices/browsegrid/v1.0/GB/GBP/en-GB/%s/%s/%s/%s?apiKey=%s",src,dest,departDate,returnDate,Credentials.ApiKey())
+			url := fmt.Sprintf(URL_FORMAT,src,dest,departDate,returnDate,Credentials.ApiKey())
 
 			response := DataUtils.Collect(url)
 
