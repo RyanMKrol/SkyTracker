@@ -46,13 +46,19 @@ func main() {
 	}
 	defer destAirports.Close()
 
-
 	// sending off each thread
 
+	var inner = 0
+	var outer = 0
+
 	for srcAirports.Next() {
+		fmt.Println(outer)
+		outer++
 
 		for destAirports.Next() {
 
+			fmt.Println(inner)
+			inner++
 			// adding another thread to wait for
 			wg.Add(1)
 
@@ -71,7 +77,7 @@ func main() {
 		}
 
 		// have to reload the result set into destAirports because .Next()
-		destAirports, err = db.Query(SELECT_SOURCES)
+		destAirports, err = db.Query(SELECT_DESTINATIONS)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -81,6 +87,7 @@ func main() {
 
 	// at this point all of the files will be setup, now I need to persist it with the server
 
+	DataUtils.PersistData()
 
 }
 

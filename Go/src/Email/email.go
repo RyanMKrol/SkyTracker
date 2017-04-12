@@ -1,12 +1,10 @@
 package Email
 
 import (
-	"Credentials"
 	"database/sql"
 	"fmt"
 	"log"
 	"os/exec"
-	"time"
 )
 
 const DATABASE_USING_SOURCE = "mysql -u %s -p\"%s\" -f \"%s\" < ./../../sql/all.sql"

@@ -3,29 +3,22 @@ package DataUtils
 
 import (
 	"os/exec"
-	"Credentials"
-	"fmt"
 	"log"
+	"fmt"
 )
 
-const MERGE_SQL_FILES = "cat ./../../sql/raw/* > ./../../sql/all.sql"
-const DATABASE_USING_SOURCE = "mysql -u %s -p\"%s\" -f \"%s\" < ./../../sql/all.sql"
+const PHP_BINARY = "/usr/bin/php"
+const PERSIST_PHP_LOC = "/var/www/html/skytracker.co/go/src/DataUtils/persist.php"
 
 // persists the data on the server
-func PersistData(source string) {
+func PersistData() {
 
-	cmd := exec.Command(MERGE_SQL_FILES)
-	persistCmd := exec.Command(fmt.Sprintf(DATABASE_USING_SOURCE, Credentials.User(), Credentials.Password(), Credentials.DatabaseName))
+		cmd := exec.Command(PHP_BINARY, PERSIST_PHP_LOC)
 
-	err := cmd.Run()
-	if err != nil{
-		log.Fatal(err)
-	}
-
-	err = persistCmd.Run()
-	if err != nil{
-		log.Fatal(err)
-	}
+		err := cmd.Run()
+		if err != nil {
+		    log.Fatal(err)
+		}
 
 	return
 }
