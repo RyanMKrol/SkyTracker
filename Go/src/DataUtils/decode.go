@@ -31,6 +31,7 @@ func Decode(data []byte, src, dest string, departDate, returnDate time.Time) {
 	// opening the file for writing, with append flag
 	file, err := os.OpenFile(fmt.Sprintf(FILE_LOC, src, dest), os.O_APPEND|os.O_WRONLY, 0777)
 	if err != nil {
+		fmt.Println("failed to open file for writing decode.go")
 		log.Fatal(err)
 	}
 	defer file.Close()
@@ -38,6 +39,7 @@ func Decode(data []byte, src, dest string, departDate, returnDate time.Time) {
 	// parsing the JSON into a blank interface
 	err = json.Unmarshal(data, &f)
 	if err != nil {
+		fmt.Println("failed to get json decode.go")
 		log.Fatal(err)
 	}
 
@@ -62,6 +64,7 @@ func Decode(data []byte, src, dest string, departDate, returnDate time.Time) {
 
 					_, err := file.WriteString(fmt.Sprintf(QUERY_FORMAT, src, dest, src, dest, departFormatted, outboundDay, returnFormatted, inboundDay, price))
 					if err != nil {
+						fmt.Println("failed to write string in file decode.go")
 						log.Fatal(err)
 					}
 				}

@@ -34,6 +34,7 @@ func main() {
 
 	db, err := sql.Open(DATABASE_DRIVER, conn)
 	if err != nil {
+		fmt.Println("failed to open database main.go")
 		panic(err.Error())
 	}
 	defer db.Close()
@@ -42,12 +43,14 @@ func main() {
 
 	srcAirports, err := db.Query(SELECT_SOURCES)
 	if err != nil {
+		fmt.Println("failed to get sources main.go")
 		panic(err.Error())
 	}
 	defer srcAirports.Close()
 
 	destAirports, err := db.Query(SELECT_DESTINATIONS)
 	if err != nil {
+		fmt.Println("failed to get destinations main.go")
 		panic(err.Error())
 	}
 	defer destAirports.Close()
@@ -64,10 +67,12 @@ func main() {
 			var src, dest, dummy string
 
 			if err := srcAirports.Scan(&dummy, &dummy, &src, &dummy, &dummy); err != nil {
+				fmt.Println("failed to scan sources main.go")
 				panic(err.Error())
 			}
 
 			if err := destAirports.Scan(&dummy, &dummy, &dest, &dummy, &dummy); err != nil {
+				fmt.Println("failed to scan destination main.go")
 				panic(err.Error())
 			}
 
@@ -78,6 +83,7 @@ func main() {
 		// have to reload the result set into destAirports because .Next()
 		destAirports, err = db.Query(SELECT_DESTINATIONS)
 		if err != nil {
+			fmt.Println("failed to reload destinations main.go")
 			panic(err.Error())
 		}
 

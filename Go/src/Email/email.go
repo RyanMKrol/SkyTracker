@@ -3,10 +3,11 @@ package Email
 import (
 	"log"
 	"os/exec"
+	"fmt"
 )
 
 const PHP_BINARY string = "/usr/bin/php"
-const EMAIL_PHP_LOC string = "/var/www/html/skytracker.co/go/src/Email/email.php"
+const EMAIL_PHP_LOC string = "/var/www/html/skytracker.co/Go/src/Email/email.php"
 
 // persists the data on the server
 func Email(attachmentLocation string) {
@@ -15,6 +16,7 @@ func Email(attachmentLocation string) {
 
 	err := cmd.Run()
 	if err != nil {
+		fmt.Println("failed to execute command in email.go")
 		log.Fatal(err)
 	}
 

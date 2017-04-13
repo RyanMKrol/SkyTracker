@@ -12,6 +12,7 @@ func SetupSQL(src, dest string) {
 
 	output, err := os.Create(fmt.Sprintf(FILE_LOC, src, dest))
 	if err != nil {
+		fmt.Println("failed to create file setupsql.go")
 		log.Fatal(err)
 	}
 	defer output.Close()

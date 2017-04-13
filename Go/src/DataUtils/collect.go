@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"fmt"
 )
 
 const EXCESSIVE_CALLS int = 429
@@ -17,6 +18,7 @@ func Collect(url string) (body []byte) {
 
 	resp, err := http.Get(url)
 	if err != nil {
+		fmt.Println("failed to get http collect.go")
 		log.Fatal(err)
 	}
 	defer resp.Body.Close()
@@ -35,6 +37,7 @@ func Collect(url string) (body []byte) {
 	// parses all data into a byte slice
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
+		fmt.Println("failed to read all collect.go")
 		log.Fatal(err)
 	}
 

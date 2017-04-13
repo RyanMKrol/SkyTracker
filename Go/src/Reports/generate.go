@@ -39,6 +39,7 @@ func GenerateReport(db *sql.DB) (reportLoc string) {
 	// file storing the report
 	file, err := os.Create(fmt.Sprintf(REPORT_LOC, currentDate.Format(DATE_FORMAT)))
 	if err != nil {
+		fmt.Println("failed to open report item generate.go")
 		log.Fatal(err)
 	}
 	defer file.Close()
@@ -46,12 +47,14 @@ func GenerateReport(db *sql.DB) (reportLoc string) {
 	// headers in csv file
 	_, err = file.WriteString(CSV_HEADERS)
 	if err != nil {
+		fmt.Println("failed to write headers generate.go")
 		log.Fatal(err)
 	}
 
 	// getting source airports from database
 	srcAirports, err := db.Query(SELECT_SOURCES)
 	if err != nil {
+		fmt.Println("failed to get sources generate.go")
 		panic(err.Error())
 	}
 	defer srcAirports.Close()
@@ -59,6 +62,7 @@ func GenerateReport(db *sql.DB) (reportLoc string) {
 	// getting destination airports from database
 	destAirports, err := db.Query(SELECT_DESTINATIONS)
 	if err != nil {
+		fmt.Println("failed to get destinations generate.go")
 		panic(err.Error())
 	}
 	defer destAirports.Close()
@@ -75,10 +79,12 @@ func GenerateReport(db *sql.DB) (reportLoc string) {
 			var dummy string
 
 			if err := srcAirports.Scan(&dummy, &dummy, &potentialMin.sourceAirport, &potentialMin.sourceCountry, &potentialMin.sourceCity); err != nil {
+				fmt.Println("failed to scan source airports generate.go")
 				panic(err.Error())
 			}
 
 			if err := destAirports.Scan(&dummy, &dummy, &potentialMin.destinationAirport, &potentialMin.destinationCountry, &potentialMin.destinationCity); err != nil {
+				fmt.Println("failed to scan destinations airports generate.go")
 				panic(err.Error())
 			}
 
@@ -98,6 +104,7 @@ func GenerateReport(db *sql.DB) (reportLoc string) {
 		// have to reload the result set into destAirports because .Next()
 		srcAirports, err = db.Query(SELECT_SOURCES)
 		if err != nil {
+			fmt.Println("failed to reload generate.go")
 			panic(err.Error())
 		}
 	}
@@ -108,6 +115,7 @@ func GenerateReport(db *sql.DB) (reportLoc string) {
 		_, err = file.WriteString(fmt.Sprintf(CSV_LINE_FORMAT, flight.sourceCity, flight.sourceAirport, flight.destinationCountry, flight.destinationCity, flight.destinationAirport, flight.departureDate, flight.returnDate, flight.tripLength, flight.price))
 
 		if err != nil {
+			fmt.Println("failed to write out flights to report generate.go")
 			log.Fatal(err)
 		}
 	}
