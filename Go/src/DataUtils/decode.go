@@ -16,6 +16,7 @@ var typeComparator map[string]interface{}
 const DATES_ARRAY_ID string = "Dates"
 const MIN_PRICE_ID string = "MinPrice"
 const QUERY_FORMAT string = "INSERT INTO %s_%s (SourcePort, DestPort, DepartDate, ReturnDate, Price) VALUES ('%s','%s','%s-%02d', '%s-%02d', %d);\n"
+const DATE_FORMAT string = "2006-01"
 
 // decodes the data into .sql files
 func Decode(data []byte, src, dest string, departDate, returnDate time.Time) {
@@ -24,8 +25,8 @@ func Decode(data []byte, src, dest string, departDate, returnDate time.Time) {
 	var inboundDay = 0
 	var f interface{}
 
-	departFormatted := departDate.Format("2006-01")
-	returnFormatted := returnDate.Format("2006-01")
+	departFormatted := departDate.Format(DATE_FORMAT)
+	returnFormatted := returnDate.Format(DATE_FORMAT)
 
 	// opening the file for writing, with append flag
 	file, err := os.OpenFile(fmt.Sprintf(FILE_LOC, src, dest), os.O_APPEND|os.O_WRONLY, 0777)

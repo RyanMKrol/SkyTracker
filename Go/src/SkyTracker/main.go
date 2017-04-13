@@ -1,9 +1,10 @@
 package main
 
 import (
-	"DataUtils"
-	"Reports"
 	"Credentials"
+	"DataUtils"
+	"Email"
+	"Reports"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
@@ -13,11 +14,15 @@ import (
 
 const MONTHS_LOOKAHEAD = 6
 const MONTHS_TRIP_MAX = 2
-const URL_FORMAT = "http://partners.api.skyscanner.net/apiservices/browsegrid/v1.0/GB/GBP/en-GB/%s/%s/%s/%s?apiKey=%s"
-const COMPRESS_SOURCE = "./../../sql/raw"
-const COMPRESS_TARGET = "./../../sql/compressed/archive.zip"
-const SELECT_SOURCES = "SELECT * FROM SourceAirports;"
-const SELECT_DESTINATIONS = "SELECT * FROM DestinationAirports;"
+
+const URL_FORMAT string = "http://partners.api.skyscanner.net/apiservices/browsegrid/v1.0/GB/GBP/en-GB/%s/%s/%s/%s?apiKey=%s"
+const COMPRESS_SOURCE string = "./../../sql/raw"
+const COMPRESS_TARGET string = "./../../sql/compressed/archive.zip"
+const SELECT_SOURCES string = "SELECT * FROM SourceAirports;"
+const SELECT_DESTINATIONS string = "SELECT * FROM DestinationAirports;"
+const DATABASE_DRIVER string = "mysql"
+const DATABASE_SOCKET_FORMAT string = "%s:%s@tcp(%s)/%s"
+const DATE_FORMAT string = "2006-01"
 
 // this is used to sync up the threads that are doing work before we continue
 var wg sync.WaitGroup
@@ -25,9 +30,9 @@ var wg sync.WaitGroup
 func main() {
 
 	user, password, ip, database := Credentials.User(), Credentials.Password(), Credentials.IPAddress(), Credentials.DatabaseName()
-	conn := fmt.Sprintf("%s:%s@tcp(%s)/%s", user, password, ip, database)
+	conn := fmt.Sprintf(DATABASE_SOCKET_FORMAT, user, password, ip, database)
 
-	db, err := sql.Open("mysql", conn)
+	db, err := sql.Open(DATABASE_DRIVER, conn)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -66,8 +71,6 @@ func main() {
 				panic(err.Error())
 			}
 
-			fmt.Println(src + " " + dest)
-
 			go t_DataProcess(src, dest)
 
 		}
@@ -81,11 +84,13 @@ func main() {
 		wg.Wait()
 	}
 
-	at this point all of the files will be setup, now I need to persist it with the server
+	// at this point all of the files will be setup, now I need to persist it with the server
 
 	DataUtils.PersistData()
 
-	Reports.GenerateReport(db)
+	report := Reports.GenerateReport(db)
+
+	Email.Email(report)
 
 }
 
@@ -96,30 +101,30 @@ func t_DataProcess(src, dest string) {
 	returnTime := time.Now()
 
 	// creates the relevant sql file
-	DataUtils.SetupSQL(src,dest)
+	DataUtils.SetupSQL(src, dest)
 
 	// goes through each date and collects data
 	for i := 1; i <= MONTHS_LOOKAHEAD; i++ {
 
 		for j := 0; j < MONTHS_TRIP_MAX; j++ {
 
-			departDate := departTime.Format("2006-01")
-			returnDate := returnTime.Format("2006-01")
+			departDate := departTime.Format(DATE_FORMAT)
+			returnDate := returnTime.Format(DATE_FORMAT)
 
-			url := fmt.Sprintf(URL_FORMAT,src,dest,departDate,returnDate,Credentials.ApiKey())
+			url := fmt.Sprintf(URL_FORMAT, src, dest, departDate, returnDate, Credentials.ApiKey())
 
 			response := DataUtils.Collect(url)
 
 			// decodes the response and stores it in the .sql file
 			DataUtils.Decode(response, src, dest, departTime, returnTime)
 
-			returnTime = returnTime.AddDate(0,1,0)
+			returnTime = returnTime.AddDate(0, 1, 0)
 		}
 
-		departTime = departTime.AddDate(0,1,0)
+		departTime = departTime.AddDate(0, 1, 0)
 
 		returnTime = time.Now()
-		returnTime = returnTime.AddDate(0,i,0)
+		returnTime = returnTime.AddDate(0, i, 0)
 
 	}
 

@@ -6,8 +6,8 @@ import (
 	"os/exec"
 )
 
-const PHP_BINARY = "/usr/bin/php"
-const PERSIST_PHP_LOC = "/var/www/html/skytracker.co/go/src/DataUtils/persist.php"
+const PHP_BINARY string = "/usr/bin/php"
+const PERSIST_PHP_LOC string = "/var/www/html/skytracker.co/go/src/DataUtils/persist.php"
 
 // persists the data on the server
 func PersistData() {
@@ -18,7 +18,6 @@ func PersistData() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 
 	return
 }
