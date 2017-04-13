@@ -1,0 +1,7 @@
+DROP TABLE Users;
+
+CREATE TABLE Users (
+  UserID int NOT NULL AUTO_INCREMENT,
+  UserEmailAddress varchar(255) NOT NULL UNIQUE,
+  PRIMARY KEY(UserID)
+);

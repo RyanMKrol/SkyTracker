@@ -9,7 +9,7 @@ Go/src/github.com/go-sql-driver/mysql/
 
 Go/bin/SkyTracker
 
-Go/sql
+Go/sql/raw
 
 Go/reports
 
