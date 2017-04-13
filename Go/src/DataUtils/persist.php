@@ -1,6 +1,6 @@
 <?php
 
-  include "./../Credentials/credentials.php"
+  include "./../Credentials/credentials.php";
 
   //creating "master" sql file
   exec("cat $raw_file_loc > $file_loc");

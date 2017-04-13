@@ -30,7 +30,7 @@ func Email(attachmentLocation string, db *sql.DB) {
 		cmd := exec.Command(fmt.Sprintf(SEND_EMAIL_CMD, attachmentLocation, address))
 
 		err = cmd.Run()
-		if err != nil{
+		if err != nil {
 			log.Fatal(err)
 		}
 	}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"DataUtils"
+	"Reports"
 	"Credentials"
 	"database/sql"
 	"fmt"
@@ -48,17 +49,10 @@ func main() {
 
 	// sending off each thread
 
-	var inner = 0
-	var outer = 0
-
 	for srcAirports.Next() {
-		fmt.Println(outer)
-		outer++
 
 		for destAirports.Next() {
 
-			fmt.Println(inner)
-			inner++
 			// adding another thread to wait for
 			wg.Add(1)
 
@@ -71,6 +65,8 @@ func main() {
 			if err := destAirports.Scan(&dummy, &dummy, &dest, &dummy, &dummy); err != nil {
 				panic(err.Error())
 			}
+
+			fmt.Println(src + " " + dest)
 
 			go t_DataProcess(src, dest)
 
@@ -85,9 +81,11 @@ func main() {
 		wg.Wait()
 	}
 
-	// at this point all of the files will be setup, now I need to persist it with the server
+	at this point all of the files will be setup, now I need to persist it with the server
 
 	DataUtils.PersistData()
+
+	Reports.GenerateReport(db)
 
 }
 

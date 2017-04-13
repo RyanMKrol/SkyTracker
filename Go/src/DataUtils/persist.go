@@ -2,9 +2,8 @@
 package DataUtils
 
 import (
-	"os/exec"
 	"log"
-	"fmt"
+	"os/exec"
 )
 
 const PHP_BINARY = "/usr/bin/php"
@@ -13,12 +12,13 @@ const PERSIST_PHP_LOC = "/var/www/html/skytracker.co/go/src/DataUtils/persist.ph
 // persists the data on the server
 func PersistData() {
 
-		cmd := exec.Command(PHP_BINARY, PERSIST_PHP_LOC)
+	cmd := exec.Command(PHP_BINARY, PERSIST_PHP_LOC)
 
-		err := cmd.Run()
-		if err != nil {
-		    log.Fatal(err)
-		}
+	err := cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 
 	return
 }
