@@ -10,10 +10,10 @@ func GeneratePrettyReport(flights []Flight) (reportLoc string) {
 
 	By(b_SourceCity).Sort(flights)
 
-	var groupedFlights 		[][]Flight
-	var formattedEntries  [][]ReportEntry
+	var groupedFlights [][]Flight
+	var formattedEntries [][]ReportEntry
 
-	groupedFlights = orderFlights(flights)
+	groupedFlights = getOrderedFlights(flights)
 
 	for i := 0; i < len(groupedFlights); i++ {
 		By(b_TripPrice).Sort(groupedFlights[i])
@@ -22,9 +22,9 @@ func GeneratePrettyReport(flights []Flight) (reportLoc string) {
 	formattedEntries = getFormattedEntries(groupedFlights, flights)
 
 	// creating slice of report entries
-	for _ , block := range formattedEntries {
+	for _, block := range formattedEntries {
 		for _, flight := range block {
-			fmt.Printf("%s\t%s\t%s\t%s\t%s\t%s\n", flight.from ,flight.to ,flight.leaving ,flight.returning ,flight.lenth ,flight.cost )
+			fmt.Printf("%s\t%s\t%s\t%s\t%s\t%s\n", flight.from, flight.to, flight.leaving, flight.returning, flight.lenth, flight.cost)
 		}
 		fmt.Println()
 	}
@@ -42,12 +42,12 @@ func max(a, b int) int {
 
 // returns a string padded with spaces on the right
 func padString(original, padString string, num int) string {
-
 	return (original + strings.Repeat(padString, num))
 
 }
 
-func orderFlights(flights []Flight) ([][]Flight){
+// returns flights ordered into slices based on source city
+func getOrderedFlights(flights []Flight) [][]Flight {
 
 	var counter int = -1
 	var current string
@@ -55,7 +55,7 @@ func orderFlights(flights []Flight) ([][]Flight){
 	var flightBlocks [][]Flight
 
 	// creating slice of report entries
-	for _ , flight := range flights {
+	for _, flight := range flights {
 
 		if flight.sourceAirport != current {
 			current = flight.sourceAirport
@@ -69,7 +69,8 @@ func orderFlights(flights []Flight) ([][]Flight){
 	return flightBlocks
 }
 
-func getFormattedEntries(groupedFlights [][]Flight, flights []Flight) ([][]ReportEntry){
+// returns ReportEntries that contain formatted flights
+func getFormattedEntries(groupedFlights [][]Flight, flights []Flight) [][]ReportEntry {
 
 	var reports [][]ReportEntry
 
@@ -79,7 +80,7 @@ func getFormattedEntries(groupedFlights [][]Flight, flights []Flight) ([][]Repor
 	var first bool = true
 
 	// gets the padding value for each column
-	for _ , flight := range flights {
+	for _, flight := range flights {
 		var from, to, leaving, returning, tripLength, cost string
 
 		from = fmt.Sprintf("%s, %s", flight.sourceCity, flight.sourceAirport)
@@ -104,7 +105,7 @@ func getFormattedEntries(groupedFlights [][]Flight, flights []Flight) ([][]Repor
 	}
 
 	// does the actual formatting based on max values for each category
-	for _ , block := range groupedFlights {
+	for _, block := range groupedFlights {
 		for _, flight := range block {
 
 			var from, to, leaving, returning, tripLength, cost string
@@ -116,12 +117,12 @@ func getFormattedEntries(groupedFlights [][]Flight, flights []Flight) ([][]Repor
 			tripLength = fmt.Sprintf("%d", flight.tripLength)
 			cost = fmt.Sprintf("%d", flight.price)
 
-			from       = padString(from, " ", maxFrom - utf8.RuneCountInString(from))
-			to         = padString(to, " ", maxTo - utf8.RuneCountInString(to))
-			leaving    = padString(leaving, " ", maxLeaving - utf8.RuneCountInString(leaving))
-			returning  = padString(returning, " ", maxReturning - utf8.RuneCountInString(returning))
-			tripLength = padString(tripLength, " ", maxTrip - utf8.RuneCountInString(tripLength))
-			cost       = padString(cost, " ", maxCost - utf8.RuneCountInString(cost))
+			from = padString(from, " ", maxFrom-utf8.RuneCountInString(from))
+			to = padString(to, " ", maxTo-utf8.RuneCountInString(to))
+			leaving = padString(leaving, " ", maxLeaving-utf8.RuneCountInString(leaving))
+			returning = padString(returning, " ", maxReturning-utf8.RuneCountInString(returning))
+			tripLength = padString(tripLength, " ", maxTrip-utf8.RuneCountInString(tripLength))
+			cost = padString(cost, " ", maxCost-utf8.RuneCountInString(cost))
 
 			entry := ReportEntry{from, to, leaving, returning, tripLength, cost}
 

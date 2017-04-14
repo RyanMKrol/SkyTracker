@@ -1,10 +1,10 @@
 package Reports
 
 type ReportEntry struct {
-	from string
-	to string
-	leaving string
+	from      string
+	to        string
+	leaving   string
 	returning string
-	lenth string
-	cost string
+	lenth     string
+	cost      string
 }
