@@ -9,19 +9,6 @@ import (
 	"time"
 )
 
-type Flight struct {
-	sourceCity         string
-	destinationCity    string
-	sourceCountry      string
-	destinationCountry string
-	sourceAirport      string
-	destinationAirport string
-	departureDate      string
-	returnDate         string
-	price              int
-	tripLength         int
-}
-
 const SELECT_SOURCES string = "SELECT * FROM SourceAirports;"
 const SELECT_DESTINATIONS string = "SELECT * FROM DestinationAirports;"
 const MIN_QUERY string = "SELECT *, DATEDIFF(ReturnDate, DepartDate) FROM %s_%s Where Price = (SELECT Min(Price) FROM %s_%s WHERE DATEDIFF(ReturnDate, DepartDate) > 2) AND DATEDIFF(ReturnDate, DepartDate) > 2 limit 1;"
@@ -124,6 +111,9 @@ func GenerateReport(db *sql.DB) (reportLoc string) {
 		}
 	}
 	fmt.Println("done")
+
+	GeneratePrettyReport(minFlights)
+
 	return fmt.Sprintf(fmt.Sprintf(SystemConfig.DOC_ROOT,REPORT_LOC), currentDate.Format(DATE_FORMAT))
 
 }
