@@ -9,9 +9,9 @@ CREATE TABLE SourceAirports (
   PRIMARY KEY(SrcAirportID)
 );
 
-INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('London Heathrow','LHR','United Kingdom','London');
-INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('London Gatwick','LGW','United Kingdom','London');
-INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('London Luton','LTN','United Kingdom','London');
+INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('London Heathrow','LHR','United Kingdom','London Heathrow');
+INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('London Gatwick','LGW','United Kingdom','London Gatwick');
+INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('London Luton','LTN','United Kingdom','London Luton');
 INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('Birmingham International','BHX','United Kingdom','Birmingham');
 INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('Manchester','MAN','United Kingdom','Manchester');
 INSERT INTO SourceAirports (SrcAirportName, SrcAirportCode, SrcCountry, SrcCity) VALUES ('Edinburgh','EDI','United Kingdom','Edinburgh');

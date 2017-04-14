@@ -47,42 +47,42 @@ func (s *flightSorter) Less(i, j int) bool {
 	return s.by(&s.flights[i], &s.flights[j])
 }
 
-var s_City = func(f1, f2 *Flight) bool {
+var b_SourceCity = func(f1, f2 *Flight) bool {
 	return f1.sourceCity < f2.sourceCity
 }
 
-var d_City = func(f1, f2 *Flight) bool {
+var b_DestinationCity = func(f1, f2 *Flight) bool {
 	return f1.destinationCity < f2.destinationCity
 }
 
-var s_Country = func(f1, f2 *Flight) bool {
+var b_SourceCountry = func(f1, f2 *Flight) bool {
 	return f1.sourceCountry < f2.sourceCountry
 }
 
-var d_Country = func(f1, f2 *Flight) bool {
+var b_DestinationCountry = func(f1, f2 *Flight) bool {
 	return f1.destinationCountry < f2.destinationCountry
 }
 
-var s_Airport = func(f1, f2 *Flight) bool {
+var b_SourceAirport = func(f1, f2 *Flight) bool {
 	return f1.sourceAirport < f2.sourceAirport
 }
 
-var d_Airport = func(f1, f2 *Flight) bool {
+var b_DestinationAirport = func(f1, f2 *Flight) bool {
 	return f1.destinationAirport < f2.destinationAirport
 }
 
-var d_Date = func(f1, f2 *Flight) bool {
+var b_DepartureDate = func(f1, f2 *Flight) bool {
 	return f1.departureDate < f2.departureDate
 }
 
-var r_Date = func(f1, f2 *Flight) bool {
+var b_ReturnDate = func(f1, f2 *Flight) bool {
 	return f1.returnDate < f2.returnDate
 }
 
-var trip_Price = func(f1, f2 *Flight) bool {
+var b_TripPrice = func(f1, f2 *Flight) bool {
 	return f1.price < f2.price
 }
 
-var trip_Length = func(f1, f2 *Flight) bool {
+var b_TripLength = func(f1, f2 *Flight) bool {
 	return f1.tripLength < f2.tripLength
 }
