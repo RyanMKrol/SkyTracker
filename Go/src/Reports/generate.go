@@ -1,6 +1,7 @@
 package Reports
 
 import (
+	"SystemConfig"
 	"database/sql"
 	"fmt"
 	"log"
@@ -24,7 +25,7 @@ type Flight struct {
 const SELECT_SOURCES string = "SELECT * FROM SourceAirports;"
 const SELECT_DESTINATIONS string = "SELECT * FROM DestinationAirports;"
 const MIN_QUERY string = "SELECT *, DATEDIFF(ReturnDate, DepartDate) FROM %s_%s Where Price = (SELECT Min(Price) FROM %s_%s WHERE DATEDIFF(ReturnDate, DepartDate) > 2) AND DATEDIFF(ReturnDate, DepartDate) > 2 limit 1;"
-const REPORT_LOC string = "/var/www/html/skytracker.co/Go/reports/Bargains:%s.csv"
+const REPORT_LOC string = "reports/Bargains:%s.csv"
 const CSV_LINE_FORMAT string = "\"%s, %s\",\"%s, %s, %s\",%s,%s,%d,%d\n"
 const CSV_HEADERS string = "From,To,Leaving,Returning,Trip Length,Cost\n"
 const DATE_FORMAT string = "2006-01-02"
@@ -37,7 +38,7 @@ func GenerateReport(db *sql.DB) (reportLoc string) {
 	var potentialMin Flight
 
 	// file storing the report
-	file, err := os.Create(fmt.Sprintf(REPORT_LOC, currentDate.Format(DATE_FORMAT)))
+	file, err := os.Create(fmt.Sprintf(fmt.Sprintf(SystemConfig.DOC_ROOT,REPORT_LOC), currentDate.Format(DATE_FORMAT)))
 	if err != nil {
 		fmt.Println("failed to open report item generate.go")
 		log.Fatal(err)
@@ -123,6 +124,6 @@ func GenerateReport(db *sql.DB) (reportLoc string) {
 		}
 	}
 	fmt.Println("done")
-	return fmt.Sprintf(REPORT_LOC, currentDate.Format(DATE_FORMAT))
+	return fmt.Sprintf(fmt.Sprintf(SystemConfig.DOC_ROOT,REPORT_LOC), currentDate.Format(DATE_FORMAT))
 
 }

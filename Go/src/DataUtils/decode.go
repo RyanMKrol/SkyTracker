@@ -2,6 +2,7 @@
 package DataUtils
 
 import (
+	"SystemConfig"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -29,7 +30,7 @@ func Decode(data []byte, src, dest string, departDate, returnDate time.Time) {
 	returnFormatted := returnDate.Format(DATE_FORMAT)
 
 	// opening the file for writing, with append flag
-	file, err := os.OpenFile(fmt.Sprintf(FILE_LOC, src, dest), os.O_APPEND|os.O_WRONLY, 0777)
+	file, err := os.OpenFile(fmt.Sprintf(fmt.Sprintf(SystemConfig.DOC_ROOT, FILE_LOC), src, dest), os.O_APPEND|os.O_WRONLY, 0777)
 	if err != nil {
 		fmt.Println("failed to open file for writing decode.go")
 		log.Fatal(err)

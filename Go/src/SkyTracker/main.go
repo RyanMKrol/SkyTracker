@@ -16,8 +16,6 @@ const MONTHS_LOOKAHEAD = 6
 const MONTHS_TRIP_MAX = 2
 
 const URL_FORMAT string = "http://partners.api.skyscanner.net/apiservices/browsegrid/v1.0/GB/GBP/en-GB/%s/%s/%s/%s?apiKey=%s"
-const COMPRESS_SOURCE string = "./../../sql/raw"
-const COMPRESS_TARGET string = "./../../sql/compressed/archive.zip"
 const SELECT_SOURCES string = "SELECT * FROM SourceAirports;"
 const SELECT_DESTINATIONS string = "SELECT * FROM DestinationAirports;"
 const DATABASE_DRIVER string = "mysql"
