@@ -10,13 +10,49 @@ func GeneratePrettyReport(flights []Flight) (reportLoc string) {
 
 	By(b_SourceCity).Sort(flights)
 
-	var orderedFlights [][]Flight
-	var reportEntries  [][]ReportEntry
+	var groupedFlights 		[][]Flight
+	var formattedEntries  [][]ReportEntry
 
-	var maxFrom, maxTo, maxLeaving, maxReturning, maxTrip, maxCost = 0, 0, 0, 0, 0, 0
+	groupedFlights = orderFlights(flights)
 
-	var current string
+	for i := 0; i < len(groupedFlights); i++ {
+		By(b_TripPrice).Sort(groupedFlights[i])
+	}
+
+	formattedEntries = getFormattedEntries(groupedFlights, flights)
+
+	// creating slice of report entries
+	for _ , block := range formattedEntries {
+		for _, flight := range block {
+			fmt.Printf("%s\t%s\t%s\t%s\t%s\t%s\n", flight.from ,flight.to ,flight.leaving ,flight.returning ,flight.lenth ,flight.cost )
+		}
+		fmt.Println()
+	}
+
+	return "things"
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	} else {
+		return b
+	}
+}
+
+// returns a string padded with spaces on the right
+func padString(original, padString string, num int) string {
+
+	return (original + strings.Repeat(padString, num))
+
+}
+
+func orderFlights(flights []Flight) ([][]Flight){
+
 	var counter int = -1
+	var current string
+
+	var flightBlocks [][]Flight
 
 	// creating slice of report entries
 	for _ , flight := range flights {
@@ -24,18 +60,25 @@ func GeneratePrettyReport(flights []Flight) (reportLoc string) {
 		if flight.sourceAirport != current {
 			current = flight.sourceAirport
 			counter++
-			orderedFlights = append(orderedFlights, []Flight{flight})
+			flightBlocks = append(flightBlocks, []Flight{flight})
 		} else {
-			orderedFlights[counter] = append(orderedFlights[counter], flight)
+			flightBlocks[counter] = append(flightBlocks[counter], flight)
 		}
-
 	}
 
-	for i := 0; i < len(orderedFlights); i++ {
-		By(b_TripPrice).Sort(orderedFlights[i])
-	}
+	return flightBlocks
+}
 
-	// getting the padding for each column
+func getFormattedEntries(groupedFlights [][]Flight, flights []Flight) ([][]ReportEntry){
+
+	var reports [][]ReportEntry
+
+	var maxFrom, maxTo, maxLeaving, maxReturning, maxTrip, maxCost = 0, 0, 0, 0, 0, 0
+
+	var counter = 0
+	var first bool = true
+
+	// gets the padding value for each column
 	for _ , flight := range flights {
 		var from, to, leaving, returning, tripLength, cost string
 
@@ -45,37 +88,23 @@ func GeneratePrettyReport(flights []Flight) (reportLoc string) {
 		}
 
 		to = fmt.Sprintf("%s, %s, %s", flight.destinationCountry, flight.destinationCity, flight.destinationAirport)
-		if len(to) > maxTo {
-			maxTo = len(to)
-		}
+		maxTo = max(maxTo, len(to))
 
 		leaving = fmt.Sprintf("%s", flight.departureDate)
-		if len(leaving) > maxLeaving {
-			maxLeaving = len(leaving)
-		}
+		maxLeaving = max(maxLeaving, len(leaving))
 
 		returning = fmt.Sprintf("%s", flight.returnDate)
-		if len(returning) > maxReturning {
-			maxReturning = len(returning)
-		}
+		maxReturning = max(maxReturning, len(returning))
 
 		tripLength = fmt.Sprintf("%d", flight.tripLength)
-		if len(tripLength) > maxTrip {
-			maxTrip = len(tripLength)
-		}
+		maxTrip = max(maxTrip, len(tripLength))
 
 		cost = fmt.Sprintf("%d", flight.price)
-		if len(cost) > maxCost {
-			maxCost = len(cost)
-		}
+		maxCost = max(maxCost, len(cost))
 	}
 
-	counter = 0
-	current = ""
-	first := true
-
-	// creating slice of report entries
-	for _ , block := range orderedFlights {
+	// does the actual formatting based on max values for each category
+	for _ , block := range groupedFlights {
 		for _, flight := range block {
 
 			var from, to, leaving, returning, tripLength, cost string
@@ -97,31 +126,15 @@ func GeneratePrettyReport(flights []Flight) (reportLoc string) {
 			entry := ReportEntry{from, to, leaving, returning, tripLength, cost}
 
 			if first {
-				reportEntries = append(reportEntries, []ReportEntry{entry})
+				reports = append(reports, []ReportEntry{entry})
 				first = false
 			} else {
-				reportEntries[counter] = append(reportEntries[counter], entry)
+				reports[counter] = append(reports[counter], entry)
 			}
 		}
 		counter++
 		first = true
 	}
 
-	// creating slice of report entries
-	for _ , block := range reportEntries {
-		for _, flight := range block {
-			fmt.Printf("%s\t%s\t%s\t%s\t%s\t%s\n", flight.from ,flight.to ,flight.leaving ,flight.returning ,flight.lenth ,flight.cost )
-		}
-		fmt.Println()
-	}
-
-	return "things"
-}
-
-
-// returns a string padded with spaces on the right
-func padString(original, padString string, num int) string {
-
-	return (original + strings.Repeat(padString, num))
-
+	return reports
 }
