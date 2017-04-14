@@ -30,16 +30,16 @@
 
   $emailsArr = arraySetup($conn, "SELECT * FROM Users;");
 
+  $reportName = $argv[1];
+  $title = $argv[2];
+  $body = $argv[3];
 
   //getting a minimum for each destination, from all of the sources
   foreach($emailsArr as $address) {
 
-
-    $reportName = $argv[1];
-
     $emailAddress = $address['UserEmailAddress'];
 
-    exec("echo \"Please find attached the report of cheap flights for Europe!\" | mail -A $reportName -s \"Your Daily Cheap Flights Report!\" $emailAddress");
+    exec("echo \"$body\" | mail -A $reportName -s \"$title\" $emailAddress");
   }
 
   //close connection

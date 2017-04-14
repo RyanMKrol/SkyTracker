@@ -67,6 +67,8 @@ func GenerateReport(db *sql.DB) (reportLoc string) {
 	}
 	defer destAirports.Close()
 
+
+	fmt.Println("going through airports")
 	// getting the cheapest flights to each destination
 	for destAirports.Next() {
 
@@ -109,6 +111,7 @@ func GenerateReport(db *sql.DB) (reportLoc string) {
 		}
 	}
 
+	fmt.Println("going through flights")
 	// writing out the flight data to the report file
 	for _, flight := range minFlights {
 
@@ -119,7 +122,7 @@ func GenerateReport(db *sql.DB) (reportLoc string) {
 			log.Fatal(err)
 		}
 	}
-
+	fmt.Println("done")
 	return fmt.Sprintf(REPORT_LOC, currentDate.Format(DATE_FORMAT))
 
 }
