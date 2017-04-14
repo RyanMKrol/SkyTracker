@@ -8,6 +8,8 @@ import (
 
 func GeneratePrettyReport(flights []Flight) (reportLoc string) {
 
+	By(srcCity).Sort(flights)
+
 	var maxFrom, maxTo, maxLeaving, maxReturning, maxTrip, maxCost = 0, 0, 0, 0, 0, 0
 
 	// getting the padding for each column
