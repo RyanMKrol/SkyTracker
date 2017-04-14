@@ -20,6 +20,10 @@
 <?php
   //main
 
+  $reportName = $argv[1];
+  $title = trim(file_get_contents($argv[2]));
+  $body = $argv[3];
+
   // Create connection
   $conn = new mysqli($server, $user, $password, $database);
 
@@ -30,16 +34,12 @@
 
   $emailsArr = arraySetup($conn, "SELECT * FROM Users;");
 
-  $reportName = $argv[1];
-  $title = $argv[2];
-  $body = $argv[3];
-
   //getting a minimum for each destination, from all of the sources
   foreach($emailsArr as $address) {
 
     $emailAddress = $address['UserEmailAddress'];
 
-    exec("echo \"$body\" | mail -A $reportName -s \"$title\" $emailAddress");
+    exec("cat \"$body\" | mail -A $reportName -s \"$title\" $emailAddress");
   }
 
   //close connection

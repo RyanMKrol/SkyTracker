@@ -76,6 +76,8 @@ func main() {
 				panic(err.Error())
 			}
 
+			fmt.Println(src + " " + dest)
+
 			go t_DataProcess(src, dest)
 
 		}
@@ -90,13 +92,20 @@ func main() {
 		wg.Wait()
 	}
 
+	fmt.Println("finished collecting")
+
 	// at this point all of the files will be setup, now I need to persist it with the server
 
 	DataUtils.PersistData()
+	fmt.Println("finished persisting")
 
 	report := Reports.GenerateReport(db)
+	fmt.Println("finished generating")
 
 	Email.Email(report)
+	fmt.Println("finished sending")
+
+	fmt.Println("finished")
 
 }
 
