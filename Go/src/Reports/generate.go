@@ -11,11 +11,12 @@ import (
 
 const SELECT_SOURCES string = "SELECT * FROM SourceAirports;"
 const SELECT_DESTINATIONS string = "SELECT * FROM DestinationAirports;"
-const MIN_QUERY string = "SELECT *, DATEDIFF(ReturnDate, DepartDate) FROM %s_%s Where Price = (SELECT Min(Price) FROM %s_%s WHERE DATEDIFF(ReturnDate, DepartDate) > 2) AND DATEDIFF(ReturnDate, DepartDate) > 2 limit 1;"
+const MIN_QUERY string = "SELECT *, DATEDIFF(ReturnDate, DepartDate) FROM %s_%s WHERE DATEDIFF(ReturnDate, DepartDate) >= %d AND DATEDIFF(ReturnDate, DepartDate) <= %d AND Price < %d ORDER BY Price ASC limit 1;"
 const REPORT_LOC string = "reports/Bargains:%s.csv"
 const CSV_LINE_FORMAT string = "\"%s, %s\",\"%s, %s, %s\",%s,%s,%d,%d\n"
 const CSV_HEADERS string = "From,To,Leaving,Returning,Trip Length,Cost\n"
 const DATE_FORMAT string = "2006-01-02"
+const MAX_PRICE int = 2147483647
 
 func GenerateReport(db *sql.DB) (reportLoc string) {
 
@@ -78,7 +79,7 @@ func GenerateReport(db *sql.DB) (reportLoc string) {
 				panic(err.Error())
 			}
 
-			err = db.QueryRow(fmt.Sprintf(MIN_QUERY, potentialMin.sourceAirport, potentialMin.destinationAirport, potentialMin.sourceAirport, potentialMin.destinationAirport)).Scan(&dummy, &dummy, &dummy, &potentialMin.departureDate, &potentialMin.returnDate, &potentialMin.price, &potentialMin.tripLength)
+			err = db.QueryRow(fmt.Sprintf(MIN_QUERY, potentialMin.sourceAirport, potentialMin.destinationAirport,3,3,50)).Scan(&dummy, &dummy, &dummy, &potentialMin.departureDate, &potentialMin.returnDate, &potentialMin.price, &potentialMin.tripLength)
 			if err == nil {
 				// updating the local cheapest flight
 				if minFlight == (Flight{}) {
@@ -86,10 +87,12 @@ func GenerateReport(db *sql.DB) (reportLoc string) {
 				} else if potentialMin.price < minFlight.price {
 					minFlight = potentialMin
 				}
+			} else {
 			}
 		}
-
-		minFlights = append(minFlights, minFlight)
+		if minFlight != (Flight{}) {
+			minFlights = append(minFlights, minFlight)
+		}
 
 		// have to reload the result set into destAirports because .Next()
 		srcAirports, err = db.Query(SELECT_SOURCES)

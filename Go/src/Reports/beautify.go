@@ -49,13 +49,12 @@ func padString(original, padString string, num int) string {
 func getGroupedFlights(flights []Flight) [][]Flight {
 
 	var counter int = -1
-	var current string
+	var current string = ""
 
 	var flightBlocks [][]Flight
 
 	// creating slice of report entries
 	for _, flight := range flights {
-
 		if flight.sourceAirport != current {
 			current = flight.sourceAirport
 			counter++
