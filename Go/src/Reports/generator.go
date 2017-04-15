@@ -18,7 +18,7 @@ const REPORT_LOC string = "reports/%d_%d_%d_%s.csv"
 const CSV_LINE_FORMAT string = "\"%s, %s\",\"%s, %s, %s\",%s,%s,%d,%d\n"
 const CSV_HEADERS string = "From,To,Leaving,Returning,Trip Length,Cost\n"
 const DATE_FORMAT string = "2006-01-02"
-const MAX_PRICE int = 2147483647
+const MAX_NUM int = 2147483647
 
 // this is used to sync up the threads that are doing work before we continue
 var wg sync.WaitGroup
@@ -26,8 +26,8 @@ var wg sync.WaitGroup
 func GenerateReports(db *sql.DB) []User {
 
 	currentDate := time.Now()
-
 	users := getUsers(db)
+
 	for _, user := range users {
 
 		fmt.Println("in the for-loop")
@@ -45,13 +45,14 @@ func GenerateReports(db *sql.DB) []User {
 
 			wg.Add(1)
 
+			// parallelising the meat of the file
 			go func(u User, f *os.File){
 				writeHeaders(f)
 				reportForUser(u, db, f)
 				f.Close()
 				wg.Done()
 			}(user, file)
-			
+
 		}
 		user.reportLoc = filename
 	}
@@ -73,27 +74,36 @@ func getUsers(db *sql.DB) []User{
 	}
 	defer users.Close()
 
-	var num = 100
-	var lil = 7
-	var big = 14
+	//these are here until i get actual values
 
 	for users.Next() {
 
 		var dummy string
 		var tempUser User = User{}
+		var maybeBudget, maybeTripMin, maybeTripMax sql.NullInt64
 
-		if err := users.Scan(&dummy, &tempUser.emailAddress); err != nil {
+		if err := users.Scan(&dummy, &tempUser.emailAddress, &maybeBudget, &maybeTripMin, &maybeTripMax); err != nil {
 			fmt.Println("failed to scan users generate.go")
 			panic(err.Error())
 		}
 
-		tempUser.budget = num
-		tempUser.tripMin = lil
-		tempUser.tripMax = big
+		if maybeBudget.Valid {
+			tempUser.budget = int(maybeBudget.Int64)
+		} else {
+			tempUser.budget = MAX_NUM
+		}
 
-		num++
-		lil++
-		big++
+		if maybeTripMin.Valid {
+			tempUser.tripMin =  int(maybeTripMin.Int64)
+		} else {
+			tempUser.tripMin = 0
+		}
+
+		if maybeTripMax.Valid {
+			tempUser.tripMax =  int(maybeTripMax.Int64)
+		} else {
+			tempUser.tripMax = MAX_NUM
+		}
 
 		userArr = append(userArr, tempUser)
 	}
@@ -109,6 +119,7 @@ func writeHeaders(file *os.File) {
 		fmt.Println("failed to write headers generate.go")
 		log.Fatal(err)
 	}
+
 }
 
 func reportForUser(user User, db *sql.DB, file *os.File) {
@@ -180,6 +191,7 @@ func reportForUser(user User, db *sql.DB, file *os.File) {
 	}
 
 	fmt.Println("going through flights")
+
 	// writing out the flight data to the report file
 	for _, flight := range minFlights {
 
