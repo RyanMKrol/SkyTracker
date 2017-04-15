@@ -96,7 +96,7 @@ func main() {
 	// DataUtils.PersistData()
 	// fmt.Println("finished persisting")
 
-	report := Reports.GenerateReport(db)
+	report := Reports.GenerateReports(db)
 
 	fmt.Println(report)
 

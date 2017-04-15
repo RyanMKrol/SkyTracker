@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"time"
+	"sync"
 )
 
 const SELECT_USERS string = "SELECT * FROM Users;"
@@ -19,30 +20,43 @@ const CSV_HEADERS string = "From,To,Leaving,Returning,Trip Length,Cost\n"
 const DATE_FORMAT string = "2006-01-02"
 const MAX_PRICE int = 2147483647
 
-func GenerateReport(db *sql.DB) []User {
+// this is used to sync up the threads that are doing work before we continue
+var wg sync.WaitGroup
+
+func GenerateReports(db *sql.DB) []User {
 
 	currentDate := time.Now()
 
 	users := getUsers(db)
 	for _, user := range users {
 
+		fmt.Println("in the for-loop")
+
 		var filename string = fmt.Sprintf(fmt.Sprintf(SystemConfig.DOC_ROOT,REPORT_LOC), user.budget, user.tripMin, user.tripMax, currentDate.Format(DATE_FORMAT))
 
 		// file doesn't exist so we need to make it ourselves
 		if _, err := os.Stat(filename); os.IsNotExist(err) {
-			file, err := os.Create(filename)
 
+			file, err := os.Create(filename)
 			if err != nil {
 				fmt.Println("failed to create report item generate.go")
 				log.Fatal(err)
 			}
 
-			writeHeaders(file)
-			reportForUser(user, db, file)
-			file.Close()
+			wg.Add(1)
+
+			go func(u User, f *os.File){
+				writeHeaders(f)
+				reportForUser(u, db, f)
+				f.Close()
+				wg.Done()
+			}(user, file)
+			
 		}
 		user.reportLoc = filename
 	}
+
+	wg.Wait()
 
 	return users
 }

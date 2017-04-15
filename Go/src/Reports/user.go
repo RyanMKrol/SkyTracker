@@ -1,9 +1,5 @@
 package Reports
 
-import (
-	"sort"
-)
-
 type User struct {
 	emailAddress string
 	budget int
