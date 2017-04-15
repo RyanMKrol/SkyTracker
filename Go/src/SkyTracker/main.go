@@ -96,13 +96,9 @@ func main() {
 	// DataUtils.PersistData()
 	// fmt.Println("finished persisting")
 
-	reportBuilder, err := Reports.CreateReportBuilder(Reports.STANDARD_REPORT)
-	if err != nil {
-		panic(err.Error())
-	}
-	reportBuilder.GenerateReport(db)
-	fmt.Println(reportBuilder.GetBasicReport())
-	fmt.Println(reportBuilder.GetFormattedReport())
+	report := Reports.GenerateReport(db)
+
+	fmt.Println(report)
 
 	fmt.Println("finished generating")
 
