@@ -13,7 +13,7 @@ func GeneratePrettyReport(flights []Flight) (reportLoc string) {
 	var groupedFlights [][]Flight
 	var formattedEntries [][]ReportEntry
 
-	groupedFlights = getOrderedFlights(flights)
+	groupedFlights = getGroupedFlights(flights)
 
 	for i := 0; i < len(groupedFlights); i++ {
 		By(b_TripPrice).Sort(groupedFlights[i])
@@ -43,11 +43,10 @@ func max(a, b int) int {
 // returns a string padded with spaces on the right
 func padString(original, padString string, num int) string {
 	return (original + strings.Repeat(padString, num))
-
 }
 
 // returns flights ordered into slices based on source city
-func getOrderedFlights(flights []Flight) [][]Flight {
+func getGroupedFlights(flights []Flight) [][]Flight {
 
 	var counter int = -1
 	var current string
@@ -117,6 +116,7 @@ func getFormattedEntries(groupedFlights [][]Flight, flights []Flight) [][]Report
 			tripLength = fmt.Sprintf("%d", flight.tripLength)
 			cost = fmt.Sprintf("%d", flight.price)
 
+			// using RuneCountInString because things like umlauts mess up the count in len()
 			from = padString(from, " ", maxFrom-utf8.RuneCountInString(from))
 			to = padString(to, " ", maxTo-utf8.RuneCountInString(to))
 			leaving = padString(leaving, " ", maxLeaving-utf8.RuneCountInString(leaving))

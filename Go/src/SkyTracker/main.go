@@ -96,10 +96,15 @@ func main() {
 	// DataUtils.PersistData()
 	// fmt.Println("finished persisting")
 
-	report := Reports.GenerateReport(db)
-	fmt.Println("finished generating")
+	reportBuilder, err := Reports.CreateReportBuilder(Reports.STANDARD_REPORT)
+	if err != nil {
+		panic(err.Error())
+	}
+	reportBuilder.GenerateReport(db)
+	fmt.Println(reportBuilder.GetBasicReport())
+	fmt.Println(reportBuilder.GetFormattedReport())
 
-	_ = report
+	fmt.Println("finished generating")
 
 	// Email.Email(report)
 	// fmt.Println("finished sending")
