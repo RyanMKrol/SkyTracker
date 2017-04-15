@@ -16,12 +16,11 @@ type StandardReport struct {
 
 const selectSources string = "SELECT * FROM SourceAirports;"
 const selectDestinations string = "SELECT * FROM DestinationAirports;"
-const minQuery string = "SELECT *, DATEDIFF(ReturnDate, DepartDate) FROM %s_%s Where Price = (SELECT Min(Price) FROM %s_%s WHERE DATEDIFF(ReturnDate, DepartDate) > 2) AND DATEDIFF(ReturnDate, DepartDate) > 2 limit 1;"
-const reportLoc string = "reports/Bargains:%s.csv"
+const minQuery string = "SELECT *, DATEDIFF(ReturnDate, DepartDate) FROM %s_%s Where DATEDIFF(ReturnDate, DepartDate) > 2 ORDER BY Price ASC limit 1;"
+const reportLoc string = "reports/StandardReport:%s.csv"
 const csvLineFormat string = "\"%s, %s\",\"%s, %s, %s\",%s,%s,%d,%d\n"
 const csvHeaders string = "From,To,Leaving,Returning,Trip Length,Cost\n"
 const dateFormat string = "2006-01-02"
-
 
 func (r *StandardReport) GetBasicReport() string {
 	return r.basicReportLoc
