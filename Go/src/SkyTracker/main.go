@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Email"
 	"Credentials"
 	"DataUtils"
 	"Reports"
@@ -96,13 +97,11 @@ func main() {
 	// DataUtils.PersistData()
 	// fmt.Println("finished persisting")
 
-	report := Reports.GenerateReports(db)
-
-	fmt.Println(report)
+	users := Reports.GenerateReports(db)
 
 	fmt.Println("finished generating")
 
-	// Email.Email(report)
+	Email.EmailUsers(users)
 	// fmt.Println("finished sending")
 	//
 	// fmt.Println("finished")

@@ -28,11 +28,11 @@ func GenerateReports(db *sql.DB) []User {
 	currentDate := time.Now()
 	users := getUsers(db)
 
-	for _, user := range users {
+	for i, _ := range users {
 
 		fmt.Println("in the for-loop")
 
-		var filename string = fmt.Sprintf(fmt.Sprintf(SystemConfig.DOC_ROOT,REPORT_LOC), user.budget, user.tripMin, user.tripMax, currentDate.Format(DATE_FORMAT))
+		var filename string = fmt.Sprintf(fmt.Sprintf(SystemConfig.DOC_ROOT,REPORT_LOC), users[i].budget, users[i].tripMin, users[i].tripMax, currentDate.Format(DATE_FORMAT))
 
 		// file doesn't exist so we need to make it ourselves
 		if _, err := os.Stat(filename); os.IsNotExist(err) {
@@ -48,14 +48,13 @@ func GenerateReports(db *sql.DB) []User {
 			// parallelising the meat of the file
 			go func(u User, f *os.File, fn string){
 				writeHeaders(f)
-				minFlights := reportForUser(u, db, f)
+				reportForUser(u, db, f)
 				f.Close()
-				u.prettyReportLoc = generatePrettyReport(minFlights, fn)
 				wg.Done()
-			}(user, file, filename)
+			}(users[i], file, filename)
 
 		}
-		user.reportLoc = filename
+		users[i].ReportLoc = filename
 	}
 
 	wg.Wait()
@@ -83,7 +82,7 @@ func getUsers(db *sql.DB) []User{
 		var tempUser User = User{}
 		var maybeBudget, maybeTripMin, maybeTripMax sql.NullInt64
 
-		if err := users.Scan(&dummy, &tempUser.emailAddress, &maybeBudget, &maybeTripMin, &maybeTripMax); err != nil {
+		if err := users.Scan(&dummy, &tempUser.EmailAddress, &maybeBudget, &maybeTripMin, &maybeTripMax); err != nil {
 			fmt.Println("failed to scan users generate.go")
 			panic(err.Error())
 		}
@@ -123,7 +122,7 @@ func writeHeaders(file *os.File) {
 
 }
 
-func reportForUser(user User, db *sql.DB, file *os.File) []Flight {
+func reportForUser(user User, db *sql.DB, file *os.File) {
 
 	var minFlight Flight
 	var minFlights []Flight
@@ -205,6 +204,4 @@ func reportForUser(user User, db *sql.DB, file *os.File) []Flight {
 	}
 
 	fmt.Println("done")
-
-	return minFlights
 }

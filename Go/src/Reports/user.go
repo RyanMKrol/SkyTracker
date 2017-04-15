@@ -1,10 +1,9 @@
 package Reports
 
 type User struct {
-	emailAddress string
+	EmailAddress string
 	budget int
 	tripMin int
 	tripMax int
-	reportLoc string
-	prettyReportLoc string
+	ReportLoc string
 }
