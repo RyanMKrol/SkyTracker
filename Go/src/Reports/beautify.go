@@ -4,9 +4,19 @@ import (
 	"fmt"
 	"strings"
 	"unicode/utf8"
+	"os"
+	"log"
 )
 
-func GeneratePrettyReport(flights []Flight) (reportLoc string) {
+func generatePrettyReport(flights []Flight, file_location string) (reportLoc string) {
+
+	formattedFileLocation := fmt.Sprintf(file_location + "_formatted")
+
+	file, err := os.Create(formattedFileLocation)
+	if err != nil {
+		fmt.Println("failed to create report item beautify.go")
+		log.Fatal(err)
+	}
 
 	By(b_SourceCity).Sort(flights)
 
@@ -24,12 +34,20 @@ func GeneratePrettyReport(flights []Flight) (reportLoc string) {
 	// creating slice of report entries
 	for _, block := range formattedEntries {
 		for _, flight := range block {
-			fmt.Printf("%s\t%s\t%s\t%s\t%s\t%s\n", flight.from, flight.to, flight.leaving, flight.returning, flight.lenth, flight.cost)
+			_, err = file.WriteString(fmt.Sprintf("%s\t%s\t%s\t%s\t%s\t%s\n", flight.from, flight.to, flight.leaving, flight.returning, flight.lenth, flight.cost))
+			if err != nil {
+				fmt.Println("failed to write out formatted flights to report beautify.go")
+				log.Fatal(err)
+			}
 		}
-		fmt.Println()
+		_, err = file.WriteString("\n")
+		if err != nil {
+			fmt.Println("failed to write out formatted flights to report beautify.go")
+			log.Fatal(err)
+		}
 	}
 
-	return "things"
+	return formattedFileLocation
 }
 
 func max(a, b int) int {

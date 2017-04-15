@@ -46,12 +46,13 @@ func GenerateReports(db *sql.DB) []User {
 			wg.Add(1)
 
 			// parallelising the meat of the file
-			go func(u User, f *os.File){
+			go func(u User, f *os.File, fn string){
 				writeHeaders(f)
-				reportForUser(u, db, f)
+				minFlights := reportForUser(u, db, f)
 				f.Close()
+				u.prettyReportLoc = generatePrettyReport(minFlights, fn)
 				wg.Done()
-			}(user, file)
+			}(user, file, filename)
 
 		}
 		user.reportLoc = filename
@@ -122,7 +123,7 @@ func writeHeaders(file *os.File) {
 
 }
 
-func reportForUser(user User, db *sql.DB, file *os.File) {
+func reportForUser(user User, db *sql.DB, file *os.File) []Flight {
 
 	var minFlight Flight
 	var minFlights []Flight
@@ -202,5 +203,8 @@ func reportForUser(user User, db *sql.DB, file *os.File) {
 			log.Fatal(err)
 		}
 	}
+
 	fmt.Println("done")
+
+	return minFlights
 }
