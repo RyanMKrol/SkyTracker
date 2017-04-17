@@ -2,11 +2,11 @@
 package DataUtils
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
-	"fmt"
 )
 
 const EXCESSIVE_CALLS int = 429

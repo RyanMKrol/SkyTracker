@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
-	"sync"
 	"strings"
+	"sync"
+	"time"
 )
 
 const SELECT_USERS string = "SELECT * FROM Users;"
@@ -33,7 +33,7 @@ func GenerateReports(db *sql.DB) []User {
 
 		fmt.Println("in the for-loop")
 
-		var filename string = fmt.Sprintf(fmt.Sprintf(SystemConfig.DOC_ROOT,REPORT_LOC), users[i].budget, users[i].tripMin, users[i].tripMax, currentDate.Format(DATE_FORMAT))
+		var filename string = fmt.Sprintf(fmt.Sprintf(SystemConfig.DOC_ROOT, REPORT_LOC), users[i].budget, users[i].tripMin, users[i].tripMax, currentDate.Format(DATE_FORMAT))
 
 		// file doesn't exist so we need to make it ourselves
 		if _, err := os.Stat(filename); os.IsNotExist(err) {
@@ -47,7 +47,7 @@ func GenerateReports(db *sql.DB) []User {
 			wg.Add(1)
 
 			// parallelising the meat of the file
-			go func(u User, f *os.File, fn string){
+			go func(u User, f *os.File, fn string) {
 				writeHeaders(f)
 				reportForUser(u, db, f, fn)
 				f.Close()
@@ -66,7 +66,7 @@ func GenerateReports(db *sql.DB) []User {
 }
 
 // gets the users from the database and parses their information
-func getUsers(db *sql.DB) []User{
+func getUsers(db *sql.DB) []User {
 
 	var userArr []User
 
@@ -98,13 +98,13 @@ func getUsers(db *sql.DB) []User{
 		}
 
 		if maybeTripMin.Valid {
-			tempUser.tripMin =  int(maybeTripMin.Int64)
+			tempUser.tripMin = int(maybeTripMin.Int64)
 		} else {
 			tempUser.tripMin = 0
 		}
 
 		if maybeTripMax.Valid {
-			tempUser.tripMax =  int(maybeTripMax.Int64)
+			tempUser.tripMax = int(maybeTripMax.Int64)
 		} else {
 			tempUser.tripMax = MAX_NUM
 		}
@@ -148,7 +148,6 @@ func reportForUser(user User, db *sql.DB, file *os.File, filename string) {
 		panic(err.Error())
 	}
 	defer destAirports.Close()
-
 
 	fmt.Println("going through airports")
 	// getting the cheapest flights to each destination

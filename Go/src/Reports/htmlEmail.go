@@ -2,9 +2,9 @@ package Reports
 
 import (
 	"fmt"
-	"strings"
-	"os"
 	"log"
+	"os"
+	"strings"
 )
 
 const toWidth = 255
@@ -35,7 +35,6 @@ func generatePrettyReport(flights []Flight, file_location string) (reportLoc str
 	for i := 0; i < len(groupedFlights); i++ {
 		By(b_TripPrice).Sort(groupedFlights[i])
 	}
-
 
 	for i, _ := range groupedFlights {
 
@@ -75,10 +74,9 @@ func generatePrettyReport(flights []Flight, file_location string) (reportLoc str
 	return formattedFileLocation
 }
 
-
 // certain functions were getting too meaty with the constant error checking, so
 //  this lightweight function will act as a general error catcher
-func errorCheck(err error){
+func errorCheck(err error) {
 	if err != nil {
 		fmt.Println("failed the error check")
 		log.Fatal(err)
@@ -91,15 +89,15 @@ func writeTableHeadings(file *os.File) {
 	errorCheck(err)
 	_, err = file.WriteString("<tr>\n")
 	errorCheck(err)
-	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: left; padding:0 10px 0 10px;\" >To</th>\n",toWidth))
+	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: left; padding:0 10px 0 10px;\" >To</th>\n", toWidth))
 	errorCheck(err)
-	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Leaving</th>\n",leavingWidth))
+	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Leaving</th>\n", leavingWidth))
 	errorCheck(err)
-	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Returning</th>\n",returningWidth))
+	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Returning</th>\n", returningWidth))
 	errorCheck(err)
-	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Days</th>\n",tripLengthWidth))
+	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Days</th>\n", tripLengthWidth))
 	errorCheck(err)
-	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Cost</th>\n",costWidth))
+	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Cost</th>\n", costWidth))
 	errorCheck(err)
 	_, err = file.WriteString("</tr>\n")
 	errorCheck(err)

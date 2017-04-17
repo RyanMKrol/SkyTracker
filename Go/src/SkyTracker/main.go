@@ -3,8 +3,8 @@ package main
 import (
 	"Credentials"
 	"DataUtils"
-	"Reports"
 	"Email"
+	"Reports"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"

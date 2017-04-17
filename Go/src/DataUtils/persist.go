@@ -3,9 +3,9 @@ package DataUtils
 
 import (
 	"SystemConfig"
+	"fmt"
 	"log"
 	"os/exec"
-	"fmt"
 )
 
 const PHP_BINARY string = "/usr/bin/php"
@@ -14,7 +14,7 @@ const PERSIST_PHP_LOC string = "src/DataUtils/persist.php"
 // persists the data on the server
 func PersistData() {
 
-	cmd := exec.Command(PHP_BINARY, fmt.Sprintf(SystemConfig.DOC_ROOT,PERSIST_PHP_LOC))
+	cmd := exec.Command(PHP_BINARY, fmt.Sprintf(SystemConfig.DOC_ROOT, PERSIST_PHP_LOC))
 
 	err := cmd.Run()
 	if err != nil {

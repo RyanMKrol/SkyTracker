@@ -2,13 +2,12 @@
 package DataUtils
 
 import (
-	"os"
 	"archive/zip"
+	"io"
+	"os"
 	"path/filepath"
 	"strings"
-	"io"
 )
-
 
 // directly copied from: http://blog.ralch.com/tutorial/golang-working-with-zip/
 
