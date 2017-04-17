@@ -12,6 +12,6 @@
   $body = $argv[3];
   $emailAddress = $argv[4];
 
-  exec("cat \"$body\" | mail -A $reportName -s \"$title\" $emailAddress");
+  exec("cat \"$body\" | mail -A $reportName -a \"From: SkyTracker <no-reply@skytracker.co>\" -s \"$title\" $emailAddress");
 
 ?>

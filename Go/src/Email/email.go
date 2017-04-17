@@ -5,7 +5,6 @@ import (
 	"Reports"
 	"fmt"
 	"os/exec"
-	"log"
 )
 
 const PHP_BINARY string = "/usr/bin/php"
@@ -20,11 +19,12 @@ func EmailUsers(users []Reports.User) {
 
 		cmd := exec.Command(PHP_BINARY, fmt.Sprintf(SystemConfig.DOC_ROOT,EMAIL_PHP_LOC), user.ReportLoc, fmt.Sprintf(SystemConfig.DOC_ROOT,TITLE_FILE), fmt.Sprintf(SystemConfig.DOC_ROOT,BODY_FILE), user.EmailAddress)
 
-		err := cmd.Run()
-		if err != nil {
-			fmt.Println("failed to execute command in email.go")
-			log.Fatal(err)
-		}
+		_ = cmd
+		// err := cmd.Run()
+		// if err != nil {
+		// 	fmt.Println("failed to execute command in email.go")
+		// 	log.Fatal(err)
+		// }
 
 	}
 }
