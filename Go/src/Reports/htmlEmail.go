@@ -115,19 +115,6 @@ func writeHtmlBase(file *os.File) {
 
 }
 
-func max(a, b int) int {
-	if a > b {
-		return a
-	} else {
-		return b
-	}
-}
-
-// returns a string padded with spaces on the right
-func padString(original, padString string, num int) string {
-	return (original + strings.Repeat(padString, num))
-}
-
 // returns flights ordered into slices based on source city
 func getGroupedFlights(flights []Flight) [][]Flight {
 
