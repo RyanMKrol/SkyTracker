@@ -7,11 +7,10 @@ import (
 	"log"
 )
 
-const fromWidth = 180
-const toWidth = 250
-const leavingWidth = 80
-const returningWidth = 80
-const tripLengthWidth = 90
+const toWidth = 255
+const leavingWidth = 90
+const returningWidth = 90
+const tripLengthWidth = 40
 const costWidth = 40
 
 func generatePrettyReport(flights []Flight, file_location string) (reportLoc string) {
@@ -38,15 +37,16 @@ func generatePrettyReport(flights []Flight, file_location string) (reportLoc str
 	}
 
 
-	for _, block := range groupedFlights {
+	for i, _ := range groupedFlights {
 
+		_, err = file.WriteString(fmt.Sprintf("<p style = \"padding: 5px 5px 5px 5px; margin: 0 0 0 0;\"><b>%s, %s</b></p>", groupedFlights[i][0].sourceCity, groupedFlights[i][0].sourceAirport))
+
+		errorCheck(err)
 		writeTableHeadings(file)
 
-		for _, flight := range block {
+		for _, flight := range groupedFlights[i] {
 
 			_, err = file.WriteString("<tr>\n")
-			errorCheck(err)
-			_, err = file.WriteString(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;\">%s, %s</td>\n", flight.sourceCity, flight.sourceAirport ))
 			errorCheck(err)
 			_, err = file.WriteString(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;\">%s, %s, %s</td>\n", flight.destinationCity, flight.destinationCountry, flight.destinationAirport))
 			errorCheck(err)
@@ -91,15 +91,13 @@ func writeTableHeadings(file *os.File) {
 	errorCheck(err)
 	_, err = file.WriteString("<tr>\n")
 	errorCheck(err)
-	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: left; padding:0 10px 0 10px;\" >From</th>\n",fromWidth))
-	errorCheck(err)
 	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: left; padding:0 10px 0 10px;\" >To</th>\n",toWidth))
 	errorCheck(err)
 	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Leaving</th>\n",leavingWidth))
 	errorCheck(err)
 	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Returning</th>\n",returningWidth))
 	errorCheck(err)
-	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Trip Length</th>\n",tripLengthWidth))
+	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Days</th>\n",tripLengthWidth))
 	errorCheck(err)
 	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Cost</th>\n",costWidth))
 	errorCheck(err)
@@ -109,7 +107,7 @@ func writeTableHeadings(file *os.File) {
 
 func writeHtmlBase(file *os.File) {
 
-	_, err := file.WriteString("<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n")
+	_, err := file.WriteString("<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n</head>\n<body style = \"font-family: Helvetica;\">\n")
 	if err != nil {
 		fmt.Println("failed to write headers htttpEmail.go")
 		log.Fatal(err)

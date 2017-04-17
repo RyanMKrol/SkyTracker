@@ -4,6 +4,7 @@ import (
 	"Credentials"
 	"DataUtils"
 	"Reports"
+	"Email"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
@@ -38,72 +39,70 @@ func main() {
 
 	// statements to get the source and destination airport pairs
 
-	// srcAirports, err := db.Query(SELECT_SOURCES)
-	// if err != nil {
-	// 	fmt.Println("failed to get sources main.go")
-	// 	panic(err.Error())
-	// }
-	// defer srcAirports.Close()
-	//
-	// destAirports, err := db.Query(SELECT_DESTINATIONS)
-	// if err != nil {
-	// 	fmt.Println("failed to get destinations main.go")
-	// 	panic(err.Error())
-	// }
-	// defer destAirports.Close()
-	//
-	// // sending off each thread
-	//
-	// for srcAirports.Next() {
-	//
-	// 	for destAirports.Next() {
-	//
-	// 		// adding another thread to wait for
-	// 		wg.Add(1)
-	//
-	// 		var src, dest, dummy string
-	//
-	// 		if err := srcAirports.Scan(&dummy, &dummy, &src, &dummy, &dummy); err != nil {
-	// 			fmt.Println("failed to scan sources main.go")
-	// 			panic(err.Error())
-	// 		}
-	//
-	// 		if err := destAirports.Scan(&dummy, &dummy, &dest, &dummy, &dummy); err != nil {
-	// 			fmt.Println("failed to scan destination main.go")
-	// 			panic(err.Error())
-	// 		}
-	//
-	// 		fmt.Println(src + " " + dest)
-	//
-	// 		go t_DataProcess(src, dest)
-	//
-	// 	}
-	//
-	// 	// have to reload the result set into destAirports because .Next()
-	// 	destAirports, err = db.Query(SELECT_DESTINATIONS)
-	// 	if err != nil {
-	// 		fmt.Println("failed to reload destinations main.go")
-	// 		panic(err.Error())
-	// 	}
-	//
-	// 	wg.Wait()
-	// }
-	//
-	// fmt.Println("finished collecting")
-	//
-	// // at this point all of the files will be setup, now I need to persist it with the server
-	//
-	// DataUtils.PersistData()
-	// fmt.Println("finished persisting")
+	srcAirports, err := db.Query(SELECT_SOURCES)
+	if err != nil {
+		fmt.Println("failed to get sources main.go")
+		panic(err.Error())
+	}
+	defer srcAirports.Close()
+
+	destAirports, err := db.Query(SELECT_DESTINATIONS)
+	if err != nil {
+		fmt.Println("failed to get destinations main.go")
+		panic(err.Error())
+	}
+	defer destAirports.Close()
+
+	// sending off each thread
+
+	for srcAirports.Next() {
+
+		for destAirports.Next() {
+
+			// adding another thread to wait for
+			wg.Add(1)
+
+			var src, dest, dummy string
+
+			if err := srcAirports.Scan(&dummy, &dummy, &src, &dummy, &dummy); err != nil {
+				fmt.Println("failed to scan sources main.go")
+				panic(err.Error())
+			}
+
+			if err := destAirports.Scan(&dummy, &dummy, &dest, &dummy, &dummy); err != nil {
+				fmt.Println("failed to scan destination main.go")
+				panic(err.Error())
+			}
+
+			fmt.Println(src + " " + dest)
+
+			go t_DataProcess(src, dest)
+
+		}
+
+		// have to reload the result set into destAirports because .Next()
+		destAirports, err = db.Query(SELECT_DESTINATIONS)
+		if err != nil {
+			fmt.Println("failed to reload destinations main.go")
+			panic(err.Error())
+		}
+
+		wg.Wait()
+	}
+
+	fmt.Println("finished collecting")
+
+	// at this point all of the files will be setup, now I need to persist it with the server
+
+	DataUtils.PersistData()
+	fmt.Println("finished persisting")
 
 	users := Reports.GenerateReports(db)
 
-	_ = users
-
 	fmt.Println("finished generating")
 
-	// Email.EmailUsers(users)
-	// fmt.Println("finished sending")
+	Email.EmailUsers(users)
+	fmt.Println("finished sending")
 
 	fmt.Println("finished")
 

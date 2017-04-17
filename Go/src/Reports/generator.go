@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 	"sync"
+	"strings"
 )
 
 const SELECT_USERS string = "SELECT * FROM Users;"
@@ -55,6 +56,8 @@ func GenerateReports(db *sql.DB) []User {
 
 		}
 		users[i].ReportLoc = filename
+		users[i].NiceReportLoc = strings.Replace(filename, ".csv", ".html", 1)
+
 	}
 
 	wg.Wait()
