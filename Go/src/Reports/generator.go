@@ -62,6 +62,7 @@ func GenerateReports(db *sql.DB) []User {
 	return users
 }
 
+// gets the users from the database and parses their information
 func getUsers(db *sql.DB) []User{
 
 	var userArr []User
@@ -122,6 +123,7 @@ func writeHeaders(file *os.File) {
 
 }
 
+// generates a report for a specific user
 func reportForUser(user User, db *sql.DB, file *os.File) {
 
 	var minFlight Flight

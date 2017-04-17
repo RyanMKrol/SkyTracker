@@ -24,7 +24,7 @@ func Collect(url string) (body []byte) {
 	defer resp.Body.Close()
 
 	// reading data from the response
-	responseCode := resp.StatusCode
+	var responseCode int = resp.StatusCode
 
 	// if the response is 429, we're sending too many requests, so wait a minute and try again
 	if responseCode == EXCESSIVE_CALLS {
