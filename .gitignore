@@ -11,6 +11,8 @@ Go/bin/SkyTracker
 
 Go/sql/raw
 
+Go/sql/all.sql
+
 Go/reports
 
 Go/doc.txt

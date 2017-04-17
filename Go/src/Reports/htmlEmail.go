@@ -12,6 +12,7 @@ const leavingWidth = 90
 const returningWidth = 90
 const tripLengthWidth = 40
 const costWidth = 40
+const hrefLink = "http://partners.api.skyscanner.net/apiservices/referral/v1.0/GB/GBP/en-GB/%s/%s/%s/%s?apiKey=na91261163675973"
 
 func generatePrettyReport(flights []Flight, file_location string) (reportLoc string) {
 
@@ -47,7 +48,7 @@ func generatePrettyReport(flights []Flight, file_location string) (reportLoc str
 
 			_, err = file.WriteString("<tr>\n")
 			errorCheck(err)
-			_, err = file.WriteString(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;\">%s, %s, %s</td>\n", flight.destinationCity, flight.destinationCountry, flight.destinationAirport))
+			_, err = file.WriteString(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;\"><a href = \"%s\">%s, %s, %s</a></td>\n", fmt.Sprintf(hrefLink,flight.sourceAirport,flight.destinationAirport,flight.departureDate,flight.returnDate),flight.destinationCity, flight.destinationCountry, flight.destinationAirport))
 			errorCheck(err)
 			_, err = file.WriteString(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;text-align: center;\">%s</td>\n", flight.departureDate))
 			errorCheck(err)

@@ -47,6 +47,8 @@ func (s *flightSorter) Less(i, j int) bool {
 	return s.by(&s.flights[i], &s.flights[j])
 }
 
+// the following functions outline the underlying mechanism for sorting by various attributes
+
 var b_SourceCity = func(f1, f2 *Flight) bool {
 	return f1.sourceCity < f2.sourceCity
 }
