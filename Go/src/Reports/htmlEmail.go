@@ -7,12 +7,14 @@ import (
 	"strings"
 )
 
-const toWidth = 255
-const leavingWidth = 90
-const returningWidth = 90
-const tripLengthWidth = 40
-const costWidth = 40
-const hrefLink = "http://partners.api.skyscanner.net/apiservices/referral/v1.0/GB/GBP/en-GB/%s/%s/%s/%s?apiKey=na91261163675973"
+const toWidth int = 255
+const leavingWidth int = 90
+const returningWidth int = 90
+const tripLengthWidth int = 40
+const costWidth int = 40
+const hrefLink string = "http://partners.api.skyscanner.net/apiservices/referral/v1.0/GB/GBP/en-GB/%s/%s/%s/%s?apiKey=na91261163675973"
+const flightWriteError string = "failed to write out one of the flight attributes - httpEmail.go"
+const tableHeadingsWriteError string = "failed to write one of the table headers - htmlEmail.go"
 
 func generatePrettyReport(flights []Flight, file_location string) (reportLoc string) {
 
@@ -29,89 +31,66 @@ func generatePrettyReport(flights []Flight, file_location string) (reportLoc str
 	}
 	defer file.Close()
 
-	writeHtmlBase(file)
-
 	groupedFlights = getGroupedFlights(flights)
 
 	for i := 0; i < len(groupedFlights); i++ {
 		By(b_TripPrice).Sort(groupedFlights[i])
 	}
 
+	writeToFile("<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n</head>\n<body style = \"font-family: Helvetica;\">\n", "failed to write html template - httpEmail.go", file)
+
 	for i, _ := range groupedFlights {
 
-		_, err = file.WriteString(fmt.Sprintf("<p style = \"padding: 5px 5px 5px 5px; margin: 0 0 0 0;\"><b>%s, %s</b></p>", groupedFlights[i][0].sourceCity, groupedFlights[i][0].sourceAirport))
-
-		errorCheck(err)
+		writeToFile(fmt.Sprintf("<p style = \"padding: 5px 5px 5px 5px; margin: 0 0 0 0;\"><b>%s, %s</b></p>", groupedFlights[i][0].sourceCity, groupedFlights[i][0].sourceAirport), flightWriteError, file)
 		writeTableHeadings(file)
 
 		for _, flight := range groupedFlights[i] {
 
-			_, err = file.WriteString("<tr>\n")
-			errorCheck(err)
-			_, err = file.WriteString(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;\"><a href = \"%s\">%s, %s, %s</a></td>\n", fmt.Sprintf(hrefLink,flight.sourceAirport,flight.destinationAirport,flight.departureDate,flight.returnDate),flight.destinationCity, flight.destinationCountry, flight.destinationAirport))
-			errorCheck(err)
-			_, err = file.WriteString(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;text-align: center;\">%s</td>\n", flight.departureDate))
-			errorCheck(err)
-			_, err = file.WriteString(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;text-align: center;\">%s</td>\n", flight.returnDate))
-			errorCheck(err)
-			_, err = file.WriteString(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;text-align: center;\">%d</td>\n", flight.tripLength))
-			errorCheck(err)
-			_, err = file.WriteString(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;text-align: center;\">%d</td>\n", flight.price))
-			errorCheck(err)
-			_, err = file.WriteString("</tr>\n")
-			errorCheck(err)
-
+			writeFlightInfo(file, flight)
 		}
 
-		_, err = file.WriteString("</table>\n")
-		errorCheck(err)
-		_, err = file.WriteString("<br>\n")
-		errorCheck(err)
+		writeToFile("</table>\n", "failed to close table tag - httpEmail.go", file)
+		writeToFile("<br>\n", "failed to write <br> tag - httpEmail.go", file)
 	}
 
-	_, err = file.WriteString("</body>\n</html>\n")
-	errorCheck(err)
+	writeToFile("</body>\n</html>\n", "failed to close body and html tag - httpEmail.go", file)
 
 	return formattedFileLocation
 }
 
-// certain functions were getting too meaty with the constant error checking, so
-//  this lightweight function will act as a general error catcher
-func errorCheck(err error) {
+// handles the errors associated with writing to a file - seeing as i do it a lot
+func writeToFile(line, errorMessage string, file *os.File) {
+
+	_, err := file.WriteString(line)
+
 	if err != nil {
-		fmt.Println("failed the error check")
+		fmt.Println(errorMessage)
 		log.Fatal(err)
 	}
+
 }
+
+func writeFlightInfo(file *os.File, flight Flight) {
+
+	writeToFile("<tr>\n", flightWriteError, file)
+	writeToFile(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;\"><a href = \"%s\">%s, %s, %s</a></td>\n", fmt.Sprintf(hrefLink,flight.sourceAirport,flight.destinationAirport,flight.departureDate,flight.returnDate),flight.destinationCity, flight.destinationCountry, flight.destinationAirport), flightWriteError, file)
+	writeToFile(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;text-align: center;\">%s</td>\n", flight.departureDate), flightWriteError, file)
+	writeToFile(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;text-align: center;\">%s</td>\n", flight.returnDate), flightWriteError, file)
+	writeToFile(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;text-align: center;\">%d</td>\n", flight.tripLength), flightWriteError, file)
+	writeToFile(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;text-align: center;\">%d</td>\n", flight.price), flightWriteError, file)
+	writeToFile("</tr>\n", flightWriteError, file)
+
+}
+
 
 func writeTableHeadings(file *os.File) {
-
-	_, err := file.WriteString("<table>\n")
-	errorCheck(err)
-	_, err = file.WriteString("<tr>\n")
-	errorCheck(err)
-	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: left; padding:0 10px 0 10px;\" >To</th>\n", toWidth))
-	errorCheck(err)
-	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Leaving</th>\n", leavingWidth))
-	errorCheck(err)
-	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Returning</th>\n", returningWidth))
-	errorCheck(err)
-	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Days</th>\n", tripLengthWidth))
-	errorCheck(err)
-	_, err = file.WriteString(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Cost</th>\n", costWidth))
-	errorCheck(err)
-	_, err = file.WriteString("</tr>\n")
-	errorCheck(err)
-}
-
-func writeHtmlBase(file *os.File) {
-
-	_, err := file.WriteString("<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n</head>\n<body style = \"font-family: Helvetica;\">\n")
-	if err != nil {
-		fmt.Println("failed to write headers htttpEmail.go")
-		log.Fatal(err)
-	}
-
+	writeToFile("<table>\n", tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th width = %d style = \"text-align: left; padding:0 10px 0 10px;\" >To</th>\n", toWidth), tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Leaving</th>\n", leavingWidth), tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Returning</th>\n", returningWidth), tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Days</th>\n", tripLengthWidth), tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Cost</th>\n", costWidth), tableHeadingsWriteError, file)
+	writeToFile("</tr>\n", tableHeadingsWriteError, file)
 }
 
 // returns flights ordered into slices based on source city
