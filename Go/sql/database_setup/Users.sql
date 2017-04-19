@@ -6,8 +6,5 @@ CREATE TABLE Users (
   UserBudget int DEFAULT NULL,
   UserTripMin int DEFAULT NULL,
   UserTripMax int DEFAULT NULL,
-  PRIMARY KEY(UserID),
-  CHECK (UserTripMin > 0),
-  CHECK (UserTripMin < 29),
-  CHECK (UserBudget > 0),
+  PRIMARY KEY(UserID)
 );
