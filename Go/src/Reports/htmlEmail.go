@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-const toWidth int = 255
+const toWidth int = 275
 const leavingWidth int = 120
 const returningWidth int = 120
 const tripLengthWidth int = 40
