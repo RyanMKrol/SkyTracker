@@ -11,7 +11,6 @@ import (
 const PHP_BINARY string = "/usr/bin/php"
 const EMAIL_PHP_LOC string = "src/Email/email.php"
 const TITLE_FILE string = "src/Email/components/title.txt"
-const BODY_FILE string = "src/Email/components/body.txt"
 
 // persists the data on the server
 func EmailUsers(users []Reports.User) {
