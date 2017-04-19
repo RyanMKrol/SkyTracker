@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 	"sync"
 	"time"
 )
@@ -15,9 +14,7 @@ const SELECT_USERS string = "SELECT * FROM Users;"
 const SELECT_SOURCES string = "SELECT * FROM SourceAirports;"
 const SELECT_DESTINATIONS string = "SELECT * FROM DestinationAirports;"
 const MIN_QUERY string = "SELECT *, DATEDIFF(ReturnDate, DepartDate) FROM %s_%s WHERE DATEDIFF(ReturnDate, DepartDate) >= %d AND DATEDIFF(ReturnDate, DepartDate) <= %d AND Price < %d ORDER BY Price ASC limit 1;"
-const REPORT_LOC string = "reports/%d_%d_%d_%s.csv"
-const CSV_LINE_FORMAT string = "\"%s, %s\",\"%s, %s, %s\",%s,%s,%d,%d\n"
-const CSV_HEADERS string = "From,To,Leaving,Returning,Trip Length,Cost\n"
+const REPORT_LOC string = "reports/%d_%d_%d_%s.html"
 const DATE_FORMAT string = "2006-01-02"
 const MAX_NUM int = 2147483647
 
@@ -47,17 +44,15 @@ func GenerateReports(db *sql.DB) []User {
 			wg.Add(1)
 
 			// parallelising the meat of the file
-			go func(u User, f *os.File, fn string) {
-				writeHeaders(f)
-				reportForUser(u, db, f, fn)
+			go func(u User, f *os.File) {
+				minFlights := reportForUser(u, db)
+				generatePrettyReport(minFlights, f)
 				f.Close()
 				wg.Done()
-			}(users[i], file, filename)
-
+			}(users[i], file)
 		}
-		users[i].ReportLoc = filename
-		users[i].NiceReportLoc = strings.Replace(filename, ".csv", ".html", 1)
 
+		users[i].NiceReportLoc = filename
 	}
 
 	wg.Wait()
@@ -115,19 +110,8 @@ func getUsers(db *sql.DB) []User {
 	return userArr
 }
 
-// writes headers to the csv file
-func writeHeaders(file *os.File) {
-
-	_, err := file.WriteString(CSV_HEADERS)
-	if err != nil {
-		fmt.Println("failed to write headers generate.go")
-		log.Fatal(err)
-	}
-
-}
-
 // generates a report for a specific user
-func reportForUser(user User, db *sql.DB, file *os.File, filename string) {
+func reportForUser(user User, db *sql.DB) []Flight {
 
 	var minFlight Flight
 	var minFlights []Flight
@@ -194,20 +178,5 @@ func reportForUser(user User, db *sql.DB, file *os.File, filename string) {
 		}
 	}
 
-	fmt.Println("going through flights")
-
-	// writing out the flight data to the report file
-	for _, flight := range minFlights {
-
-		_, err = file.WriteString(fmt.Sprintf(CSV_LINE_FORMAT, flight.sourceCity, flight.sourceAirport, flight.destinationCountry, flight.destinationCity, flight.destinationAirport, flight.departureDate, flight.returnDate, flight.tripLength, flight.price))
-
-		if err != nil {
-			fmt.Println("failed to write out flights to report generate.go")
-			log.Fatal(err)
-		}
-	}
-
-	generatePrettyReport(minFlights, filename)
-
-	fmt.Println("done")
+	return minFlights
 }

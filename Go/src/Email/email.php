@@ -7,10 +7,9 @@
 <?php
   //main
 
-  $reportName = $argv[1];
-  $title = trim(file_get_contents($argv[2]));
-  $body = $argv[3];
-  $emailAddress = $argv[4];
+  $title = trim(file_get_contents($argv[1]));
+  $body = $argv[2];
+  $emailAddress = $argv[3];
 
-  exec("mail -A $reportName -a \"From: SkyTracker <no-reply@skytracker.co>\" -a \"Content-type: text/html\" -s \"$title\" $emailAddress < $body");
+  exec("mail -a \"From: SkyTracker <no-reply@skytracker.co>\" -a \"Content-type: text/html\" -s \"$title\" $emailAddress < $body");
 ?>

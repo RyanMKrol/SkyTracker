@@ -18,7 +18,7 @@ func EmailUsers(users []Reports.User) {
 
 	for _, user := range users {
 
-		cmd := exec.Command(PHP_BINARY, fmt.Sprintf(SystemConfig.DOC_ROOT, EMAIL_PHP_LOC), user.ReportLoc, fmt.Sprintf(SystemConfig.DOC_ROOT, TITLE_FILE), user.NiceReportLoc, user.EmailAddress)
+		cmd := exec.Command(PHP_BINARY, fmt.Sprintf(SystemConfig.DOC_ROOT, EMAIL_PHP_LOC), fmt.Sprintf(SystemConfig.DOC_ROOT, TITLE_FILE), user.NiceReportLoc, user.EmailAddress)
 
 		err := cmd.Run()
 		if err != nil {

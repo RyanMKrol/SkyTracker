@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 )
 
 const toWidth int = 255
@@ -16,20 +15,11 @@ const hrefLink string = "http://partners.api.skyscanner.net/apiservices/referral
 const flightWriteError string = "failed to write out one of the flight attributes - httpEmail.go"
 const tableHeadingsWriteError string = "failed to write one of the table headers - htmlEmail.go"
 
-func generatePrettyReport(flights []Flight, file_location string) (reportLoc string) {
+func generatePrettyReport(flights []Flight, file *os.File) {
 
 	By(b_SourceCity).Sort(flights)
 
-	formattedFileLocation := strings.Replace(file_location, ".csv", ".html", 1)
-
 	var groupedFlights [][]Flight
-
-	file, err := os.Create(formattedFileLocation)
-	if err != nil {
-		fmt.Println("failed to create report item htttpEmail.go")
-		log.Fatal(err)
-	}
-	defer file.Close()
 
 	groupedFlights = getGroupedFlights(flights)
 
@@ -54,8 +44,6 @@ func generatePrettyReport(flights []Flight, file_location string) (reportLoc str
 	}
 
 	writeToFile("</body>\n</html>\n", "failed to close body and html tag - httpEmail.go", file)
-
-	return formattedFileLocation
 }
 
 // handles the errors associated with writing to a file - seeing as i do it a lot
