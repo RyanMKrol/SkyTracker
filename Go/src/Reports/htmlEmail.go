@@ -11,6 +11,7 @@ const leavingWidth int = 120
 const returningWidth int = 120
 const tripLengthWidth int = 40
 const costWidth int = 40
+const tableWidth int = 700
 const hrefLink string = "http://partners.api.skyscanner.net/apiservices/referral/v1.0/GB/GBP/en-GB/%s/%s/%s/%s?apiKey=na91261163675973"
 const flightWriteError string = "failed to write out one of the flight attributes - httpEmail.go"
 const tableHeadingsWriteError string = "failed to write one of the table headers - htmlEmail.go"
@@ -88,7 +89,7 @@ func writeFlightInfo(file *os.File, flight Flight) {
 
 
 func writeTableHeadings(file *os.File) {
-	writeToFile("<table style = \"width: 700px\">\n", tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<table style = \"width: %dpx\">\n", tableWidth), tableHeadingsWriteError, file)
 	writeToFile(fmt.Sprintf("<th width = %d style = \"%s text-align: left; min-width = %d;\" >To</th>\n", toWidth,paddingStyle,toWidth), tableHeadingsWriteError, file)
 	writeToFile(fmt.Sprintf("<th width = %d style = \"%s%s min-width = %d;\" >Leaving</th>\n",paddingStyle, centreAlignStyle, leavingWidth,leavingWidth), tableHeadingsWriteError, file)
 	writeToFile(fmt.Sprintf("<th width = %d style = \"%s%s min-width = %d;\" >Returning</th>\n",paddingStyle, centreAlignStyle, returningWidth,returningWidth), tableHeadingsWriteError, file)
