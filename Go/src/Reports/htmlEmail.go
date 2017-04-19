@@ -8,8 +8,8 @@ import (
 )
 
 const toWidth int = 255
-const leavingWidth int = 90
-const returningWidth int = 90
+const leavingWidth int = 120
+const returningWidth int = 120
 const tripLengthWidth int = 40
 const costWidth int = 40
 const hrefLink string = "http://partners.api.skyscanner.net/apiservices/referral/v1.0/GB/GBP/en-GB/%s/%s/%s/%s?apiKey=na91261163675973"
@@ -84,12 +84,12 @@ func writeFlightInfo(file *os.File, flight Flight) {
 
 
 func writeTableHeadings(file *os.File) {
-	writeToFile("<table>\n", tableHeadingsWriteError, file)
-	writeToFile(fmt.Sprintf("<th width = %d style = \"text-align: left; padding:0 10px 0 10px;\" >To</th>\n", toWidth), tableHeadingsWriteError, file)
-	writeToFile(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Leaving</th>\n", leavingWidth), tableHeadingsWriteError, file)
-	writeToFile(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Returning</th>\n", returningWidth), tableHeadingsWriteError, file)
-	writeToFile(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Days</th>\n", tripLengthWidth), tableHeadingsWriteError, file)
-	writeToFile(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px;\" >Cost</th>\n", costWidth), tableHeadingsWriteError, file)
+	writeToFile("<table style = \"width: 700px\">\n", tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th width = %d style = \"text-align: left; padding:0 10px 0 10px; min-width = %d;\" >To</th>\n", toWidth,toWidth), tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px; min-width = %d;\" >Leaving</th>\n", leavingWidth,leavingWidth), tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px; min-width = %d;\" >Returning</th>\n", returningWidth,returningWidth), tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px; min-width = %d;\" >Days</th>\n", tripLengthWidth,tripLengthWidth), tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th width = %d style = \"text-align: center; padding:0 10px 0 10px; min-width = %d;\" >Cost</th>\n", costWidth,costWidth), tableHeadingsWriteError, file)
 	writeToFile("</tr>\n", tableHeadingsWriteError, file)
 }
 
