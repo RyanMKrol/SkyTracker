@@ -8,10 +8,10 @@ import (
 	"os"
 	"sync"
 	"time"
-)
+)EmailAddress
 
 const SELECT_USERS string = "SELECT * FROM Users;"
-const SELECT_SOURCES string = "SELECT * FROM SourceAirports;"
+const SELECT_SOURCES string = "SELECT * FROM SourceAirports WHERE SrcAirportCode IN (SELECT SourceAirportCode FROM Users NATURAL JOIN UserSourceAirports WHERE UserEmailAddress = %s);"
 const SELECT_DESTINATIONS string = "SELECT * FROM DestinationAirports;"
 const MIN_QUERY string = "SELECT *, DATEDIFF(ReturnDate, DepartDate) FROM %s_%s WHERE DATEDIFF(ReturnDate, DepartDate) >= %d AND DATEDIFF(ReturnDate, DepartDate) <= %d AND Price < %d ORDER BY Price ASC limit 1;"
 const REPORT_LOC string = "reports/%d_%d_%d_%s.html"
@@ -118,7 +118,7 @@ func reportForUser(user User, db *sql.DB) []Flight {
 	var potentialMin Flight
 
 	// getting source airports from database
-	srcAirports, err := db.Query(SELECT_SOURCES)
+	srcAirports, err := db.Query(fmt.Sprintf(SELECT_SOURCES),user.EmailAddress)
 	if err != nil {
 		fmt.Println("failed to get sources generate.go")
 		panic(err.Error())
@@ -171,7 +171,7 @@ func reportForUser(user User, db *sql.DB) []Flight {
 		}
 
 		// have to reload the result set into destAirports because .Next()
-		srcAirports, err = db.Query(SELECT_SOURCES)
+		srcAirports, err := db.Query(fmt.Sprintf(SELECT_SOURCES),user.EmailAddress)
 		if err != nil {
 			fmt.Println("failed to reload generate.go")
 			panic(err.Error())
