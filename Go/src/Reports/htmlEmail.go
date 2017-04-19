@@ -65,7 +65,7 @@ func writeFlightInfo(file *os.File, flight Flight) {
 	writeToFile(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;text-align: center;\">%s</td>\n", flight.departureDate), flightWriteError, file)
 	writeToFile(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;text-align: center;\">%s</td>\n", flight.returnDate), flightWriteError, file)
 	writeToFile(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;text-align: center;\">%d</td>\n", flight.tripLength), flightWriteError, file)
-	writeToFile(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;text-align: center;\">%d</td>\n", flight.price), flightWriteError, file)
+	writeToFile(fmt.Sprintf("<td style=\"padding:0 10px 0 10px;text-align: center;\">£%d</td>\n", flight.price), flightWriteError, file)
 	writeToFile("</tr>\n", flightWriteError, file)
 
 }
