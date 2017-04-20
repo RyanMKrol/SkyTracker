@@ -9,7 +9,8 @@ import (
 	"sync"
 	"time"
 )
-
+// const SELECT_USERS string = "SELECT * FROM UserTravelMonths WHERE UserID = (SELECT UserID FROM Users WHERE UserEmailAddress = %s) ORDER BY TravelMonth ASC;"
+const SELECT_TRAVEL_MONTHS string = "SELECT * FROM UserTravelMonths WHERE UserID = (SELECT UserID FROM Users WHERE UserEmailAddress = \"%s\") ORDER BY TravelMonth ASC;"
 const SELECT_USERS string = "SELECT * FROM Users;"
 const SELECT_SOURCES string = "SELECT * FROM SourceAirports WHERE SrcAirportCode IN (SELECT SourceAirportCode FROM Users NATURAL JOIN UserSourceAirports WHERE UserEmailAddress = \"%s\");"
 const SELECT_DESTINATIONS string = "SELECT * FROM DestinationAirports;"
@@ -17,6 +18,7 @@ const MIN_QUERY string = "SELECT *, DATEDIFF(ReturnDate, DepartDate) FROM %s_%s 
 const REPORT_LOC string = "reports/%d_%d_%d_%s.html"
 const DATE_FORMAT string = "2006-01-02"
 const MAX_NUM int = 2147483647
+const MONTHS_IN_YEAR int = 12
 
 // this is used to sync up the threads that are doing work before we continue
 var wg sync.WaitGroup
@@ -45,7 +47,8 @@ func GenerateReports(db *sql.DB) []User {
 
 			// parallelising the meat of the file
 			go func(u User, f *os.File) {
-				minFlights := reportForUser(u, db)
+				intervals := intervalBuilder(u,db)
+				minFlights := reportForUser(u, db, intervals)
 				generatePrettyReport(minFlights, f)
 				f.Close()
 				wg.Done()
@@ -110,8 +113,96 @@ func getUsers(db *sql.DB) []User {
 	return userArr
 }
 
+// builds up the intervals to search over that a user will have specified
+func intervalBuilder(user User, db *sql.DB) (intervals []Interval) {
+
+	months, err := db.Query(fmt.Sprintf(SELECT_TRAVEL_MONTHS, user.EmailAddress))
+	if err != nil {
+		fmt.Println("failed to get user months generate.go")
+		panic(err.Error())
+	}
+	defer months.Close()
+
+	var monthArr [MONTHS_IN_YEAR]bool
+	for months.Next() {
+
+		var dummy string
+		var tempInt int
+		if err := months.Scan(&dummy, &dummy, &tempInt); err != nil {
+			fmt.Println("failed to scan user travel month generate.go")
+			panic(err.Error())
+		}
+		monthArr[tempInt-1] = true
+	}
+
+	var allTrue = true
+	var firstFalse int
+
+	// finds the first false if one is present
+	for i, m := range monthArr {
+		if !m {
+			if allTrue {
+				firstFalse = i
+			}
+			allTrue = false
+		}
+	}
+
+	// if they're all true then we can search the whole year using one interval
+	if allTrue {
+		intervals = append(intervals, Interval{int(time.Now().Month()),int(time.Now().Month())-1, int(time.Now().Year()), int(time.Now().Year())+1})
+		return
+	}
+
+	// if not we need to find where the first 'true' after a false is
+	var trueStarts int
+	for i := firstFalse+1; i < firstFalse + MONTHS_IN_YEAR; i++ {
+		if monthArr[i] {
+			trueStarts = i%MONTHS_IN_YEAR
+			break
+		}
+	}
+
+	var inInterval bool = true
+	var tempInterval Interval
+	tempInterval.StartMonth = trueStarts + 1
+
+	// generates the month intervals
+	for i := trueStarts; i < trueStarts + MONTHS_IN_YEAR; i++ {
+		if monthArr[i%MONTHS_IN_YEAR] && inInterval {
+
+			tempInterval.EndMonth = (i%MONTHS_IN_YEAR)+1
+
+		} else if monthArr[i%MONTHS_IN_YEAR] {
+
+			tempInterval.StartMonth = (i%MONTHS_IN_YEAR)+1
+			tempInterval.EndMonth = (i%MONTHS_IN_YEAR)+1
+			inInterval = true
+
+		} else if inInterval {
+
+			intervals = append(intervals, tempInterval)
+			inInterval = false
+
+		}
+	}
+
+	// have to set the year as well as the month
+	for i, _ := range intervals {
+		intervals[i].StartYear = int(time.Now().Year())
+		if intervals[i].StartMonth < intervals[i].EndMonth {
+			intervals[i].EndYear = intervals[i].StartYear
+		} else {
+			intervals[i].EndYear = intervals[i].StartYear + 1
+		}
+	}
+
+	fmt.Println(intervals)
+	return
+}
+
 // generates a report for a specific user
-func reportForUser(user User, db *sql.DB) []Flight {
+func reportForUser(user User, db *sql.DB, intervals []Interval) []Flight {
 
 	var minFlight Flight
 	var minFlights []Flight
