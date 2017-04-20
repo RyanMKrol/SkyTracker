@@ -97,7 +97,7 @@ func main() {
 	// fmt.Println("finished persisting")
 
 	users := Reports.GenerateReports(db)
-	_  = users
+	_ = users
 	// fmt.Println("finished generating")
 	//
 	// Email.EmailUsers(users)

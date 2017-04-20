@@ -9,14 +9,27 @@ import (
 	"sync"
 	"time"
 )
-// const SELECT_USERS string = "SELECT * FROM UserTravelMonths WHERE UserID = (SELECT UserID FROM Users WHERE UserEmailAddress = %s) ORDER BY TravelMonth ASC;"
+
+// for databaser interaction
 const SELECT_TRAVEL_MONTHS string = "SELECT * FROM UserTravelMonths WHERE UserID = (SELECT UserID FROM Users WHERE UserEmailAddress = \"%s\") ORDER BY TravelMonth ASC;"
 const SELECT_USERS string = "SELECT * FROM Users;"
 const SELECT_SOURCES string = "SELECT * FROM SourceAirports WHERE SrcAirportCode IN (SELECT SourceAirportCode FROM Users NATURAL JOIN UserSourceAirports WHERE UserEmailAddress = \"%s\");"
 const SELECT_DESTINATIONS string = "SELECT * FROM DestinationAirports;"
-const MIN_QUERY string = "SELECT *, DATEDIFF(ReturnDate, DepartDate) FROM %s_%s WHERE DATEDIFF(ReturnDate, DepartDate) >= %d AND DATEDIFF(ReturnDate, DepartDate) <= %d AND Price < %d ORDER BY Price ASC limit 1;"
+const MIN_QUERY string = "SELECT *, DATEDIFF(ReturnDate, DepartDate) FROM %s_%s WHERE DATEDIFF(ReturnDate, DepartDate) >= %d AND DATEDIFF(ReturnDate, DepartDate) <= %d AND Price < %d %s ORDER BY Price ASC limit 1;"
+
+// for the report writing
 const REPORT_LOC string = "reports/%d_%d_%d_%s.html"
 const DATE_FORMAT string = "2006-01-02"
+
+// for the query builder
+const monthGreater string = "(Month(DepartDate) >= %d AND "
+const monthLesser string = "Month(ReturnDate) <= %d  AND "
+const yearGreater string = "Year(DepartDate) >= %d  AND "
+const yearLesser string = "Year(ReturnDate) <= %d)"
+const orConnective string = " OR "
+const andConnective string = " AND "
+
+// used throuhout
 const MAX_NUM int = 2147483647
 const MONTHS_IN_YEAR int = 12
 
@@ -150,7 +163,6 @@ func intervalBuilder(user User, db *sql.DB) (intervals []Interval) {
 
 	// if they're all true then we can search the whole year using one interval
 	if allTrue {
-		intervals = append(intervals, Interval{int(time.Now().Month()),int(time.Now().Month())-1, int(time.Now().Year()), int(time.Now().Year())+1})
 		return
 	}
 
@@ -211,8 +223,6 @@ func reportForUser(user User, db *sql.DB, intervals []Interval) []Flight {
 	// getting source airports from database
 	srcAirports, err := db.Query(fmt.Sprintf(SELECT_SOURCES,user.EmailAddress))
 	if err != nil {
-		fmt.Println(user.EmailAddress)
-		fmt.Println(fmt.Sprintf(SELECT_SOURCES,user.EmailAddress))
 		fmt.Println("failed to get sources generate.go")
 		panic(err.Error())
 	}
@@ -248,7 +258,7 @@ func reportForUser(user User, db *sql.DB, intervals []Interval) []Flight {
 				panic(err.Error())
 			}
 
-			err = db.QueryRow(fmt.Sprintf(MIN_QUERY, potentialMin.sourceAirport, potentialMin.destinationAirport, user.tripMin, user.tripMax, user.budget)).Scan(&dummy, &dummy, &dummy, &potentialMin.departureDate, &potentialMin.returnDate, &potentialMin.price, &potentialMin.tripLength)
+			err = db.QueryRow(fmt.Sprintf(MIN_QUERY, potentialMin.sourceAirport, potentialMin.destinationAirport, user.tripMin, user.tripMax, user.budget,buildDateModifiers(intervals))).Scan(&dummy, &dummy, &dummy, &potentialMin.departureDate, &potentialMin.returnDate, &potentialMin.price, &potentialMin.tripLength)
 			if err == nil {
 				// updating the local cheapest flight
 				if minFlight == (Flight{}) {
@@ -256,9 +266,9 @@ func reportForUser(user User, db *sql.DB, intervals []Interval) []Flight {
 				} else if potentialMin.price < minFlight.price {
 					minFlight = potentialMin
 				}
-			} else {
 			}
 		}
+
 		if minFlight != (Flight{}) {
 			minFlights = append(minFlights, minFlight)
 		}
@@ -272,4 +282,29 @@ func reportForUser(user User, db *sql.DB, intervals []Interval) []Flight {
 	}
 
 	return minFlights
+}
+
+// builds up a string to specify the date range of the query
+func buildDateModifiers(intervals []Interval) string {
+
+	var datesModifier string = ""
+
+	var first bool = true
+
+	for _, interval := range intervals {
+
+		if first {
+			first = false
+			datesModifier += andConnective
+		} else {
+			datesModifier += orConnective
+		}
+		datesModifier += fmt.Sprintf(monthGreater,interval.StartMonth)
+		datesModifier += fmt.Sprintf(monthLesser,interval.EndMonth)
+		datesModifier += fmt.Sprintf(yearGreater,interval.StartYear)
+		datesModifier += fmt.Sprintf(yearLesser,interval.EndYear)
+
+	}
+
+	return datesModifier
 }
