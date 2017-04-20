@@ -8,6 +8,7 @@ import (
 	"os"
 	"sync"
 	"time"
+	"errors"
 )
 
 // for databaser interaction
@@ -29,13 +30,14 @@ const yearLesser string = "Year(ReturnDate) <= %d)"
 const orConnective string = " OR "
 const andConnective string = " AND "
 
-// used throuhout
+// used throughout
 const MAX_NUM int = 2147483647
 const MONTHS_IN_YEAR int = 12
 
 // this is used to sync up the threads that are doing work before we continue
 var wg sync.WaitGroup
 
+// generates reports for each user
 func GenerateReports(db *sql.DB) []User {
 
 	currentDate := time.Now()
@@ -68,7 +70,7 @@ func GenerateReports(db *sql.DB) []User {
 			}(users[i], file)
 		}
 
-		users[i].NiceReportLoc = filename
+		users[i].ReportLoc = filename
 	}
 
 	wg.Wait()
@@ -148,32 +150,63 @@ func intervalBuilder(user User, db *sql.DB) (intervals []Interval) {
 		monthArr[tempInt-1] = true
 	}
 
-	var allTrue = true
-	var firstFalse int
-
-	// finds the first false if one is present
-	for i, m := range monthArr {
-		if !m {
-			if allTrue {
-				firstFalse = i
-			}
-			allTrue = false
-		}
-	}
-
-	// if they're all true then we can search the whole year using one interval
-	if allTrue {
+	if allTrue(monthArr){
 		return
 	}
 
-	// if not we need to find where the first 'true' after a false is
-	var trueStarts int
-	for i := firstFalse+1; i < firstFalse + MONTHS_IN_YEAR; i++ {
-		if monthArr[i] {
-			trueStarts = i%MONTHS_IN_YEAR
-			break
+	firstFalse, err := findFalse(0,monthArr)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	firstTrueAfterFalse, err := findTrue(firstFalse,monthArr)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	intervals = findIntervals(firstTrueAfterFalse, monthArr)
+	setIntervalYears(intervals)
+
+	return
+}
+
+// finds a true element given a starting position and an array
+func findTrue(start int, arr [MONTHS_IN_YEAR]bool) (int, error) {
+	// finds the first false if one is present
+	for i := start; i < start + MONTHS_IN_YEAR; i++ {
+		if arr[i%MONTHS_IN_YEAR] {
+			return (i%MONTHS_IN_YEAR), nil
 		}
 	}
+
+	return 0, errors.New("True could not be found")
+
+}
+
+// finds a false element given a starting position and an array
+func findFalse(start int, arr [MONTHS_IN_YEAR]bool) (int,error) {
+
+	// finds the first false if one is present
+	for i := start; i < MONTHS_IN_YEAR; i++ {
+		if !arr[i] {
+			return i,nil
+		}
+	}
+
+	return 0, errors.New("False could not be found")
+}
+
+// checks if all items in an array are true
+func allTrue(arr [MONTHS_IN_YEAR]bool) bool {
+	for _, m := range arr {
+		if !m {
+			return false
+		}
+	}
+	return true
+}
+
+func findIntervals(trueStarts int, months [MONTHS_IN_YEAR]bool) (intervals []Interval){
 
 	var inInterval bool = true
 	var tempInterval Interval
@@ -181,11 +214,11 @@ func intervalBuilder(user User, db *sql.DB) (intervals []Interval) {
 
 	// generates the month intervals
 	for i := trueStarts; i < trueStarts + MONTHS_IN_YEAR; i++ {
-		if monthArr[i%MONTHS_IN_YEAR] && inInterval {
+		if months[i%MONTHS_IN_YEAR] && inInterval {
 
 			tempInterval.EndMonth = (i%MONTHS_IN_YEAR)+1
 
-		} else if monthArr[i%MONTHS_IN_YEAR] {
+		} else if months[i%MONTHS_IN_YEAR] {
 
 			tempInterval.StartMonth = (i%MONTHS_IN_YEAR)+1
 			tempInterval.EndMonth = (i%MONTHS_IN_YEAR)+1
@@ -198,6 +231,10 @@ func intervalBuilder(user User, db *sql.DB) (intervals []Interval) {
 
 		}
 	}
+	return
+}
+
+func setIntervalYears(intervals []Interval) {
 
 	// have to set the year as well as the month
 	for i, _ := range intervals {
@@ -209,8 +246,6 @@ func intervalBuilder(user User, db *sql.DB) (intervals []Interval) {
 		}
 	}
 
-	fmt.Println(intervals)
-	return
 }
 
 // generates a report for a specific user
@@ -292,7 +327,6 @@ func buildDateModifiers(intervals []Interval) string {
 	var first bool = true
 
 	for _, interval := range intervals {
-
 		if first {
 			first = false
 			datesModifier += andConnective
@@ -303,7 +337,6 @@ func buildDateModifiers(intervals []Interval) string {
 		datesModifier += fmt.Sprintf(monthLesser,interval.EndMonth)
 		datesModifier += fmt.Sprintf(yearGreater,interval.StartYear)
 		datesModifier += fmt.Sprintf(yearLesser,interval.EndYear)
-
 	}
 
 	return datesModifier

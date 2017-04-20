@@ -6,5 +6,5 @@ type User struct {
 	budget        int
 	tripMin       int
 	tripMax       int
-	NiceReportLoc string
+	ReportLoc     string
 }
