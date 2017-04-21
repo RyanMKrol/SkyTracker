@@ -31,6 +31,8 @@ func Collect(url string) (body []byte) {
 		time.Sleep(SLEEP_TIME * time.Millisecond)
 		return Collect(url)
 	} else if responseCode != GOOD_RESPONSE {
+		fmt.Println("just not a good response")
+		fmt.Println(responseCode)
 		log.Fatal(err)
 	}
 

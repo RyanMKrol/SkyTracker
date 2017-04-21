@@ -150,22 +150,25 @@ func intervalBuilder(user User, db *sql.DB) (intervals []Interval) {
 		monthArr[tempInt-1] = true
 	}
 
+	// if they're all true we don't need any intervals
 	if allTrue(monthArr){
 		return
 	}
 
+	// have to find the first false so we don't begin the partitioning in the middle of an interval
 	firstFalse, err := findFalse(0,monthArr)
 	if err != nil {
 		panic(err.Error())
 	}
 
+	// this will be the start of the first interval
 	firstTrueAfterFalse, err := findTrue(firstFalse,monthArr)
 	if err != nil {
 		panic(err.Error())
 	}
 
 	intervals = findIntervals(firstTrueAfterFalse, monthArr)
-	setIntervalYears(intervals)
+	intervals = setIntervalYears(intervals)
 
 	return
 }
@@ -206,14 +209,15 @@ func allTrue(arr [MONTHS_IN_YEAR]bool) bool {
 	return true
 }
 
-func findIntervals(trueStarts int, months [MONTHS_IN_YEAR]bool) (intervals []Interval){
+// parses the intervals from an array of months the user wants to search in
+func findIntervals(startPos int, months [MONTHS_IN_YEAR]bool) (intervals []Interval){
 
 	var inInterval bool = true
 	var tempInterval Interval
-	tempInterval.StartMonth = trueStarts + 1
+	tempInterval.StartMonth = startPos + 1
 
 	// generates the month intervals
-	for i := trueStarts; i < trueStarts + MONTHS_IN_YEAR; i++ {
+	for i := startPos; i < startPos + MONTHS_IN_YEAR; i++ {
 		if months[i%MONTHS_IN_YEAR] && inInterval {
 
 			tempInterval.EndMonth = (i%MONTHS_IN_YEAR)+1
@@ -234,9 +238,9 @@ func findIntervals(trueStarts int, months [MONTHS_IN_YEAR]bool) (intervals []Int
 	return
 }
 
-func setIntervalYears(intervals []Interval) {
+// sets the years of the interval start and end depending on the ordering of the months
+func setIntervalYears(intervals []Interval) []Interval {
 
-	// have to set the year as well as the month
 	for i, _ := range intervals {
 		intervals[i].StartYear = int(time.Now().Year())
 		if intervals[i].StartMonth < intervals[i].EndMonth {
@@ -246,6 +250,7 @@ func setIntervalYears(intervals []Interval) {
 		}
 	}
 
+	return intervals
 }
 
 // generates a report for a specific user
