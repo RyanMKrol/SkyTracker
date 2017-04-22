@@ -16,6 +16,39 @@
 
       ga('create', 'UA-97845942-1', 'auto');
       ga('send', 'pageview');
+    </script>
+
+    <link rel="stylesheet" href="lib/jquery-ui-1.12.1.custom/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <script>
+      $( function() {
+        $( "#tripLength" ).slider({
+          range: true,
+          min: 1,
+          max: 28,
+          values: [ 7, 14 ],
+          slide: function( event, ui ) {
+            $( "#daysAmount" ).val(ui.values[ 0 ] + " - " + ui.values[ 1 ] + " Days");
+          }
+        });
+        $( "#daysAmount" ).val( $( "#tripLength" ).slider( "values", 0 ) +
+          " - " + $( "#tripLength" ).slider( "values", 1 ) + " Days" );
+      } );
+
+      $( function() {
+        $( "#budgetSlider" ).slider({
+          value:100,
+          min: 0,
+          max: 500,
+          step: 10,
+          slide: function( event, ui ) {
+            $( "#budgetAmount" ).val( "£" + ui.value );
+          }
+        });
+        $( "#budgetAmount" ).val( "£" + $( "#budgetSlider" ).slider( "value" ) );
+      } );
 
     </script>
 
@@ -60,15 +93,20 @@
 
       <h3>What is your budget?</h3>
       <!-- the budget input -->
-      <input type="range" name="budget" min="0" max="1000"><br><br>
+      <p>
+        <label for="amount">Price range:</label>
+        <input type="text" id="budgetAmount" readonly style="border:0; color:#f6931f; font-weight:bold;">
+      </p>
+
+      <div id="budgetSlider"></div>
 
       <h3>What is the minimum length of your trip?</h3>
-      <!-- the budget input -->
-      <input type="number" name="tripMin" min="0" max="28"><br><br>
+      <p>
+        <label for="amount">Price range:</label>
+        <input type="text" id="daysAmount" readonly style="border:0; color:#f6931f; font-weight:bold;">
+      </p>
 
-      <h3>What is the maximum length of your trip?</h3>
-      <!-- the budget input -->
-      <input type="number" name="tripMax" min="0" max="28"><br><br>
+      <div id="tripLength"></div>
 
     </form>
 
