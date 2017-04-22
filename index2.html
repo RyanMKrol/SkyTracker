@@ -55,7 +55,8 @@
   </head>
 
   <body>
-    <form action = "Scripts/addUser.php" method = "post">
+    <form>
+
 
       <h3>What is your email address?</h3>
       <!-- the email address -->
@@ -100,7 +101,7 @@
 
       <div id="budgetSlider"></div>
 
-      <h3>What is the minimum length of your trip?</h3>
+      <h3>How long would you like your trip to be?</h3>
       <p>
         <label for="amount">Price range:</label>
         <input type="text" id="daysAmount" readonly style="border:0; color:#f6931f; font-weight:bold;">
@@ -108,7 +109,9 @@
 
       <div id="tripLength"></div>
 
-    </form>
+      <input type="submit">
 
+    </form>
+    <script src = "js/sendForm.js"></script>
   </body>
 </html>
