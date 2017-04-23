@@ -29,6 +29,10 @@
     die("Connection failed: " . $conn->connect_error);
   }
 
+  mysqli_autocommit($conn, FALSE);
+
+  mysqli_commit($conn);
+
   $email    = $conn->real_escape_string($email);
   $budget   = $conn->real_escape_string($budget);
   $tripMin  = $conn->real_escape_string($tripMin);
@@ -40,18 +44,20 @@
   if ($conn->query($sql) === TRUE) {
       echo "<p>New record created successfully</p>\n";
   } else {
-      echo "\n" . $sql . "\n";
-      echo "<p>oh dear</p>\n";
+      echo "Failed to add a new record";
+      mysqli_rollback($conn);
+      return;
   }
 
   foreach($months as $month => $val) {
     if($val == true){
-      $sql = "INSERT INTO UserTravelMonths (UserEmailAddress, TravelMonth) VALUES ('$email', $month);";
+      $sql = "INSERT INTO UserTravelMonths (UserEmailAddress, TravelMonth) VALUES ($email, $month);";
       if ($conn->query($sql) === TRUE) {
-          echo "<p>successfullt added travel month</p>\n";
+          echo "<p>successfully added travel month</p>\n";
       } else {
-          echo "\n" . $sql . "\n";
-          echo "<p>failed to add travel month</p>\n";
+          echo "Failed to add a new month to the user";
+          mysqli_rollback($conn);
+          return;
       }
     }
   }
@@ -60,9 +66,11 @@
     if($val == true){
       $sql = "INSERT INTO UserSourceAirports (UserEmailAddress, SourceAirportCode) VALUES ('$email', '$airport');";
       if ($conn->query($sql) === TRUE) {
-          echo "<p>successfullt added airport</p>\n";
+          echo "<p>successfully added airport</p>\n";
       } else {
-          echo "<p>failed to add airport</p>\n";
+          echo "Failed to add a new airport to the user";
+          mysqli_rollback($conn);
+          return;
       }
     }
   }
