@@ -13,16 +13,16 @@
   if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
   }
+
   // stop this connection from committing unless we tell it to.
   mysqli_autocommit($conn, FALSE);
   // commit here before anything happens. When we rollback, nothing will have changed in the database
   mysqli_commit($conn);
 
 
-  $data = json_decode($_POST["_data"], true);
-  $authentication = $data['salt'];
-  $email          = $data['emailAddress'];
-
+  $data           = json_decode($_POST["_data"], true);
+  $authentication = $conn->real_escape_string($data['salt']);
+  $email          = $conn->real_escape_string($data['emailAddress']);
 
   // if there's no attempt at authentication, we make a new user
   if(strcmp($authentication, '0') == 0){
@@ -36,12 +36,8 @@
   // otherwise we see if the authorisation checks out and then update
   } else {
 
-    $authentication = $conn->real_escape_string($authentication);
-    $email          = $conn->real_escape_string($email);
-
     $sql    = "SELECT * FROM Users WHERE UserSalt = '$authentication';";
     $result = mysqli_query($conn, $sql);
-
 
     // if there are results for the salt, and the email address in the result is the same as the one passed in, we succeed
     if ((mysqli_num_rows($result) != 0) && (strcmp($email, mysqli_fetch_assoc($result)['UserEmailAddress']) == 0)){

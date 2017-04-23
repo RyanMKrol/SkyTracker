@@ -2,7 +2,6 @@ package main
 
 import (
 	"Credentials"
-	"Email"
 	"DataUtils"
 	"Reports"
 	"database/sql"
@@ -98,7 +97,7 @@ func main() {
 	// }
 
 		// at this point all of the files will be setup, now I need to persist it with the server
-		// 
+		//
 		// DataUtils.PersistData()
 		// fmt.Println("finished persisting")
 
@@ -106,10 +105,10 @@ func main() {
 		_ = users
 		fmt.Println("finished generating")
 
-		Email.EmailUsers(users)
-		fmt.Println("finished sending")
-
-		fmt.Println("finished")
+		// Email.EmailUsers(users)
+		// fmt.Println("finished sending")
+		//
+		// fmt.Println("finished")
 
 }
 

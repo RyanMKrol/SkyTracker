@@ -64,7 +64,7 @@ func GenerateReports(db *sql.DB) []User {
 			go func(u User, f *os.File) {
 				intervals := intervalBuilder(u,db)
 				minFlights := reportForUser(u, db, intervals)
-				generatePrettyReport(minFlights, f)
+				generatePrettyReport(minFlights, f, u.salt)
 				f.Close()
 				wg.Done()
 			}(users[i], file)
@@ -99,7 +99,7 @@ func getUsers(db *sql.DB) []User {
 		var tempUser User = User{}
 		var maybeBudget, maybeTripMin, maybeTripMax sql.NullInt64
 
-		if err := users.Scan(&dummy, &tempUser.EmailAddress, &maybeBudget, &maybeTripMin, &maybeTripMax, &dummy); err != nil {
+		if err := users.Scan(&dummy, &tempUser.EmailAddress, &maybeBudget, &maybeTripMin, &maybeTripMax, &tempUser.salt); err != nil {
 			fmt.Println("failed to scan users generate.go")
 			panic(err.Error())
 		}

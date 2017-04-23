@@ -23,7 +23,7 @@ const paragraphHeaderFormat string = "<p style = \"padding: 5px 5px 5px 5px; mar
 const paddingStyle string = "padding:0 10px 0 10px;"
 const centreAlignStyle string = "text-align: center;"
 
-func generatePrettyReport(flights []Flight, file *os.File) {
+func generatePrettyReport(flights []Flight, file *os.File, salt string) {
 
 	By(b_SourceCity).Sort(flights)
 
@@ -51,6 +51,8 @@ func generatePrettyReport(flights []Flight, file *os.File) {
 		writeToFile("<br>\n", brTagWriteError, file)
 	}
 
+	writeEndStatements(file, salt);
+
 	writeToFile("</body>\n</html>\n", closeBodyHtmlTagWriteError, file)
 }
 
@@ -63,6 +65,12 @@ func writeToFile(line, errorMessage string, file *os.File) {
 		fmt.Println(errorMessage)
 		log.Fatal(err)
 	}
+
+}
+
+func writeEndStatements(file *os.File, salt string){
+
+	writeToFile(fmt.Sprintf("<p>To update your preferences, click <a href = 'http://www.skytracker.co/index2.html?token=%s'>here</a></p>\n",salt),"failed to finish", file)
 
 }
 
@@ -86,7 +94,6 @@ func writeFlightInfo(file *os.File, flight Flight) {
 	writeToFile("</tr>\n", flightWriteError, file)
 
 }
-
 
 func writeTableHeadings(file *os.File) {
 	writeToFile(fmt.Sprintf("<table style = \"width: %dpx\">\n", tableWidth), tableHeadingsWriteError, file)
