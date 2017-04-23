@@ -14,14 +14,12 @@
   $tripMax  = $data['tripMaxLen'];
   $months   = $data['months'];
   $airports = $data['airports'];
-  $salt     = hash("sha256", $email . time());
 
-  echo ("<p>$email</p>\n");
-  echo ("<p>$budget</p>\n");
-  echo ("<p>$tripMin</p>\n");
-  echo ("<p>$tripMax</p>\n");
-  echo ("<p>$months</p>");
-  echo ("<p>$airports</p>");
+  // create a hash which will act as a users 'password'. Whenever they want to update their details,
+  //  we'll send this hash and it'll be sent back to us as a token to prove it's from their email address. NOT
+  //   as secure as a password, but it means that people can't just update other people's preferences just by knowing
+  //    their email address
+  $salt     = hash("sha256", $email . time());
 
   // Create connection
   $conn = new mysqli($server, $user, $password, $database);
@@ -70,16 +68,5 @@
   }
 
   $conn->close();
-
-  //
-  // //need to deal with cases here - we can do this later:
-  // // 1. The record is created successfully, in which case we just welcome the user to the platform
-  // // 2. The record already exists in the database, in which case we update the user's details, and give confirmation of that
-  // // 3. The record was not created in the database, we report an error
-  //
-  //
-  // //need to add response code here saying that the email has been added
-  // echo "<p>$email has been added</p>";
-  //
 
 ?>
