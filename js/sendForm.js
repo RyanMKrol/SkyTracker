@@ -30,8 +30,10 @@ $( "form" ).on( "submit", function( event ) {
   jsonRaw["tripMaxLen"] = $( "#tripLengthSlider" ).slider( "values", 1 );
   jsonRaw["months"] = monthArray;
   jsonRaw["airports"] = airportArray;
+  jsonRaw["salt"] = getUrlParam("token");
 
   var jsonData = JSON.stringify(jsonRaw);
+  console.log(jsonData);
 
   $.ajax({
     type: "POST",
@@ -47,3 +49,14 @@ $( "form" ).on( "submit", function( event ) {
   return false;
 
 });
+
+// token extraction found at: https://www.sitepoint.com/url-parameters-jquery/
+//  modified a bit for if the token isn't in the url
+function getUrlParam(name){
+	var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+  if (results != undefined) {
+    return results[1];
+  } else {
+    return 0;
+  }
+}

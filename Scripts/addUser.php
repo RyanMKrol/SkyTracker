@@ -8,12 +8,19 @@
 
   $data = json_decode($_POST["_data"], true);
 
-  $email    = $data['emailAddress'];
-  $budget   = $data['budget'];
-  $tripMin  = $data['tripMinLen'];
-  $tripMax  = $data['tripMaxLen'];
-  $months   = $data['months'];
-  $airports = $data['airports'];
+  $email          = $data['emailAddress'];
+  $budget         = $data['budget'];
+  $tripMin        = $data['tripMinLen'];
+  $tripMax        = $data['tripMaxLen'];
+  $months         = $data['months'];
+  $airports       = $data['airports'];
+  $authentication = $data['salt'];
+
+  if($authentication == '0'){
+    echo "we'll create something new";
+  } else {
+    echo "we'll try and update and see what happens";
+  }
 
   // create a hash which will act as a users 'password'. Whenever they want to update their details,
   //  we'll send this hash and it'll be sent back to us as a token to prove it's from their email address. NOT
