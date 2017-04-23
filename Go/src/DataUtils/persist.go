@@ -8,6 +8,7 @@ import (
 	"os/exec"
 )
 
+// file locations
 const PHP_BINARY string = "/usr/bin/php"
 const PERSIST_PHP_LOC string = "src/DataUtils/persist.php"
 

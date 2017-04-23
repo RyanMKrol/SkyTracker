@@ -6,24 +6,34 @@ import (
 	"os"
 )
 
+// html sizes
 const toWidth int = 275
 const leavingWidth int = 120
 const returningWidth int = 120
 const tripLengthWidth int = 40
 const costWidth int = 40
 const tableWidth int = 700
+
+// skyscanner redirect link
 const hrefLink string = "http://partners.api.skyscanner.net/apiservices/referral/v1.0/GB/GBP/en-GB/%s/%s/%s/%s?apiKey=na91261163675973"
+
+// file write errors
 const flightWriteError string = "failed to write out one of the flight attributes - httpEmail.go"
 const tableHeadingsWriteError string = "failed to write one of the table headers - htmlEmail.go"
 const htmlHeadersWriteErrors string = "failed to write html template header tabs - httpEmail.go"
 const closeTableWriteError string = "failed to close table tag - httpEmail.go"
 const brTagWriteError string = "failed to write <br> tag - httpEmail.go"
 const closeBodyHtmlTagWriteError string = "failed to close body and html tag - httpEmail.go"
+
+// write formats
 const paragraphHeaderFormat string = "<p style = \"padding: 5px 5px 5px 5px; margin: 0 0 0 0;\"><b>%s, %s</b></p>"
+
+// styles
 const paddingStyle string = "padding:0 10px 0 10px;"
 const centreAlignStyle string = "text-align: center;"
 
-func generatePrettyReport(flights []Flight, file *os.File, salt string) {
+// main function for generating the report itself
+func generatePrettyReport(flights []Flight, file *os.File, user User) {
 
 	By(b_SourceCity).Sort(flights)
 
@@ -51,7 +61,7 @@ func generatePrettyReport(flights []Flight, file *os.File, salt string) {
 		writeToFile("<br>\n", brTagWriteError, file)
 	}
 
-	writeEndStatements(file, salt);
+	writeEndStatements(file, user);
 
 	writeToFile("</body>\n</html>\n", closeBodyHtmlTagWriteError, file)
 }
@@ -65,15 +75,15 @@ func writeToFile(line, errorMessage string, file *os.File) {
 		fmt.Println(errorMessage)
 		log.Fatal(err)
 	}
-
 }
 
-func writeEndStatements(file *os.File, salt string){
+// write any statements at the end of the report
+func writeEndStatements(file *os.File, user User){
 
-	writeToFile(fmt.Sprintf("<p>To update your preferences, click <a href = 'http://www.skytracker.co/index2.html?token=%s'>here</a></p>\n",salt),"failed to finish", file)
-
+	writeToFile(fmt.Sprintf("<p>To update your preferences, click <a href = 'http://www.skytracker.co/index2.html?token=%s&email=%s'>here</a></p>\n",user.salt,user.EmailAddress),"failed to finish", file)
 }
 
+// writes headers to the html report
 func writeHTMLHeadings(file *os.File){
 		writeToFile("<!doctype html>\n", htmlHeadersWriteErrors, file)
 		writeToFile("<html lang=\"en\">\n", htmlHeadersWriteErrors, file)
@@ -83,6 +93,7 @@ func writeHTMLHeadings(file *os.File){
 		writeToFile("<body style = \"font-family: Helvetica;\">\n", htmlHeadersWriteErrors, file)
 }
 
+// writes individual flight info to the reports
 func writeFlightInfo(file *os.File, flight Flight) {
 
 	writeToFile("<tr>\n", flightWriteError, file)
@@ -95,6 +106,7 @@ func writeFlightInfo(file *os.File, flight Flight) {
 
 }
 
+// write headings for each table
 func writeTableHeadings(file *os.File) {
 	writeToFile(fmt.Sprintf("<table style = \"width: %dpx\">\n", tableWidth), tableHeadingsWriteError, file)
 	writeToFile(fmt.Sprintf("<th width = %d style = \"%s text-align: left; min-width = %d;\" >To</th>\n", toWidth,paddingStyle,toWidth), tableHeadingsWriteError, file)

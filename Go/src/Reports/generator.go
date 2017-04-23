@@ -64,7 +64,7 @@ func GenerateReports(db *sql.DB) []User {
 			go func(u User, f *os.File) {
 				intervals := intervalBuilder(u,db)
 				minFlights := reportForUser(u, db, intervals)
-				generatePrettyReport(minFlights, f, u.salt)
+				generatePrettyReport(minFlights, f, u)
 				f.Close()
 				wg.Done()
 			}(users[i], file)

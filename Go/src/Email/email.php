@@ -1,6 +1,5 @@
 <?php
   //globals and includes
-
   include "./../Credentials/credentials.php";
 
 ?>

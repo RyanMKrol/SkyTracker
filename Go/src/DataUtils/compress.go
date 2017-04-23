@@ -10,7 +10,6 @@ import (
 )
 
 // directly copied from: http://blog.ralch.com/tutorial/golang-working-with-zip/
-
 func Compress(source, target string) error {
 	zipfile, err := os.Create(target)
 	if err != nil {

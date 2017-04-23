@@ -8,6 +8,7 @@ import (
 	"os/exec"
 )
 
+// file location constants
 const PHP_BINARY string = "/usr/bin/php"
 const EMAIL_PHP_LOC string = "src/Email/email.php"
 const TITLE_FILE string = "src/Email/components/title.txt"

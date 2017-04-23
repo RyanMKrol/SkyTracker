@@ -1,3 +1,12 @@
+$( document ).ready(function() {
+
+  var emailChecker = getUrlParam('email');
+  if(getUrlParam('email') != 0){
+    $("#EmailAddress").val(emailChecker);
+  }
+  
+});
+
 $( "form" ).on( "submit", function( event ) {
 
   if($("input[name='SourceAirport']:checked").length == 0){
@@ -33,7 +42,6 @@ $( "form" ).on( "submit", function( event ) {
   jsonRaw["salt"] = getUrlParam("token");
 
   var jsonData = JSON.stringify(jsonRaw);
-  console.log(jsonData);
 
   $.ajax({
     type: "POST",
@@ -45,9 +53,7 @@ $( "form" ).on( "submit", function( event ) {
     }
   });
 
-
   return false;
-
 });
 
 // token extraction found at: https://www.sitepoint.com/url-parameters-jquery/

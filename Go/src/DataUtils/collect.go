@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// http response codes
 const EXCESSIVE_CALLS int = 429
 const GOOD_RESPONSE int = 200
 const SLEEP_TIME time.Duration = 60000
