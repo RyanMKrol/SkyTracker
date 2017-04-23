@@ -29,8 +29,10 @@
     die("Connection failed: " . $conn->connect_error);
   }
 
+  // stop this connection from committing unless we tell it to.
   mysqli_autocommit($conn, FALSE);
 
+  // commit here before anything happens. When we rollback, nothing will have changed in the database
   mysqli_commit($conn);
 
   $email    = $conn->real_escape_string($email);
@@ -51,7 +53,7 @@
 
   foreach($months as $month => $val) {
     if($val == true){
-      $sql = "INSERT INTO UserTravelMonths (UserEmailAddress, TravelMonth) VALUES ($email, $month);";
+      $sql = "INSERT INTO UserTravelMonths (UserEmailAddress, TravelMonth) VALUES ('$email', $month);";
       if ($conn->query($sql) === TRUE) {
           echo "<p>successfully added travel month</p>\n";
       } else {
@@ -75,6 +77,10 @@
     }
   }
 
+  // commit the results to the database
+  mysqli_commit($conn);
+
+  // close the connection to the database
   $conn->close();
 
 ?>
