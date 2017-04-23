@@ -10,9 +10,26 @@ $( "form" ).on( "submit", function( event ) {
     return false;
   }
 
-  event.preventDefault();
-  console.log( $( this ).serialize() );
   console.log($( "#budgetSlider" ).slider( "value" ))
-  console.log($( "#tripLength" ).slider( "values", 0 ))
-  console.log($( "#tripLength" ).slider( "values", 1 ))
+  console.log($( "#tripLengthSlider" ).slider( "values", 0 ))
+  console.log($( "#tripLengthSlider" ).slider( "values", 1 ))
+
+
+  // now we've got an array for what's checked and what isn't
+  var monthArray = {};
+  $("input[name='Month']").each(function(){
+    monthArray[$(this).val()] = $(this).is(":checked");
+  });
+
+  // now we've got an array for what's checked and what isn't
+  var airportArray = {};
+  $("input[name='SourceAirport']").each(function(){
+    airportArray[$(this).val()] = $(this).is(":checked");
+  });
+
+  var thing = JSON.stringify(monthArray);
+  var other = JSON.stringify(airportArray);
+
+  return false;
+
 });
