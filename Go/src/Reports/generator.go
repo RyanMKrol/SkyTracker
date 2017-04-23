@@ -12,9 +12,9 @@ import (
 )
 
 // for databaser interaction
-const SELECT_TRAVEL_MONTHS string = "SELECT * FROM UserTravelMonths WHERE UserID = (SELECT UserID FROM Users WHERE UserEmailAddress = \"%s\") ORDER BY TravelMonth ASC;"
+const SELECT_TRAVEL_MONTHS string = "SELECT * FROM UserTravelMonths WHERE UserEmailAddress = \"%s\" ORDER BY TravelMonth ASC;"
 const SELECT_USERS string = "SELECT * FROM Users;"
-const SELECT_SOURCES string = "SELECT * FROM SourceAirports WHERE SrcAirportCode IN (SELECT SourceAirportCode FROM Users NATURAL JOIN UserSourceAirports WHERE UserEmailAddress = \"%s\");"
+const SELECT_SOURCES string = "SELECT * FROM SourceAirports WHERE SrcAirportCode IN (SELECT SourceAirportCode FROM UserSourceAirports WHERE UserEmailAddress = \"%s\");"
 const SELECT_DESTINATIONS string = "SELECT * FROM DestinationAirports;"
 const MIN_QUERY string = "SELECT *, DATEDIFF(ReturnDate, DepartDate) FROM %s_%s WHERE DATEDIFF(ReturnDate, DepartDate) >= %d AND DATEDIFF(ReturnDate, DepartDate) <= %d AND Price < %d %s ORDER BY Price ASC limit 1;"
 

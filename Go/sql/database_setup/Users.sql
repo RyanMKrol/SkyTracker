@@ -1,3 +1,6 @@
+DROP TABLE UserSourceAirports;
+DROP TABLE UserTravelMonths;
+
 DROP TABLE Users;
 
 CREATE TABLE Users (
