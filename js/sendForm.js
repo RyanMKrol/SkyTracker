@@ -10,11 +10,6 @@ $( "form" ).on( "submit", function( event ) {
     return false;
   }
 
-  console.log($( "#budgetSlider" ).slider( "value" ))
-  console.log($( "#tripLengthSlider" ).slider( "values", 0 ))
-  console.log($( "#tripLengthSlider" ).slider( "values", 1 ))
-
-
   // now we've got an array for what's checked and what isn't
   var monthArray = {};
   $("input[name='Month']").each(function(){
@@ -27,8 +22,27 @@ $( "form" ).on( "submit", function( event ) {
     airportArray[$(this).val()] = $(this).is(":checked");
   });
 
-  var thing = JSON.stringify(monthArray);
-  var other = JSON.stringify(airportArray);
+  var jsonRaw = {};
+
+  jsonRaw["emailAddress"] = $("#EmailAddress").val()
+  jsonRaw["budget"] = $( "#budgetSlider" ).slider( "value" );
+  jsonRaw["tripMinLen"] = $( "#tripLengthSlider" ).slider( "values", 0 );
+  jsonRaw["tripMaxLen"] = $( "#tripLengthSlider" ).slider( "values", 1 );
+  jsonRaw["months"] = monthArray;
+  jsonRaw["airports"] = airportArray;
+
+  var jsonData = JSON.stringify(jsonRaw);
+
+  $.ajax({
+    type: "POST",
+    url: "./../Scripts/addUser.php",
+    data: {_data: jsonData},
+    success: function(data){
+      alert("things were done right");
+      console.log(data);
+    }
+  });
+
 
   return false;
 
