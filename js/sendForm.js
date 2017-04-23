@@ -1,10 +1,34 @@
 $( document ).ready(function() {
 
-  var emailChecker = getUrlParam('email');
-  if(getUrlParam('email') != 0){
-    $("#EmailAddress").val(emailChecker);
-  }
-  
+  var query = location.search.substr(1);
+  var result = {};
+
+  query.split("&").forEach(function(part) {
+    var item = part.split("=");
+
+    switch(item[0]){
+      case 'email' :
+        $("#EmailAddress").val(item[1]);
+        break;
+      case 'source':
+      case 'month' :
+        $("input:checkbox[value=" + item[1] + "]").attr("checked", true);
+        break;
+      case 'tripMin' :
+        $( "#tripLengthSlider" ).slider( "values", 0, item[1]);
+        $( "#daysAmount" ).val(item[1] + " - " + $( "#tripLengthSlider" ).slider( "values", 1) + " Days");
+        break;
+      case 'tripMax' :
+        $( "#tripLengthSlider" ).slider( "values", 1, item[1]);
+        $( "#daysAmount" ).val($( "#tripLengthSlider" ).slider( "values", 0) + " - " + item[ 1 ] + " Days");
+        break;
+      case 'budget' :
+        $( "#budgetSlider" ).slider( "option", "value", item[1]);
+        $( "#budgetAmount" ).val( "£" + item[1] );
+        break;
+    }
+  });
+
 });
 
 $( "form" ).on( "submit", function( event ) {
@@ -61,6 +85,7 @@ $( "form" ).on( "submit", function( event ) {
 function getUrlParam(name){
 	var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
   if (results != undefined) {
+    console.log(results);
     return results[1];
   } else {
     return 0;
