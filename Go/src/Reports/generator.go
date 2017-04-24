@@ -62,10 +62,14 @@ func GenerateReports(db *sql.DB) []User {
 
 			// parallelising the meat of the file
 			go func(u User, f *os.File) {
+				fmt.Println("building intervals")
 				intervals := intervalBuilder(u,db)
+				fmt.Println("getting min flights")
 				minFlights := reportForUser(u, db, intervals)
+				fmt.Println("getting nice report")
 				generatePrettyReport(minFlights, f, u)
 				f.Close()
+				fmt.Println("done")
 				wg.Done()
 			}(users[i], file)
 		}
@@ -95,8 +99,10 @@ func getUsers(db *sql.DB) []User {
 
 	for users.Next() {
 
-		var dummy string
 		var tempUser User = User{}
+
+		// getting the other information from the user
+		var dummy string
 		var maybeBudget, maybeTripMin, maybeTripMax sql.NullInt64
 
 		if err := users.Scan(&dummy, &tempUser.EmailAddress, &maybeBudget, &maybeTripMin, &maybeTripMax, &tempUser.salt); err != nil {
@@ -122,6 +128,55 @@ func getUsers(db *sql.DB) []User {
 			tempUser.tripMax = MAX_NUM
 		}
 
+		// getting the months that the user wants to travel in
+		var monthArr []int
+		months, err := db.Query(fmt.Sprintf(SELECT_TRAVEL_MONTHS,tempUser.EmailAddress))
+		if err != nil {
+			fmt.Println("failed to get users generate.go")
+			panic(err.Error())
+		}
+
+		for months.Next() {
+
+			var dummy string
+			var month int
+
+			if err := months.Scan(&dummy, &dummy, &month); err != nil {
+				fmt.Println("failed to scan month generate.go")
+				panic(err.Error())
+			}
+
+			monthArr = append(monthArr, month)
+		}
+
+		fmt.Println(monthArr)
+		tempUser.months = monthArr
+
+		// getting the airports that the user wants to fly from
+		var airportArr []string
+		airports, err := db.Query(fmt.Sprintf(SELECT_SOURCES, tempUser.EmailAddress))
+		if err != nil {
+			fmt.Println("failed to get users generate.go")
+			panic(err.Error())
+		}
+
+		for airports.Next() {
+
+			var dummy string
+			var airport string
+
+			if err := airports.Scan(&dummy, &dummy, &airport, &dummy, &dummy); err != nil {
+				fmt.Println("failed to scan airport generate.go")
+				panic(err.Error())
+			}
+
+			airportArr = append(airportArr, airport)
+		}
+		tempUser.sources = airportArr
+		fmt.Println(airportArr)
+
+		months.Close()
+		airports.Close()
 		userArr = append(userArr, tempUser)
 	}
 

@@ -80,7 +80,21 @@ func writeToFile(line, errorMessage string, file *os.File) {
 // write any statements at the end of the report
 func writeEndStatements(file *os.File, user User){
 
-	writeToFile(fmt.Sprintf("<p>To update your preferences, click <a href = 'http://www.skytracker.co/index2.html?token=%s&email=%s'>here</a></p>\n",user.salt,user.EmailAddress),"failed to finish", file)
+	var link = fmt.Sprintf("http://www.skytracker.co/index2.html?token=%s&email=%s&tripMin=%d&tripMax=%d&budget=%d", user.salt, user.EmailAddress,user.tripMin, user.tripMax, user.budget)
+
+	fmt.Println(user)
+
+	for _, month := range user.months {
+		link += fmt.Sprintf("&month=%d", month);
+	}
+
+	for _, airport := range user.sources {
+		link += fmt.Sprintf("&source=%s", airport);
+	}
+
+	var anchorTag string = fmt.Sprintf("<a href = '%s'>here</a>", link)
+
+	writeToFile(fmt.Sprintf("<p>To update your preferences, click %s</p>\n",anchorTag),"failed to finish", file)
 }
 
 // writes headers to the html report

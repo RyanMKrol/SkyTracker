@@ -7,5 +7,7 @@ type User struct {
 	tripMin       int
 	tripMax       int
 	salt          string
+	months				[]int
+	sources       []string
 	ReportLoc     string
 }
