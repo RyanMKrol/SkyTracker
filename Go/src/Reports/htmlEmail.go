@@ -32,6 +32,9 @@ const paragraphHeaderFormat string = "<p style = \"padding: 5px 5px 5px 5px; mar
 const paddingStyle string = "padding:0 10px 0 10px;"
 const centreAlignStyle string = "text-align: center;"
 
+const baseLink string = "http://www.skytracker.co/index2.html?"
+const unsubLink string = "http://www.skytracker.co/unsubscribe.php?"
+
 // main function for generating the report itself
 func generatePrettyReport(flights []Flight, file *os.File, user User) {
 
@@ -80,7 +83,7 @@ func writeToFile(line, errorMessage string, file *os.File) {
 // write any statements at the end of the report
 func writeEndStatements(file *os.File, user User){
 
-	var link = fmt.Sprintf("http://www.skytracker.co/index2.html?token=%s&email=%s&tripMin=%d&tripMax=%d&budget=%d", user.salt, user.EmailAddress,user.tripMin, user.tripMax, user.budget)
+	var link = fmt.Sprintf("%stoken=%s&email=%s&tripMin=%d&tripMax=%d&budget=%d", baseLink, user.salt, user.EmailAddress,user.tripMin, user.tripMax, user.budget)
 
 	fmt.Println(user)
 
@@ -95,6 +98,7 @@ func writeEndStatements(file *os.File, user User){
 	var anchorTag string = fmt.Sprintf("<a href = '%s'>here</a>", link)
 
 	writeToFile(fmt.Sprintf("<p>To update your preferences, click %s</p>\n",anchorTag),"failed to finish", file)
+	writeToFile(fmt.Sprintf("<p>To unsubscribe, click <a href = '%semail=%s&token=%s'>here</a></p>\n",unsubLink,user.EmailAddress,user.salt), "failed to write unsubscribe", file)
 }
 
 // writes headers to the html report

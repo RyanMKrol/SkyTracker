@@ -331,27 +331,53 @@ func reportForUser(user User, db *sql.DB, intervals []Interval) []Flight {
 	}
 	defer destAirports.Close()
 
+	var sourceInfo      []Flight
+	var destinationInfo []Flight
+
+	fmt.Println("getting all of the flights in one area")
+
+	for destAirports.Next() {
+		var dummy string
+		var tempFlight = Flight{}
+
+		if err := destAirports.Scan(&dummy, &dummy, &tempFlight.destinationAirport, &tempFlight.destinationCountry, &tempFlight.destinationCity); err != nil {
+			fmt.Println("failed to scan destinations airports generate.go")
+			panic(err.Error())
+		}
+
+		destinationInfo = append(destinationInfo, tempFlight)
+	}
+
+	for srcAirports.Next() {
+		var dummy string
+		var tempFlight = Flight{}
+
+		if err := srcAirports.Scan(&dummy, &dummy, &tempFlight.sourceAirport, &tempFlight.sourceCountry, &tempFlight.sourceCity); err != nil {
+			fmt.Println("failed to scan source airports generate.go")
+			panic(err.Error())
+		}
+
+		sourceInfo = append(sourceInfo, tempFlight)
+	}
+
 	fmt.Println("going through airports")
 	// getting the cheapest flights to each destination
-	for destAirports.Next() {
+	for _, destInfo := range destinationInfo {
 
-		// have to refresh the min flights so we don't have hangovers from previous destination
+		minFlight    = Flight{}
 		potentialMin = Flight{}
-		minFlight = Flight{}
 
-		for srcAirports.Next() {
+		for _, srcInfo := range sourceInfo {
 
 			var dummy string
 
-			if err := srcAirports.Scan(&dummy, &dummy, &potentialMin.sourceAirport, &potentialMin.sourceCountry, &potentialMin.sourceCity); err != nil {
-				fmt.Println("failed to scan source airports generate.go")
-				panic(err.Error())
-			}
+			potentialMin.sourceAirport = srcInfo.sourceAirport
+			potentialMin.sourceCountry = srcInfo.sourceCountry
+			potentialMin.sourceCity = srcInfo.sourceCity
 
-			if err := destAirports.Scan(&dummy, &dummy, &potentialMin.destinationAirport, &potentialMin.destinationCountry, &potentialMin.destinationCity); err != nil {
-				fmt.Println("failed to scan destinations airports generate.go")
-				panic(err.Error())
-			}
+			potentialMin.destinationAirport = destInfo.destinationAirport
+			potentialMin.destinationCountry = destInfo.destinationCountry
+			potentialMin.destinationCity = destInfo.destinationCity
 
 			err = db.QueryRow(fmt.Sprintf(MIN_QUERY, potentialMin.sourceAirport, potentialMin.destinationAirport, user.tripMin, user.tripMax, user.budget,buildDateModifiers(intervals))).Scan(&dummy, &dummy, &dummy, &potentialMin.departureDate, &potentialMin.returnDate, &potentialMin.price, &potentialMin.tripLength)
 			if err == nil {
@@ -367,14 +393,9 @@ func reportForUser(user User, db *sql.DB, intervals []Interval) []Flight {
 		if minFlight != (Flight{}) {
 			minFlights = append(minFlights, minFlight)
 		}
-
-		// have to reload the result set into destAirports because .Next()
-		srcAirports, err = db.Query(fmt.Sprintf(SELECT_SOURCES,user.EmailAddress))
-		if err != nil {
-			fmt.Println("failed to reload generate.go")
-			panic(err.Error())
-		}
 	}
+
+	fmt.Println("finished getting my min flights in order")
 
 	return minFlights
 }
