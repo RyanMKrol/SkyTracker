@@ -16,7 +16,7 @@ const SELECT_TRAVEL_MONTHS string = "SELECT * FROM UserTravelMonths WHERE UserEm
 const SELECT_USERS string = "SELECT * FROM Users;"
 const SELECT_SOURCES string = "SELECT * FROM SourceAirports WHERE SrcAirportCode IN (SELECT SourceAirportCode FROM UserSourceAirports WHERE UserEmailAddress = \"%s\");"
 const SELECT_DESTINATIONS string = "SELECT * FROM DestinationAirports;"
-const MIN_QUERY string = "SELECT *, DATEDIFF(ReturnDate, DepartDate) FROM %s_%s WHERE DATEDIFF(ReturnDate, DepartDate) >= %d AND DATEDIFF(ReturnDate, DepartDate) <= %d AND Price < %d %s ORDER BY Price ASC limit 1;"
+const MIN_QUERY string = "(select *, DATEDIFF(ReturnDate, DepartDate) from Flights where DestinationAirportCode = '%s' AND DATEDIFF(ReturnDate, DepartDate) >= %d AND DATEDIFF(ReturnDate, DepartDate) <= %d AND Price <= %d AND SourceAirportCode IN (SELECT SourceAirportCode FROM UserSourceAirports WHERE UserEmailAddress = '%s') %s ORDER BY Price ASC limit 1)"
 
 // for the report writing
 const REPORT_LOC string = "reports/%d_%d_%d_%s.html"
@@ -29,6 +29,8 @@ const yearGreater string = "Year(DepartDate) >= %d  AND "
 const yearLesser string = "Year(ReturnDate) <= %d)"
 const orConnective string = " OR "
 const andConnective string = " AND "
+const openingStatement string = "SELECT * FROM SourceAirports INNER JOIN ("
+const endingStatement string = ") AS t1 ON SourceAirports.SrcAirportCode = t1.SourceAirportCode INNER JOIN DestinationAirports ON t1.DestinationAirportCode = DestinationAirports.DestAirportCode;"
 
 // used throughout
 const MAX_NUM int = 2147483647
@@ -311,17 +313,7 @@ func setIntervalYears(intervals []Interval) []Interval {
 // generates a report for a specific user
 func reportForUser(user User, db *sql.DB, intervals []Interval) []Flight {
 
-	var minFlight Flight
 	var minFlights []Flight
-	var potentialMin Flight
-
-	// getting source airports from database
-	srcAirports, err := db.Query(fmt.Sprintf(SELECT_SOURCES,user.EmailAddress))
-	if err != nil {
-		fmt.Println("failed to get sources generate.go")
-		panic(err.Error())
-	}
-	defer srcAirports.Close()
 
 	// getting destination airports from database
 	destAirports, err := db.Query(SELECT_DESTINATIONS)
@@ -331,9 +323,7 @@ func reportForUser(user User, db *sql.DB, intervals []Interval) []Flight {
 	}
 	defer destAirports.Close()
 
-	var sourceInfo      []Flight
 	var destinationInfo []Flight
-
 	fmt.Println("getting all of the flights in one area")
 
 	for destAirports.Next() {
@@ -348,56 +338,54 @@ func reportForUser(user User, db *sql.DB, intervals []Interval) []Flight {
 		destinationInfo = append(destinationInfo, tempFlight)
 	}
 
-	for srcAirports.Next() {
+	var query string = queryBuilder(destinationInfo, intervals, user)
+
+	fmt.Println(query)
+
+	flights, err := db.Query(query)
+	if err != nil {
+		fmt.Println("failed to get destinations generate.go")
+		panic(err.Error())
+	}
+	defer flights.Close()
+
+	for flights.Next() {
 		var dummy string
 		var tempFlight = Flight{}
 
-		if err := srcAirports.Scan(&dummy, &dummy, &tempFlight.sourceAirport, &tempFlight.sourceCountry, &tempFlight.sourceCity); err != nil {
-			fmt.Println("failed to scan source airports generate.go")
+		if err := flights.Scan(&dummy, &dummy, &dummy, &tempFlight.sourceCountry , &tempFlight.sourceCity, &dummy, &tempFlight.sourceAirport, &dummy, &tempFlight.departureDate, &tempFlight.returnDate, &tempFlight.price, &tempFlight.tripLength, &dummy, &dummy, &tempFlight.destinationAirport, &tempFlight.destinationCountry, &tempFlight.destinationCity); err != nil {
+			fmt.Println("failed to scan destinations airports generate.go")
 			panic(err.Error())
 		}
 
-		sourceInfo = append(sourceInfo, tempFlight)
-	}
-
-	fmt.Println("going through airports")
-	// getting the cheapest flights to each destination
-	for _, destInfo := range destinationInfo {
-
-		minFlight    = Flight{}
-		potentialMin = Flight{}
-
-		for _, srcInfo := range sourceInfo {
-
-			var dummy string
-
-			potentialMin.sourceAirport = srcInfo.sourceAirport
-			potentialMin.sourceCountry = srcInfo.sourceCountry
-			potentialMin.sourceCity = srcInfo.sourceCity
-
-			potentialMin.destinationAirport = destInfo.destinationAirport
-			potentialMin.destinationCountry = destInfo.destinationCountry
-			potentialMin.destinationCity = destInfo.destinationCity
-
-			err = db.QueryRow(fmt.Sprintf(MIN_QUERY, potentialMin.sourceAirport, potentialMin.destinationAirport, user.tripMin, user.tripMax, user.budget,buildDateModifiers(intervals))).Scan(&dummy, &dummy, &dummy, &potentialMin.departureDate, &potentialMin.returnDate, &potentialMin.price, &potentialMin.tripLength)
-			if err == nil {
-				// updating the local cheapest flight
-				if minFlight == (Flight{}) {
-					minFlight = potentialMin
-				} else if potentialMin.price < minFlight.price {
-					minFlight = potentialMin
-				}
-			}
-		}
-
-		if minFlight != (Flight{}) {
-			minFlights = append(minFlights, minFlight)
-		}
+		minFlights = append(minFlights, tempFlight)
 	}
 
 	fmt.Println("finished getting my min flights in order")
 
 	return minFlights
+}
+
+func queryBuilder(destinations []Flight, intervals []Interval, user User) string{
+
+	var first bool = true
+	var query string = openingStatement
+
+	for _, destInfo := range destinations {
+
+		if(first){
+			first = false
+		} else {
+			query += " UNION \n"
+		}
+
+		query += fmt.Sprintf(MIN_QUERY,destInfo.destinationAirport, user.tripMin, user.tripMax, user.budget,user.EmailAddress, buildDateModifiers(intervals))
+
+	}
+	query += endingStatement
+
+	return query
+
 }
 
 // builds up a string to specify the date range of the query

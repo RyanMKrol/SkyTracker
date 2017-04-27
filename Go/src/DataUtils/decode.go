@@ -16,7 +16,7 @@ var typeComparator map[string]interface{}
 
 const DATES_ARRAY_ID string = "Dates"
 const MIN_PRICE_ID string = "MinPrice"
-const QUERY_FORMAT string = "INSERT INTO %s_%s (SourcePort, DestPort, DepartDate, ReturnDate, Price) VALUES ('%s','%s','%s-%02d', '%s-%02d', %d);\n"
+const QUERY_FORMAT string = "INSERT INTO Flights (SourceAirportCode, DestinationAirportCode, DepartDate, ReturnDate, Price) VALUES ('%s','%s','%s-%02d', '%s-%02d', %d);\n"
 const DATE_FORMAT string = "2006-01"
 
 // decodes the data into .sql files
@@ -63,7 +63,7 @@ func Decode(data []byte, src, dest string, departDate, returnDate time.Time) {
 
 					price := int(specificQuote[MIN_PRICE_ID].(float64))
 
-					_, err := file.WriteString(fmt.Sprintf(QUERY_FORMAT, src, dest, src, dest, departFormatted, outboundDay, returnFormatted, inboundDay, price))
+					_, err := file.WriteString(fmt.Sprintf(QUERY_FORMAT, src, dest, departFormatted, outboundDay, returnFormatted, inboundDay, price))
 					if err != nil {
 						fmt.Println("failed to write string in file decode.go")
 						log.Fatal(err)

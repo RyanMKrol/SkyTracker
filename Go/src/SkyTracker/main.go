@@ -2,8 +2,8 @@ package main
 
 import (
 	"Credentials"
-	"DataUtils"
 	"Reports"
+	"DataUtils"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
@@ -100,7 +100,7 @@ func main() {
 		//
 		// DataUtils.PersistData()
 		// fmt.Println("finished persisting")
-
+		//
 		users := Reports.GenerateReports(db)
 		_ = users
 		fmt.Println("finished generating")

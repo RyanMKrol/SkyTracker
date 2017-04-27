@@ -2,10 +2,15 @@
 
   include "./../Credentials/credentials.php";
 
-  //creating "master" sql file
-  exec("cat $raw_file_loc > $file_loc");
 
-  //update updating the database
-  exec("mysql -u $user -p\"$password\" -f \"$database\" < $file_loc");
+  $files = scandir($raw_file_dir);
+
+  foreach($files as $file) {
+
+      $fullFilePath = $raw_file_dir . $file;
+      exec("mysql -u $user -p\"$password\" -f \"$database\" < $fullFilePath");
+      echo $raw_file_dir . $file . "\n";
+
+  }
 
 ?>
