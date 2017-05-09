@@ -4,6 +4,8 @@ import (
 	"SystemConfig"
 	"database/sql"
 	"errors"
+	"strings"
+	"strconv"
 	"fmt"
 	"log"
 	"os"
@@ -20,7 +22,7 @@ const MIN_QUERY string = "(select *, DATEDIFF(ReturnDate, DepartDate) from Fligh
 const UPDATE_REPORT string = "UPDATE Users SET UserLastReport = NOW() WHERE UserLastReport IS NULL OR DATEDIFF(NOW(),UserLastReport) = (Select FLDays from FrequencyLookup WHERE FLID = UserReportFrequency);"
 
 // for the report writing
-const REPORT_LOC string = "reports/%d_%d_%d_%s.html"
+const REPORT_LOC string = "reports/%d_%d_%d_%s_%s_%s.html"
 const DATE_FORMAT string = "2006-01-02"
 
 // for the query builder
@@ -50,7 +52,8 @@ func GenerateReports(db *sql.DB) []User {
 
 		fmt.Println("in the for-loop")
 
-		var filename string = fmt.Sprintf(fmt.Sprintf(SystemConfig.DOC_ROOT, REPORT_LOC), users[i].budget, users[i].tripMin, users[i].tripMax, currentDate.Format(DATE_FORMAT))
+		var filename string = fmt.Sprintf(fmt.Sprintf(SystemConfig.DOC_ROOT, REPORT_LOC), users[i].budget, users[i].tripMin, users[i].tripMax, getAirportsString(users[i].sources), getMonthsString(users[i].months), currentDate.Format(DATE_FORMAT))
+		fmt.Println(filename)
 
 		// file doesn't exist so we need to make it ourselves
 		if _, err := os.Stat(filename); os.IsNotExist(err) {
@@ -82,13 +85,34 @@ func GenerateReports(db *sql.DB) []User {
 
 	wg.Wait()
 
-	_, err := db.Exec(UPDATE_REPORT)
-	if err != nil {
-		fmt.Println("failed to update user last report dates generate.go")
-		panic(err.Error())
-	}
+	//updates the users LastReportDate to today
+	// _, err := db.Exec(UPDATE_REPORT)
+	// if err != nil {
+	// 	fmt.Println("failed to update user last report dates generate.go")
+	// 	panic(err.Error())
+	// }
+
 
 	return users
+}
+
+//convert an arry of airport strings to a single string
+func getAirportsString(arr []string) string {
+	fmt.Println(strings.Join(arr, ""))
+	return strings.Join(arr, "")
+}
+
+//convert an array of months into a single string
+func getMonthsString(arr []int) string {
+	var intString string = ""
+
+	for _, i := range arr {
+		intString += strconv.Itoa(i)
+	}
+
+	fmt.Println(intString)
+
+	return intString
 }
 
 // gets the users from the database and parses their information
@@ -104,14 +128,13 @@ func getUsers(db *sql.DB) []User {
 	}
 	defer users.Close()
 
-	//these are here until i get actual values
-
+	//parsing the user informaton
 	for users.Next() {
 
 		var tempUser User = User{}
 
 		// getting the other information from the user
-		var dummy string
+		var dummy sql.NullString
 		var maybeBudget, maybeTripMin, maybeTripMax sql.NullInt64
 
 		if err := users.Scan(&dummy, &tempUser.EmailAddress, &maybeBudget, &maybeTripMin, &maybeTripMax, &dummy, &dummy, &tempUser.salt); err != nil {
@@ -145,6 +168,7 @@ func getUsers(db *sql.DB) []User {
 			panic(err.Error())
 		}
 
+		//parsing the months into the user
 		for months.Next() {
 
 			var dummy string
@@ -158,6 +182,7 @@ func getUsers(db *sql.DB) []User {
 			monthArr = append(monthArr, month)
 		}
 
+		fmt.Println("**************** months here ****************");
 		fmt.Println(monthArr)
 		tempUser.months = monthArr
 
@@ -169,6 +194,7 @@ func getUsers(db *sql.DB) []User {
 			panic(err.Error())
 		}
 
+		//parsing the airport information
 		for airports.Next() {
 
 			var dummy string
@@ -195,24 +221,20 @@ func getUsers(db *sql.DB) []User {
 // builds up the intervals to search over that a user will have specified
 func intervalBuilder(user User, db *sql.DB) (intervals []Interval) {
 
-	months, err := db.Query(fmt.Sprintf(SELECT_TRAVEL_MONTHS, user.EmailAddress))
-	if err != nil {
-		fmt.Println("failed to get user months generate.go")
-		panic(err.Error())
-	}
-	defer months.Close()
-
 	var monthArr [MONTHS_IN_YEAR]bool
-	for months.Next() {
 
-		var dummy string
-		var tempInt int
-		if err := months.Scan(&dummy, &dummy, &tempInt); err != nil {
-			fmt.Println("failed to scan user travel month generate.go")
-			panic(err.Error())
-		}
-		monthArr[tempInt-1] = true
+	fmt.Println("about to print the things")
+
+	for _, month := range user.months {
+
+		fmt.Println("printing a month")
+
+		fmt.Println(month)
+		monthArr[month-1] = true
 	}
+
+	fmt.Println(monthArr)
+
 
 	// if they're all true we don't need any intervals
 	if allTrue(monthArr) {
@@ -346,8 +368,6 @@ func reportForUser(user User, db *sql.DB, intervals []Interval) []Flight {
 	}
 
 	var query string = queryBuilder(destinationInfo, intervals, user)
-
-	fmt.Println(query)
 
 	flights, err := db.Query(query)
 	if err != nil {

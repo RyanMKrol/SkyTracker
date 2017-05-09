@@ -3,7 +3,6 @@ package main
 import (
 	"Credentials"
 	"DataUtils"
-	"Email"
 	"Reports"
 	"database/sql"
 	"fmt"
@@ -106,8 +105,8 @@ func main() {
 	_ = users
 	fmt.Println("finished generating")
 
-	Email.EmailUsers(users)
-	fmt.Println("finished sending")
+	// Email.EmailUsers(users)
+	// fmt.Println("finished sending")
 
 	fmt.Println("finished")
 
