@@ -17,6 +17,7 @@ const SELECT_USERS string = "SELECT * FROM Users WHERE UserLastReport IS NULL OR
 const SELECT_SOURCES string = "SELECT * FROM SourceAirports WHERE SrcAirportCode IN (SELECT SourceAirportCode FROM UserSourceAirports WHERE UserEmailAddress = \"%s\");"
 const SELECT_DESTINATIONS string = "SELECT * FROM DestinationAirports;"
 const MIN_QUERY string = "(select *, DATEDIFF(ReturnDate, DepartDate) from Flights where DestinationAirportCode = '%s' AND DATEDIFF(ReturnDate, DepartDate) >= %d AND DATEDIFF(ReturnDate, DepartDate) <= %d AND Price <= %d AND SourceAirportCode IN (SELECT SourceAirportCode FROM UserSourceAirports WHERE UserEmailAddress = '%s') %s ORDER BY Price ASC limit 1)"
+const UPDATE_REPORT string = "UPDATE Users SET UserLastReport = NOW() WHERE UserLastReport IS NULL OR DATEDIFF(NOW(),UserLastReport) = (Select FLDays from FrequencyLookup WHERE FLID = UserReportFrequency);"
 
 // for the report writing
 const REPORT_LOC string = "reports/%d_%d_%d_%s.html"
@@ -80,6 +81,12 @@ func GenerateReports(db *sql.DB) []User {
 	}
 
 	wg.Wait()
+
+	_, err := db.Exec(UPDATE_REPORT)
+	if err != nil {
+		fmt.Println("failed to update user last report dates generate.go")
+		panic(err.Error())
+	}
 
 	return users
 }
