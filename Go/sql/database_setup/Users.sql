@@ -12,7 +12,8 @@ CREATE TABLE Users (
   UserReportFrequency int DEFAULT 2,
   UserLastReport DATE,
   UserSalt varchar(255) NOT NULL UNIQUE,
-  PRIMARY KEY(UserID)
+  PRIMARY KEY(UserID),
+  FOREIGN KEY (UserReportFrequency) REFERENCES FrequencyLookup(FLID) ON DELETE CASCADE
 );
 
 SOURCE UserSourceAirports.sql;
