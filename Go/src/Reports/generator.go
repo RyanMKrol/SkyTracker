@@ -3,12 +3,12 @@ package Reports
 import (
 	"SystemConfig"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"os"
 	"sync"
 	"time"
-	"errors"
 )
 
 // for databaser interaction
@@ -65,7 +65,7 @@ func GenerateReports(db *sql.DB) []User {
 			// parallelising the meat of the file
 			go func(u User, f *os.File) {
 				fmt.Println("building intervals")
-				intervals := intervalBuilder(u,db)
+				intervals := intervalBuilder(u, db)
 				fmt.Println("getting min flights")
 				minFlights := reportForUser(u, db, intervals)
 				fmt.Println("getting nice report")
@@ -132,7 +132,7 @@ func getUsers(db *sql.DB) []User {
 
 		// getting the months that the user wants to travel in
 		var monthArr []int
-		months, err := db.Query(fmt.Sprintf(SELECT_TRAVEL_MONTHS,tempUser.EmailAddress))
+		months, err := db.Query(fmt.Sprintf(SELECT_TRAVEL_MONTHS, tempUser.EmailAddress))
 		if err != nil {
 			fmt.Println("failed to get users generate.go")
 			panic(err.Error())
@@ -208,18 +208,18 @@ func intervalBuilder(user User, db *sql.DB) (intervals []Interval) {
 	}
 
 	// if they're all true we don't need any intervals
-	if allTrue(monthArr){
+	if allTrue(monthArr) {
 		return
 	}
 
 	// have to find the first false so we don't begin the partitioning in the middle of an interval
-	firstFalse, err := findFalse(0,monthArr)
+	firstFalse, err := findFalse(0, monthArr)
 	if err != nil {
 		panic(err.Error())
 	}
 
 	// this will be the start of the first interval
-	firstTrueAfterFalse, err := findTrue(firstFalse,monthArr)
+	firstTrueAfterFalse, err := findTrue(firstFalse, monthArr)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -233,9 +233,9 @@ func intervalBuilder(user User, db *sql.DB) (intervals []Interval) {
 // finds a true element given a starting position and an array
 func findTrue(start int, arr [MONTHS_IN_YEAR]bool) (int, error) {
 	// finds the first false if one is present
-	for i := start; i < start + MONTHS_IN_YEAR; i++ {
+	for i := start; i < start+MONTHS_IN_YEAR; i++ {
 		if arr[i%MONTHS_IN_YEAR] {
-			return (i%MONTHS_IN_YEAR), nil
+			return (i % MONTHS_IN_YEAR), nil
 		}
 	}
 
@@ -244,12 +244,12 @@ func findTrue(start int, arr [MONTHS_IN_YEAR]bool) (int, error) {
 }
 
 // finds a false element given a starting position and an array
-func findFalse(start int, arr [MONTHS_IN_YEAR]bool) (int,error) {
+func findFalse(start int, arr [MONTHS_IN_YEAR]bool) (int, error) {
 
 	// finds the first false if one is present
 	for i := start; i < MONTHS_IN_YEAR; i++ {
 		if !arr[i] {
-			return i,nil
+			return i, nil
 		}
 	}
 
@@ -267,22 +267,22 @@ func allTrue(arr [MONTHS_IN_YEAR]bool) bool {
 }
 
 // parses the intervals from an array of months the user wants to search in
-func findIntervals(startPos int, months [MONTHS_IN_YEAR]bool) (intervals []Interval){
+func findIntervals(startPos int, months [MONTHS_IN_YEAR]bool) (intervals []Interval) {
 
 	var inInterval bool = true
 	var tempInterval Interval
 	tempInterval.StartMonth = startPos + 1
 
 	// generates the month intervals
-	for i := startPos; i < startPos + MONTHS_IN_YEAR; i++ {
+	for i := startPos; i < startPos+MONTHS_IN_YEAR; i++ {
 		if months[i%MONTHS_IN_YEAR] && inInterval {
 
-			tempInterval.EndMonth = (i%MONTHS_IN_YEAR)+1
+			tempInterval.EndMonth = (i % MONTHS_IN_YEAR) + 1
 
 		} else if months[i%MONTHS_IN_YEAR] {
 
-			tempInterval.StartMonth = (i%MONTHS_IN_YEAR)+1
-			tempInterval.EndMonth = (i%MONTHS_IN_YEAR)+1
+			tempInterval.StartMonth = (i % MONTHS_IN_YEAR) + 1
+			tempInterval.EndMonth = (i % MONTHS_IN_YEAR) + 1
 			inInterval = true
 
 		} else if inInterval {
@@ -353,7 +353,7 @@ func reportForUser(user User, db *sql.DB, intervals []Interval) []Flight {
 		var dummy string
 		var tempFlight = Flight{}
 
-		if err := flights.Scan(&dummy, &dummy, &dummy, &tempFlight.sourceCountry , &tempFlight.sourceCity, &dummy, &tempFlight.sourceAirport, &dummy, &tempFlight.departureDate, &tempFlight.returnDate, &tempFlight.price, &tempFlight.tripLength, &dummy, &dummy, &tempFlight.destinationAirport, &tempFlight.destinationCountry, &tempFlight.destinationCity); err != nil {
+		if err := flights.Scan(&dummy, &dummy, &dummy, &tempFlight.sourceCountry, &tempFlight.sourceCity, &dummy, &tempFlight.sourceAirport, &dummy, &tempFlight.departureDate, &tempFlight.returnDate, &tempFlight.price, &tempFlight.tripLength, &dummy, &dummy, &tempFlight.destinationAirport, &tempFlight.destinationCountry, &tempFlight.destinationCity); err != nil {
 			fmt.Println("failed to scan destinations airports generate.go")
 			panic(err.Error())
 		}
@@ -366,20 +366,20 @@ func reportForUser(user User, db *sql.DB, intervals []Interval) []Flight {
 	return minFlights
 }
 
-func queryBuilder(destinations []Flight, intervals []Interval, user User) string{
+func queryBuilder(destinations []Flight, intervals []Interval, user User) string {
 
 	var first bool = true
 	var query string = openingStatement
 
 	for _, destInfo := range destinations {
 
-		if(first){
+		if first {
 			first = false
 		} else {
 			query += " UNION \n"
 		}
 
-		query += fmt.Sprintf(MIN_QUERY,destInfo.destinationAirport, user.tripMin, user.tripMax, user.budget,user.EmailAddress, buildDateModifiers(intervals))
+		query += fmt.Sprintf(MIN_QUERY, destInfo.destinationAirport, user.tripMin, user.tripMax, user.budget, user.EmailAddress, buildDateModifiers(intervals))
 
 	}
 	query += endingStatement
@@ -402,10 +402,10 @@ func buildDateModifiers(intervals []Interval) string {
 		} else {
 			datesModifier += orConnective
 		}
-		datesModifier += fmt.Sprintf(monthGreater,interval.StartMonth)
-		datesModifier += fmt.Sprintf(monthLesser,interval.EndMonth)
-		datesModifier += fmt.Sprintf(yearGreater,interval.StartYear)
-		datesModifier += fmt.Sprintf(yearLesser,interval.EndYear)
+		datesModifier += fmt.Sprintf(monthGreater, interval.StartMonth)
+		datesModifier += fmt.Sprintf(monthLesser, interval.EndMonth)
+		datesModifier += fmt.Sprintf(yearGreater, interval.StartYear)
+		datesModifier += fmt.Sprintf(yearLesser, interval.EndYear)
 	}
 
 	return datesModifier

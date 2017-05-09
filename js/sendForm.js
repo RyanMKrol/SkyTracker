@@ -26,6 +26,9 @@ $( document ).ready(function() {
         $( "#budgetSlider" ).slider( "option", "value", item[1]);
         $( "#budgetAmount" ).val( "£" + item[1] );
         break;
+      case 'frequency' :
+        $("input:radio[value=" + item[1] + "]").attr("checked", true);
+        break;
     }
   });
 

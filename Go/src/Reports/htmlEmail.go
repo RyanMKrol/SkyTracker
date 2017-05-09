@@ -64,7 +64,7 @@ func generatePrettyReport(flights []Flight, file *os.File, user User) {
 		writeToFile("<br>\n", brTagWriteError, file)
 	}
 
-	writeEndStatements(file, user);
+	writeEndStatements(file, user)
 
 	writeToFile("</body>\n</html>\n", closeBodyHtmlTagWriteError, file)
 }
@@ -81,41 +81,41 @@ func writeToFile(line, errorMessage string, file *os.File) {
 }
 
 // write any statements at the end of the report
-func writeEndStatements(file *os.File, user User){
+func writeEndStatements(file *os.File, user User) {
 
-	var link = fmt.Sprintf("%stoken=%s&email=%s&tripMin=%d&tripMax=%d&budget=%d", baseLink, user.salt, user.EmailAddress,user.tripMin, user.tripMax, user.budget)
+	var link = fmt.Sprintf("%stoken=%s&email=%s&tripMin=%d&tripMax=%d&budget=%d", baseLink, user.salt, user.EmailAddress, user.tripMin, user.tripMax, user.budget)
 
 	fmt.Println(user)
 
 	for _, month := range user.months {
-		link += fmt.Sprintf("&month=%d", month);
+		link += fmt.Sprintf("&month=%d", month)
 	}
 
 	for _, airport := range user.sources {
-		link += fmt.Sprintf("&source=%s", airport);
+		link += fmt.Sprintf("&source=%s", airport)
 	}
 
 	var anchorTag string = fmt.Sprintf("<a href = '%s'>here</a>", link)
 
-	writeToFile(fmt.Sprintf("<p>To update your preferences, click %s</p>\n",anchorTag),"failed to finish", file)
-	writeToFile(fmt.Sprintf("<p>To unsubscribe, click <a href = '%semail=%s&token=%s'>here</a></p>\n",unsubLink,user.EmailAddress,user.salt), "failed to write unsubscribe", file)
+	writeToFile(fmt.Sprintf("<p>To update your preferences, click %s</p>\n", anchorTag), "failed to finish", file)
+	writeToFile(fmt.Sprintf("<p>To unsubscribe, click <a href = '%semail=%s&token=%s'>here</a></p>\n", unsubLink, user.EmailAddress, user.salt), "failed to write unsubscribe", file)
 }
 
 // writes headers to the html report
-func writeHTMLHeadings(file *os.File){
-		writeToFile("<!doctype html>\n", htmlHeadersWriteErrors, file)
-		writeToFile("<html lang=\"en\">\n", htmlHeadersWriteErrors, file)
-		writeToFile("<head>\n", htmlHeadersWriteErrors, file)
-		writeToFile("<meta charset=\"UTF-8\">\n", htmlHeadersWriteErrors, file)
-		writeToFile("</head>\n", htmlHeadersWriteErrors, file)
-		writeToFile("<body style = \"font-family: Helvetica;\">\n", htmlHeadersWriteErrors, file)
+func writeHTMLHeadings(file *os.File) {
+	writeToFile("<!doctype html>\n", htmlHeadersWriteErrors, file)
+	writeToFile("<html lang=\"en\">\n", htmlHeadersWriteErrors, file)
+	writeToFile("<head>\n", htmlHeadersWriteErrors, file)
+	writeToFile("<meta charset=\"UTF-8\">\n", htmlHeadersWriteErrors, file)
+	writeToFile("</head>\n", htmlHeadersWriteErrors, file)
+	writeToFile("<body style = \"font-family: Helvetica;\">\n", htmlHeadersWriteErrors, file)
 }
 
 // writes individual flight info to the reports
 func writeFlightInfo(file *os.File, flight Flight) {
 
 	writeToFile("<tr>\n", flightWriteError, file)
-	writeToFile(fmt.Sprintf("<td style=\"%s\"><a href = \"%s\">%s, %s, %s</a></td>\n", paddingStyle, fmt.Sprintf(hrefLink,flight.sourceAirport,flight.destinationAirport,flight.departureDate,flight.returnDate),flight.destinationCity, flight.destinationCountry, flight.destinationAirport), flightWriteError, file)
+	writeToFile(fmt.Sprintf("<td style=\"%s\"><a href = \"%s\">%s, %s, %s</a></td>\n", paddingStyle, fmt.Sprintf(hrefLink, flight.sourceAirport, flight.destinationAirport, flight.departureDate, flight.returnDate), flight.destinationCity, flight.destinationCountry, flight.destinationAirport), flightWriteError, file)
 	writeToFile(fmt.Sprintf("<td style=\"%s%s\">%s</td>\n", paddingStyle, centreAlignStyle, flight.departureDate), flightWriteError, file)
 	writeToFile(fmt.Sprintf("<td style=\"%s%s\">%s</td>\n", paddingStyle, centreAlignStyle, flight.returnDate), flightWriteError, file)
 	writeToFile(fmt.Sprintf("<td style=\"%s%s\">%d</td>\n", paddingStyle, centreAlignStyle, flight.tripLength), flightWriteError, file)
@@ -127,11 +127,11 @@ func writeFlightInfo(file *os.File, flight Flight) {
 // write headings for each table
 func writeTableHeadings(file *os.File) {
 	writeToFile(fmt.Sprintf("<table style = \"width: %dpx\">\n", tableWidth), tableHeadingsWriteError, file)
-	writeToFile(fmt.Sprintf("<th width = %d style = \"%s text-align: left; min-width = %d;\" >To</th>\n", toWidth,paddingStyle,toWidth), tableHeadingsWriteError, file)
-	writeToFile(fmt.Sprintf("<th width = %d style = \"%s%s min-width = %d;\" >Leaving</th>\n",paddingStyle, centreAlignStyle, leavingWidth,leavingWidth), tableHeadingsWriteError, file)
-	writeToFile(fmt.Sprintf("<th width = %d style = \"%s%s min-width = %d;\" >Returning</th>\n",paddingStyle, centreAlignStyle, returningWidth,returningWidth), tableHeadingsWriteError, file)
-	writeToFile(fmt.Sprintf("<th width = %d style = \"%s%s min-width = %d;\" >Days</th>\n",paddingStyle, centreAlignStyle, tripLengthWidth,tripLengthWidth), tableHeadingsWriteError, file)
-	writeToFile(fmt.Sprintf("<th width = %d style = \"%s%s min-width = %d;\" >Cost</th>\n",paddingStyle, centreAlignStyle, costWidth,costWidth), tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th width = %d style = \"%s text-align: left; min-width = %d;\" >To</th>\n", toWidth, paddingStyle, toWidth), tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th width = %d style = \"%s%s min-width = %d;\" >Leaving</th>\n", paddingStyle, centreAlignStyle, leavingWidth, leavingWidth), tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th width = %d style = \"%s%s min-width = %d;\" >Returning</th>\n", paddingStyle, centreAlignStyle, returningWidth, returningWidth), tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th width = %d style = \"%s%s min-width = %d;\" >Days</th>\n", paddingStyle, centreAlignStyle, tripLengthWidth, tripLengthWidth), tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th width = %d style = \"%s%s min-width = %d;\" >Cost</th>\n", paddingStyle, centreAlignStyle, costWidth, costWidth), tableHeadingsWriteError, file)
 	writeToFile("</tr>\n", tableHeadingsWriteError, file)
 }
 

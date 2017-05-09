@@ -2,8 +2,9 @@ package main
 
 import (
 	"Credentials"
-	"Reports"
 	"DataUtils"
+	"Email"
+	"Reports"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
@@ -39,76 +40,76 @@ func main() {
 
 	// statements to get the source and destination airport pairs
 
-	// srcAirports, err := db.Query(SELECT_SOURCES)
-	// if err != nil {
-	// 	fmt.Println("failed to get sources main.go")
-	// 	panic(err.Error())
-	// }
-	// defer srcAirports.Close()
-	//
-	// destAirports, err := db.Query(SELECT_DESTINATIONS)
-	// if err != nil {
-	// 	fmt.Println("failed to get destinations main.go")
-	// 	panic(err.Error())
-	// }
-	// defer destAirports.Close()
-	//
-	// // sending off each thread
-	//
-	// var sourceArray []string
-	// var destinationArray []string
-	//
-	// for srcAirports.Next() {
-	//
-	// 	var src, dummy string
-	//
-	// 	if err := srcAirports.Scan(&dummy, &dummy, &src, &dummy, &dummy); err != nil {
-	// 		fmt.Println("failed to scan sources main.go")
-	// 		panic(err.Error())
-	// 	}
-	// 	sourceArray = append(sourceArray, src)
-	// }
-	//
-	// for destAirports.Next() {
-	//
-	// 	var dest, dummy string
-	//
-	// 	if err := destAirports.Scan(&dummy, &dummy, &dest, &dummy, &dummy); err != nil {
-	// 		fmt.Println("failed to scan destinations main.go")
-	// 		panic(err.Error())
-	// 	}
-	// 	destinationArray = append(destinationArray, dest)
-	// }
-	//
-	// for _, src := range sourceArray {
-	//
-	// 	for _, dest := range destinationArray {
-	//
-	// 		// adding another thread to wait for
-	// 		wg.Add(1)
-	//
-	// 		fmt.Println(src + " " + dest)
-	//
-	// 		go t_DataProcess(src, dest)
-	//
-	// 	}
-	//
-	// 	wg.Wait()
-	// }
+	srcAirports, err := db.Query(SELECT_SOURCES)
+	if err != nil {
+		fmt.Println("failed to get sources main.go")
+		panic(err.Error())
+	}
+	defer srcAirports.Close()
 
-		// at this point all of the files will be setup, now I need to persist it with the server
-		//
-		// DataUtils.PersistData()
-		// fmt.Println("finished persisting")
-		//
-		users := Reports.GenerateReports(db)
-		_ = users
-		fmt.Println("finished generating")
+	destAirports, err := db.Query(SELECT_DESTINATIONS)
+	if err != nil {
+		fmt.Println("failed to get destinations main.go")
+		panic(err.Error())
+	}
+	defer destAirports.Close()
 
-		// Email.EmailUsers(users)
-		// fmt.Println("finished sending")
-		//
-		// fmt.Println("finished")
+	// sending off each thread
+
+	var sourceArray []string
+	var destinationArray []string
+
+	for srcAirports.Next() {
+
+		var src, dummy string
+
+		if err := srcAirports.Scan(&dummy, &dummy, &src, &dummy, &dummy); err != nil {
+			fmt.Println("failed to scan sources main.go")
+			panic(err.Error())
+		}
+		sourceArray = append(sourceArray, src)
+	}
+
+	for destAirports.Next() {
+
+		var dest, dummy string
+
+		if err := destAirports.Scan(&dummy, &dummy, &dest, &dummy, &dummy); err != nil {
+			fmt.Println("failed to scan destinations main.go")
+			panic(err.Error())
+		}
+		destinationArray = append(destinationArray, dest)
+	}
+
+	for _, src := range sourceArray {
+
+		for _, dest := range destinationArray {
+
+			// adding another thread to wait for
+			wg.Add(1)
+
+			fmt.Println(src + " " + dest)
+
+			go t_DataProcess(src, dest)
+
+		}
+
+		wg.Wait()
+	}
+
+	// at this point all of the files will be setup, now I need to persist it with the server
+
+	DataUtils.PersistData()
+	fmt.Println("finished persisting")
+
+	users := Reports.GenerateReports(db)
+	_ = users
+	fmt.Println("finished generating")
+
+	Email.EmailUsers(users)
+	fmt.Println("finished sending")
+
+	fmt.Println("finished")
 
 }
 
