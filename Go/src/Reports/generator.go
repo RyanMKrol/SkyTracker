@@ -13,7 +13,7 @@ import (
 
 // for databaser interaction
 const SELECT_TRAVEL_MONTHS string = "SELECT * FROM UserTravelMonths WHERE UserEmailAddress = \"%s\" ORDER BY TravelMonth ASC;"
-const SELECT_USERS string = "SELECT * FROM Users;"
+const SELECT_USERS string = "SELECT * FROM Users WHERE UserLastReport IS NULL OR DATEDIFF(NOW(),UserLastReport) = (Select FLDays from FrequencyLookup WHERE FLID = UserReportFrequency);"
 const SELECT_SOURCES string = "SELECT * FROM SourceAirports WHERE SrcAirportCode IN (SELECT SourceAirportCode FROM UserSourceAirports WHERE UserEmailAddress = \"%s\");"
 const SELECT_DESTINATIONS string = "SELECT * FROM DestinationAirports;"
 const MIN_QUERY string = "(select *, DATEDIFF(ReturnDate, DepartDate) from Flights where DestinationAirportCode = '%s' AND DATEDIFF(ReturnDate, DepartDate) >= %d AND DATEDIFF(ReturnDate, DepartDate) <= %d AND Price <= %d AND SourceAirportCode IN (SELECT SourceAirportCode FROM UserSourceAirports WHERE UserEmailAddress = '%s') %s ORDER BY Price ASC limit 1)"
