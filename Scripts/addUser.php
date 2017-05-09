@@ -141,6 +141,7 @@
     $tripMax        = $conn->real_escape_string($data['tripMaxLen']);
     $months         = $data['months'];
     $airports       = $data['airports'];
+    $frequency      = $conn->real_escape_string($data['frequency']);
 
     // create a hash which will act as a users 'password'. Whenever they want to update their details,
     //  we'll send this hash and it'll be sent back to us as a token to prove it's from their email address. NOT
@@ -148,7 +149,9 @@
     //    their email address
     $salt           = $conn->real_escape_string(hash("sha256", $email . time()));
 
-    $sql = "INSERT INTO Users (UserEmailAddress, UserBudget, UserTripMin, UserTripMax, UserSalt) VALUES ('$email',$budget,$tripMin,$tripMax,'$salt');";
+    $sql = "INSERT INTO Users (UserEmailAddress, UserBudget, UserTripMin, UserTripMax, UserReportFrequency, UserSalt) VALUES ('$email',$budget,$tripMin,$tripMax,$frequency,'$salt');";
+
+    echo $sql . "\n";
 
     if ($conn->query($sql) !== TRUE) {
         echo "Failed to add a new record\n";
