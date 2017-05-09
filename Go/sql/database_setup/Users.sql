@@ -10,6 +10,10 @@ CREATE TABLE Users (
   UserTripMin int DEFAULT NULL,
   UserTripMax int DEFAULT NULL,
   UserReportFrequency int DEFAULT 2,
+  UserLastReport DATE,
   UserSalt varchar(255) NOT NULL UNIQUE,
   PRIMARY KEY(UserID)
 );
+
+SOURCE UserSourceAirports.sql;
+SOURCE UserTravelMonths.sql;
