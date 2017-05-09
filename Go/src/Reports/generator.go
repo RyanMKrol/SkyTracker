@@ -107,7 +107,7 @@ func getUsers(db *sql.DB) []User {
 		var dummy string
 		var maybeBudget, maybeTripMin, maybeTripMax sql.NullInt64
 
-		if err := users.Scan(&dummy, &tempUser.EmailAddress, &maybeBudget, &maybeTripMin, &maybeTripMax, &tempUser.salt); err != nil {
+		if err := users.Scan(&dummy, &tempUser.EmailAddress, &maybeBudget, &maybeTripMin, &maybeTripMax, &dummy, &dummy, &tempUser.salt); err != nil {
 			fmt.Println("failed to scan users generate.go")
 			panic(err.Error())
 		}
