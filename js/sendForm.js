@@ -70,6 +70,8 @@ $( "form" ).on( "submit", function( event ) {
 
   var jsonData = JSON.stringify(jsonRaw);
 
+  console.log(jsonData);
+
   $.ajax({
     type: "POST",
     url: "./../Scripts/addUser.php",

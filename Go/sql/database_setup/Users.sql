@@ -9,6 +9,7 @@ CREATE TABLE Users (
   UserBudget int DEFAULT NULL,
   UserTripMin int DEFAULT NULL,
   UserTripMax int DEFAULT NULL,
+  UserReportFrequency int DEFAULT 2,
   UserSalt varchar(255) NOT NULL UNIQUE,
   PRIMARY KEY(UserID)
 );

@@ -133,6 +133,8 @@
   // creates a new user in the database
   function createUserData($data, $conn) {
 
+    echo "entered create user \n";
+
     $email          = $conn->real_escape_string($data['emailAddress']);
     $budget         = $conn->real_escape_string($data['budget']);
     $tripMin        = $conn->real_escape_string($data['tripMinLen']);
@@ -154,11 +156,17 @@
         return false;
     }
 
+    echo "created the user \n";
+
     foreach($months as $month => $val) {
       if($val == true){
 
         $month = $conn->real_escape_string($month);
         $sql = "INSERT INTO UserTravelMonths (UserEmailAddress, TravelMonth) VALUES ('$email', $month);";
+
+        echo "$month \n";
+        echo "$sql \n";
+
 
         if ($conn->query($sql) !== TRUE) {
             echo "Failed to add a new month to the user\n";
@@ -167,6 +175,7 @@
         }
       }
     }
+    echo "created the months \n";
 
     foreach($airports as $airport => $val) {
       if($val == true){
