@@ -156,17 +156,11 @@
         return false;
     }
 
-    echo "created the user \n";
-
     foreach($months as $month => $val) {
       if($val == true){
 
         $month = $conn->real_escape_string($month);
         $sql = "INSERT INTO UserTravelMonths (UserEmailAddress, TravelMonth) VALUES ('$email', $month);";
-
-        echo "$month \n";
-        echo "$sql \n";
-
 
         if ($conn->query($sql) !== TRUE) {
             echo "Failed to add a new month to the user\n";
@@ -175,7 +169,6 @@
         }
       }
     }
-    echo "created the months \n";
 
     foreach($airports as $airport => $val) {
       if($val == true){

@@ -67,10 +67,9 @@ $( "form" ).on( "submit", function( event ) {
   jsonRaw["months"] = monthArray;
   jsonRaw["airports"] = airportArray;
   jsonRaw["salt"] = getUrlParam("token");
+  jsonRaw["frequency"] = $("input[name='Frequency']:checked").val();
 
   var jsonData = JSON.stringify(jsonRaw);
-
-  console.log(jsonData);
 
   $.ajax({
     type: "POST",
