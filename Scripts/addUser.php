@@ -26,32 +26,35 @@
   $email          = $conn->real_escape_string($data['emailAddress']);
   $ipAddress      = $conn->real_escape_string($data['ipAddress']);
 
-  // if there's no attempt at authentication, we make a new user
-  if(strcmp($authentication, '0') == 0){
+  if(checkIP($ipAddress)){
 
-    if(createUserData($data,$conn)){
-      echo "successfully created the user";
-    } else {
-      echo "something failed when creating the user";
-    }
+    // if there's no attempt at authentication, we make a new user
+    if(strcmp($authentication, '0') == 0){
 
-  // otherwise we see if the authorisation checks out and then update
-  } else {
-
-    $sql    = "SELECT * FROM Users WHERE UserSalt = '$authentication';";
-    $result = mysqli_query($conn, $sql);
-
-    // if there are results for the salt, and the email address in the result is the same as the one passed in, we succeed
-    if ((mysqli_num_rows($result) != 0) && (strcmp($email, mysqli_fetch_assoc($result)['UserEmailAddress']) == 0)){
-
-      echo "salt and address are good\n";
-      if(updateUserData($data,$conn)){
-        echo "successfully updated everything\n";
+      if(createUserData($data,$conn)){
+        echo "successfully created the user";
       } else {
-        echo "something failed when updating everything\n";
+        echo "something failed when creating the user";
       }
+
+    // otherwise we see if the authorisation checks out and then update
     } else {
-      echo "salt and address are not good\n";
+
+      $sql    = "SELECT * FROM Users WHERE UserSalt = '$authentication';";
+      $result = mysqli_query($conn, $sql);
+
+      // if there are results for the salt, and the email address in the result is the same as the one passed in, we succeed
+      if ((mysqli_num_rows($result) != 0) && (strcmp($email, mysqli_fetch_assoc($result)['UserEmailAddress']) == 0)){
+
+        echo "salt and address are good\n";
+        if(updateUserData($data,$conn)){
+          echo "successfully updated everything\n";
+        } else {
+          echo "something failed when updating everything\n";
+        }
+      } else {
+        echo "salt and address are not good\n";
+      }
     }
   }
 
@@ -197,6 +200,7 @@
 
   //function to check the IP address isn't overloading the server
   function checkIP($conn, $ipAddress){
+
     //updating the count for this IP address
     $sql = "INSERT INTO IPStore (IPAddress, IPCount) VALUES ('$ipAddress', 1) ON DUPLICATE KEY UPDATE IPCount = IPCount + 1;";
     if ($conn->query($sql) !== TRUE) {
