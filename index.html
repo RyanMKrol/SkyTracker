@@ -1,42 +1,164 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>SkyTracker</title>
+  <head>
+    <title>SkyTracker</title>
 
-<link rel="icon" type="image/png" href="images/favicon.png">
-<link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
 
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    <link rel="stylesheet" href="css/style.css">
 
-  ga('create', 'UA-53565123-4', 'auto');
-  ga('send', 'pageview');
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <!-- <link rel="stylesheet" href="css/style.css"> -->
 
-</script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-</head>
+      ga('create', 'UA-97845942-1', 'auto');
+      ga('send', 'pageview');
+    </script>
 
-<body>
-  <div class="vid-container">
-  <video class="bgvid" autoplay="autoplay" muted="muted" preload="auto" loop>
-      <source src="SkyTrackerCover.mp4" type="video/mp4">
-  </video>
-  <div class="inner-container">
-    <video class="bgvid inner" autoplay="autoplay" muted="muted" preload="auto" loop>
-      <source src="SkyTrackerCover.mp4" type="video/mp4">
-    </video>
-    <div class="box">
-    </div>
-    <div class="text_input">
-      <h1>SkyTracker</h1>
-      <form action = "Scripts/addUser.php" method = "post">
-        <input type="email" name="addr" placeholder="Email">
+    <link rel="stylesheet" href="lib/jquery-ui-1.12.1.custom/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <script>
+      $( function() {
+        $( "#tripLengthSlider" ).slider({
+          range: true,
+          min: 1,
+          max: 28,
+          values: [ 7, 14 ],
+          slide: function( event, ui ) {
+            $( "#daysAmount" ).val(ui.values[ 0 ] + " - " + ui.values[ 1 ] + " Days");
+          }
+        });
+        $( "#daysAmount" ).val( $( "#tripLengthSlider" ).slider( "values", 0 ) +
+          " - " + $( "#tripLengthSlider" ).slider( "values", 1 ) + " Days" );
+      } );
+
+      $( function() {
+        $( "#budgetSlider" ).slider({
+          value:100,
+          min: 0,
+          max: 500,
+          step: 10,
+          slide: function( event, ui ) {
+            $( "#budgetAmount" ).val( "£" + ui.value );
+          }
+        });
+        $( "#budgetAmount" ).val( "£" + $( "#budgetSlider" ).slider( "value" ) );
+      } );
+
+    </script>
+
+  <script src='https://www.google.com/recaptcha/api.js'></script>
+
+  <script type="text/javascript">
+    var resetCaptcha = function() {
+      alert("the captcha expired");
+      grecaptcha.reset();
+    };
+  </script>
+
+  </head>
+
+  <body>
+    <div class="container">
+      <form id="contact">
+        <h3>SkyTracker Preferences</h3>
+        <fieldset>
+          <b><label for="EmailAddress">How do we contact you?</label></b>
+          <input type="text" id = "EmailAddress" placeholder = "Your Email Address" tabindex="1" required autofocus>
+        </fieldset>
+        <fieldset>
+          <b><label for="SourceAirport">Where would you like to travel from?</label></b>
+          <table>
+            <tr>
+              <td><input type="checkbox" name="SourceAirport" value="LHR" tabindex="2"> LHR London Heathrow</td>
+              <td><input type="checkbox" name="SourceAirport" value="LGW" tabindex="3"> LGW London Gatwick</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" name="SourceAirport" value="LTN" tabindex="4"> LTN London Luton</td>
+              <td><input type="checkbox" name="SourceAirport" value="BHX" tabindex="5"> BHX Birmingham International</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" name="SourceAirport" value="MAN" tabindex="6"> MAN Manchester</td>
+              <td><input type="checkbox" name="SourceAirport" value="EDI" tabindex="7"> EDI Edinburgh</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" name="SourceAirport" value="GLA" tabindex="8"> GLA Glasgow</td>
+              <td><input type="checkbox" name="SourceAirport" value="EMA" tabindex="9"> EMA East Midlands</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" name="SourceAirport" value="BRS" tabindex="10"> BRS Bristol</td>
+              <td><input type="checkbox" name="SourceAirport" value="NCL" tabindex="11"> NCL Newcastle</td>
+            </tr>
+          </table>
+        </fieldset>
+
+        <fieldset>
+          <b><label for="Month">When would you like to travel?</label></b>
+          <table>
+            <tr>
+              <td><input type="checkbox" name="Month" value="1" > Jan</td>
+              <td><input type="checkbox" name="Month" value="2" > Feb</td>
+              <td><input type="checkbox" name="Month" value="3" > Mar</td>
+              <td><input type="checkbox" name="Month" value="4" > Apr</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" name="Month" value="5" > May</td>
+              <td><input type="checkbox" name="Month" value="6" > Jun</td>
+              <td><input type="checkbox" name="Month" value="7" > Jul</td>
+              <td><input type="checkbox" name="Month" value="8" > Aug</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" name="Month" value="9" > Sep</td>
+              <td><input type="checkbox" name="Month" value="10"> Oct</td>
+              <td><input type="checkbox" name="Month" value="11"> Nov</td>
+              <td><input type="checkbox" name="Month" value="12"> Dec</td>
+            </tr>
+          </table>
+        </fieldset>
+
+        <fieldset>
+          <p>
+            <b><label for="amount">Price range:</label></b>
+            <input type="text" id="budgetAmount" readonly required>
+          </p>
+
+          <div class = 'jquerySlider' id = "budgetSlider"></div>
+        </fieldset>
+
+        <fieldset>
+          <p>
+            <b><label for="amount">Trip Length:</label></b>
+            <input type="text" id="daysAmount" readonly required>
+          </p>
+
+          <div class = 'jquerySlider' id = "tripLengthSlider"></div>
+        </fieldset>
+
+        <fieldset>
+          <p>
+            <b><label for="Frequency">Report Frequency:</label></b>
+          </p>
+          <!-- the months that the user can travel in -->
+          <input required type="radio" name="Frequency" value="1" > Daily<br>
+          <input required type="radio" name="Frequency" value="2" > Weekly<br>
+          <input required type="radio" name="Frequency" value="3" > Monthly<br>
+        </fieldset>
+
+        <fieldset>
+          <div style = "width: 304px; margin: 0 auto;" class="g-recaptcha" data-sitekey="6LdM0yAUAAAAAEmqAQ5zLMSAk0p_voKEYPykQhSw" data-callback = captchaSet data-expired-callback = resetCaptcha></div><br>
+        </fieldset>
+
+          <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">Submit</button>
+        </fieldset>
       </form>
     </div>
-  </div>
-</div>
+    <script src = "js/sendForm.js"></script>
+  </body>
 </html>
