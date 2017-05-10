@@ -26,7 +26,7 @@
   $data           = json_decode($_POST["_data"], true);
   $authentication = $conn->real_escape_string($data['salt']);
   $email          = $conn->real_escape_string($data['emailAddress']);
-  $ipAddress      = $conn->real_escape_string($data['ipAddress']);
+  $ipAddress      = getRealIpAddr();
   $captchaToken   = $data["captcha"];
 
   if(checkCaptcha($captchaToken) && checkIP($conn, $ipAddress)){
@@ -229,12 +229,31 @@
     return true;
   }
 
+  //http://itman.in/en/how-to-get-client-ip-address-in-php/
+  function getRealIpAddr() {
+    if (!empty($_SERVER['HTTP_CLIENT_IP']))   //check ip from share internet
+    {
+      $ip=$_SERVER['HTTP_CLIENT_IP'];
+    }
+    elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))   //to check ip is pass from proxy
+    {
+      $ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
+    }
+    else
+    {
+      $ip=$_SERVER['REMOTE_ADDR'];
+    }
+    return $ip;
+  }
+
   // curl functionality pulled from https://www.madebymagnitude.com/blog/sending-post-data-from-php/
   function checkCaptcha($captchaToken){
 
+    global $secretCaptcha;
+
     # Our new data
     $data = array(
-      'secret' => '6LfyzCAUAAAAAC7dBjDujlycFS2frPDcCCBTkciN',
+      'secret' => $secretCaptcha,
       'response' => $captchaToken
       );
 
@@ -253,6 +272,13 @@
     # Get the response
     $response = json_decode(curl_exec($ch), true);
 
-    return response['success'];
+    if(!$response['success']){
+      echo "Sorry, your CAPTCHA token is invalid\n";
+    }
+
+    $success = $response['success'] === true;
+    return $success;
   }
+
+
 ?>

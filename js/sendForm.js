@@ -3,10 +3,6 @@ var captchaToken = undefined;
 
 $( document ).ready(function() {
 
-  $.get("http://ipinfo.io", function(response) {
-    ipAddress = response.ip;
-  }, "jsonp");
-
   var query = location.search.substr(1);
   var result = {};
 
@@ -80,7 +76,6 @@ $( "form" ).on( "submit", function( event ) {
   jsonRaw["airports"] = airportArray;
   jsonRaw["salt"] = getUrlParam("token");
   jsonRaw["frequency"] = $("input[name='Frequency']:checked").val();
-  jsonRaw["ipAddress"] = ipAddress;
   jsonRaw["captcha"] = captchaToken;
 
   var jsonData = JSON.stringify(jsonRaw);
