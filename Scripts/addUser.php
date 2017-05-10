@@ -36,6 +36,7 @@
 
       if(createUserData($data,$conn)){
         echo "successfully created the user";
+        exec("php newUser.php $email");
       } else {
         echo "something failed when creating the user";
       }
