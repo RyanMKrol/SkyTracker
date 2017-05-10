@@ -1,4 +1,10 @@
+var ipAddress;
+
 $( document ).ready(function() {
+
+  $.get("http://ipinfo.io", function(response) {
+    ipAddress = response.ip;
+  }, "jsonp");
 
   var query = location.search.substr(1);
   var result = {};
@@ -68,15 +74,16 @@ $( "form" ).on( "submit", function( event ) {
   jsonRaw["airports"] = airportArray;
   jsonRaw["salt"] = getUrlParam("token");
   jsonRaw["frequency"] = $("input[name='Frequency']:checked").val();
+  jsonRaw["ipAddress"] = ipAddress;
 
   var jsonData = JSON.stringify(jsonRaw);
+  console.log(jsonData);
 
   $.ajax({
     type: "POST",
     url: "./../Scripts/addUser.php",
     data: {_data: jsonData},
     success: function(data){
-      alert("things were done right");
       console.log(data);
     }
   });

@@ -2,6 +2,7 @@
   //globals and includes
   include './../Go/src/Credentials/credentials.php';
 
+  $MAX_ACCOUNTS_PER_IP = 50;
 ?>
 <?php
   //main
@@ -23,6 +24,7 @@
   $data           = json_decode($_POST["_data"], true);
   $authentication = $conn->real_escape_string($data['salt']);
   $email          = $conn->real_escape_string($data['emailAddress']);
+  $ipAddress      = $conn->real_escape_string($data['ipAddress']);
 
   // if there's no attempt at authentication, we make a new user
   if(strcmp($authentication, '0') == 0){
@@ -72,7 +74,7 @@
     $sql = "UPDATE Users SET UserBudget=$budget, UserTripMin=$tripMin, UserTripMax=$tripMax WHERE UserEmailAddress='$email';";
 
     if ($conn->query($sql) !== TRUE) {
-      echo $sql . "\n";
+        echo $sql . "\n";
         echo "Failed to update the user\n";
         mysqli_rollback($conn);
         return false;
@@ -189,6 +191,30 @@
 
     // commit the data to the database
     mysqli_commit($conn);
+
+    return true;
+  }
+
+  //function to check the IP address isn't overloading the server
+  function checkIP($conn, $ipAddress){
+    //updating the count for this IP address
+    $sql = "INSERT INTO IPStore (IPAddress, IPCount) VALUES ('$ipAddress', 1) ON DUPLICATE KEY UPDATE IPCount = IPCount + 1;";
+    if ($conn->query($sql) !== TRUE) {
+        echo $sql . "\n";
+        echo "Failed to update the IP count\n";
+        mysqli_rollback($conn);
+        return false;
+    }
+
+    $sql = "SELECT IPCount FROM IPStore WHERE IPAddress = '$ipAddress';";
+    $result = mysqli_query($conn, $sql);
+    $result = mysqli_fetch_assoc($result);
+
+    //checking that no IP is creating too many users
+    if ($result['IPCount'] > $MAX_ACCOUNTS_PER_IP) {
+        echo "Contact the server admin at ryankrol@hotmail.co.uk to get you IP cleared\n";
+        return false;
+    }
 
     return true;
   }

@@ -50,10 +50,7 @@ func GenerateReports(db *sql.DB) []User {
 
 	for i, _ := range users {
 
-		fmt.Println("in the for-loop")
-
 		var filename string = fmt.Sprintf(fmt.Sprintf(SystemConfig.DOC_ROOT, REPORT_LOC), users[i].budget, users[i].tripMin, users[i].tripMax, getAirportsString(users[i].sources), getMonthsString(users[i].months), currentDate.Format(DATE_FORMAT))
-		fmt.Println(filename)
 
 		// file doesn't exist so we need to make it ourselves
 		if _, err := os.Stat(filename); os.IsNotExist(err) {
@@ -85,13 +82,12 @@ func GenerateReports(db *sql.DB) []User {
 
 	wg.Wait()
 
-	//updates the users LastReportDate to today
-	// _, err := db.Exec(UPDATE_REPORT)
-	// if err != nil {
-	// 	fmt.Println("failed to update user last report dates generate.go")
-	// 	panic(err.Error())
-	// }
-
+	updates the users LastReportDate to today
+	_, err := db.Exec(UPDATE_REPORT)
+	if err != nil {
+		fmt.Println("failed to update user last report dates generate.go")
+		panic(err.Error())
+	}
 
 	return users
 }
@@ -182,8 +178,6 @@ func getUsers(db *sql.DB) []User {
 			monthArr = append(monthArr, month)
 		}
 
-		fmt.Println("**************** months here ****************");
-		fmt.Println(monthArr)
 		tempUser.months = monthArr
 
 		// getting the airports that the user wants to fly from
@@ -208,7 +202,6 @@ func getUsers(db *sql.DB) []User {
 			airportArr = append(airportArr, airport)
 		}
 		tempUser.sources = airportArr
-		fmt.Println(airportArr)
 
 		months.Close()
 		airports.Close()
@@ -223,18 +216,9 @@ func intervalBuilder(user User, db *sql.DB) (intervals []Interval) {
 
 	var monthArr [MONTHS_IN_YEAR]bool
 
-	fmt.Println("about to print the things")
-
 	for _, month := range user.months {
-
-		fmt.Println("printing a month")
-
-		fmt.Println(month)
 		monthArr[month-1] = true
 	}
-
-	fmt.Println(monthArr)
-
 
 	// if they're all true we don't need any intervals
 	if allTrue(monthArr) {
