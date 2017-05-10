@@ -1,4 +1,5 @@
 var ipAddress;
+var captchaToken = undefined;
 
 $( document ).ready(function() {
 
@@ -42,6 +43,11 @@ $( document ).ready(function() {
 
 $( "form" ).on( "submit", function( event ) {
 
+  if(captchaToken == undefined){
+    alert("Please fill out the Captcha before submitting");
+    return false;
+  }
+
   if($("input[name='SourceAirport']:checked").length == 0){
     alert("You must select at least one source airport!");
     return false;
@@ -75,9 +81,9 @@ $( "form" ).on( "submit", function( event ) {
   jsonRaw["salt"] = getUrlParam("token");
   jsonRaw["frequency"] = $("input[name='Frequency']:checked").val();
   jsonRaw["ipAddress"] = ipAddress;
+  jsonRaw["captcha"] = captchaToken;
 
   var jsonData = JSON.stringify(jsonRaw);
-  console.log(jsonData);
 
   $.ajax({
     type: "POST",
@@ -85,6 +91,7 @@ $( "form" ).on( "submit", function( event ) {
     data: {_data: jsonData},
     success: function(data){
       console.log(data);
+      grecaptcha.reset();
     }
   });
 
@@ -96,9 +103,12 @@ $( "form" ).on( "submit", function( event ) {
 function getUrlParam(name){
 	var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
   if (results != undefined) {
-    console.log(results);
     return results[1];
   } else {
     return 0;
   }
+}
+
+function captchaSet(token) {
+  captchaToken = token;
 }

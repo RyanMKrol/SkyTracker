@@ -1,3 +1,5 @@
+
+
 <?php
   //globals and includes
   include './../Go/src/Credentials/credentials.php';
@@ -25,8 +27,9 @@
   $authentication = $conn->real_escape_string($data['salt']);
   $email          = $conn->real_escape_string($data['emailAddress']);
   $ipAddress      = $conn->real_escape_string($data['ipAddress']);
+  $captchaToken   = $data["captcha"];
 
-  if(checkIP($ipAddress)){
+  if(checkCaptcha($captchaToken) && checkIP($conn, $ipAddress)){
 
     // if there's no attempt at authentication, we make a new user
     if(strcmp($authentication, '0') == 0){
@@ -201,6 +204,8 @@
   //function to check the IP address isn't overloading the server
   function checkIP($conn, $ipAddress){
 
+    global $MAX_ACCOUNTS_PER_IP;
+
     //updating the count for this IP address
     $sql = "INSERT INTO IPStore (IPAddress, IPCount) VALUES ('$ipAddress', 1) ON DUPLICATE KEY UPDATE IPCount = IPCount + 1;";
     if ($conn->query($sql) !== TRUE) {
@@ -217,9 +222,37 @@
     //checking that no IP is creating too many users
     if ($result['IPCount'] > $MAX_ACCOUNTS_PER_IP) {
         echo "Contact the server admin at ryankrol@hotmail.co.uk to get you IP cleared\n";
+        mysqli_rollback($conn);
         return false;
     }
 
     return true;
+  }
+
+  // curl functionality pulled from https://www.madebymagnitude.com/blog/sending-post-data-from-php/
+  function checkCaptcha($captchaToken){
+
+    # Our new data
+    $data = array(
+      'secret' => '6LfyzCAUAAAAAC7dBjDujlycFS2frPDcCCBTkciN',
+      'response' => $captchaToken
+      );
+
+    # Create a connection
+    $url = 'https://www.google.com/recaptcha/api/siteverify';
+    $ch = curl_init($url);
+
+    # Form data string
+    $postString = http_build_query($data, '', '&');
+
+    # Setting our options
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $postString);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    # Get the response
+    $response = json_decode(curl_exec($ch), true);
+
+    return response['success'];
   }
 ?>

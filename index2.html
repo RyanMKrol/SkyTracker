@@ -52,10 +52,20 @@
 
     </script>
 
+  <script src='https://www.google.com/recaptcha/api.js'></script>
+
+  <script type="text/javascript">
+    var resetCaptcha = function() {
+      alert("the captcha expired");
+      grecaptcha.reset();
+    };
+  </script>
+
+
   </head>
 
   <body>
-    <form>
+    <form method = "POST" action = >
 
       <h3>What is your email address?</h3>
       <!-- the email address -->
@@ -109,12 +119,13 @@
 
       <h3>How often would you like to receive reports?</h3>
       <!-- the months that the user can travel in -->
-      <input type="radio" name="Frequency" value="1" >Daily<br>
-      <input type="radio" name="Frequency" value="2" >Weekly<br>
-      <input type="radio" name="Frequency" value="3" >Monthly<br><br>
+      <input required type="radio" name="Frequency" value="1" >Daily<br>
+      <input required type="radio" name="Frequency" value="2" >Weekly<br>
+      <input required type="radio" name="Frequency" value="3" >Monthly<br><br>
 
       <input type="submit">
 
+      <div class="g-recaptcha" data-sitekey="6LfyzCAUAAAAAOE_rFnqiOXZiHhXaM-UuxZJII2B" data-callback = captchaSet data-expired-callback = resetCaptcha></div>
     </form>
     <script src = "js/sendForm.js"></script>
   </body>
