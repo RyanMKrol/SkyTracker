@@ -83,7 +83,7 @@ func writeToFile(line, errorMessage string, file *os.File) {
 // write any statements at the end of the report
 func writeEndStatements(file *os.File, user User) {
 
-	var link = fmt.Sprintf("%stoken=%s&email=%s&tripMin=%d&tripMax=%d&budget=%d", baseLink, user.salt, user.EmailAddress, user.tripMin, user.tripMax, user.budget)
+	var link = fmt.Sprintf("%stoken=%s&email=%s&tripMin=%d&tripMax=%d&budget=%d&frequency=%d", baseLink, user.salt, user.EmailAddress, user.tripMin, user.tripMax, user.budget,user.ReportFrequency)
 
 	fmt.Println(user)
 

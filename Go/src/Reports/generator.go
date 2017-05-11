@@ -82,7 +82,7 @@ func GenerateReports(db *sql.DB) []User {
 
 	wg.Wait()
 
-	updates the users LastReportDate to today
+	// updates the users LastReportDate to today
 	_, err := db.Exec(UPDATE_REPORT)
 	if err != nil {
 		fmt.Println("failed to update user last report dates generate.go")
@@ -133,7 +133,7 @@ func getUsers(db *sql.DB) []User {
 		var dummy sql.NullString
 		var maybeBudget, maybeTripMin, maybeTripMax sql.NullInt64
 
-		if err := users.Scan(&dummy, &tempUser.EmailAddress, &maybeBudget, &maybeTripMin, &maybeTripMax, &dummy, &dummy, &tempUser.salt); err != nil {
+		if err := users.Scan(&dummy, &tempUser.EmailAddress, &maybeBudget, &maybeTripMin, &maybeTripMax, &tempUser.ReportFrequency, &dummy, &tempUser.salt); err != nil {
 			fmt.Println("failed to scan users generate.go")
 			panic(err.Error())
 		}
