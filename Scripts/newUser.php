@@ -26,7 +26,7 @@
 
   $emailBody = "";
   $emailBody .= "<h3>Welcome!</h3>";
-  $emailBody .= "<p> It appears that you have signed up to receive flight price reports from SkyTracker, if this is not you, then please feel free to <a href = 'http://www.skytracker.co/unsubscribe.php?email=$emailAddress&token=$salt'>unsubscribe</a> or check us out at <a href = 'http://www.skytracker.co'>SkyTracker</a> and decide for yourself if you want to join! <br><br>If you <b>did</b> mean to sign up, please do us a favour and add us as a contact so we can get our reports straight to your inbox!<br><br>Thanks!</p>";
+  $emailBody .= "<p> It appears that you have signed up to receive flight price reports from SkyTracker, if this is not you, then please feel free to <a href = 'http://www.skytracker.co?unsubscribe&email=$emailAddress&token=$salt'>unsubscribe</a> or check us out at <a href = 'http://www.skytracker.co'>SkyTracker</a> and decide for yourself if you want to join! <br><br>If you <b>did</b> mean to sign up, please do us a favour and add us as a contact so we can get our reports straight to your inbox!<br><br>Thanks!</p>";
 
   echo $emailBody . "\n";
 

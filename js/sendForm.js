@@ -3,6 +3,10 @@ var captchaToken = undefined;
 
 $( document ).ready(function() {
 
+  var email;
+  var token;
+  var unsub = false;
+
   var query = location.search.substr(1);
   var result = {};
 
@@ -12,6 +16,7 @@ $( document ).ready(function() {
     switch(item[0]){
       case 'email' :
         $("#EmailAddress").val(item[1]);
+        email = item[1];
         break;
       case 'source':
       case 'month' :
@@ -32,8 +37,36 @@ $( document ).ready(function() {
       case 'frequency' :
         $("input:radio[value=" + item[1] + "]").attr("checked", true);
         break;
+      case 'token' :
+        token = item[1];
+        break;
+      case 'unsubscribe' :
+        unsub = true;
+        break;
     }
   });
+
+  if(unsub) {
+
+    var jsonRaw = {};
+
+    jsonRaw["token"] = token;
+    jsonRaw["email"] = email;
+
+    var jsonData = JSON.stringify(jsonRaw);
+
+    console.log(jsonData);
+
+    $.ajax({
+      type: "POST",
+      url: "./../Scripts/unsubscribe.php",
+      data: {_data: jsonData},
+      success: function(data){
+        data = JSON.parse(data);
+        alert(data['message']);
+      },
+    });
+  }
 
 });
 
@@ -68,7 +101,7 @@ $( "form" ).on( "submit", function( event ) {
 
   var jsonRaw = {};
 
-  jsonRaw["emailAddress"] = $("#EmailAddress").val()
+  jsonRaw["emailAddress"] = $("#EmailAddress").val();
   jsonRaw["budget"] = $( "#budgetSlider" ).slider( "value" );
   jsonRaw["tripMinLen"] = $( "#tripLengthSlider" ).slider( "values", 0 );
   jsonRaw["tripMaxLen"] = $( "#tripLengthSlider" ).slider( "values", 1 );
@@ -85,8 +118,16 @@ $( "form" ).on( "submit", function( event ) {
     url: "./../Scripts/addUser.php",
     data: {_data: jsonData},
     success: function(data){
+      data = JSON.parse(data);
       console.log(data);
       grecaptcha.reset();
+      alert(data['message']);
+      if(!data['success']){
+        return false;
+      }
+    },
+    error: function(response){
+      alert("Sorry, something went wrong in the database.\n Try again later!");
     }
   });
 

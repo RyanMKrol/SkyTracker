@@ -1,5 +1,3 @@
-
-
 <?php
   //globals and includes
   include './../Go/src/Credentials/credentials.php';
@@ -8,6 +6,9 @@
 ?>
 <?php
   //main
+
+  $returnData->success = true;
+  $returnData->message = "";
 
   // Create connection
   $conn = new mysqli($server, $user, $password, $database);
@@ -29,38 +30,50 @@
   $ipAddress      = getRealIpAddr();
   $captchaToken   = $data["captcha"];
 
+
   if(checkCaptcha($captchaToken) && checkIP($conn, $ipAddress)){
 
-    // if there's no attempt at authentication, we make a new user
-    if(strcmp($authentication, '0') == 0){
+    if(!userExists($conn, $email)){
+      //no user exists so we create one
 
       if(createUserData($data,$conn)){
-        echo "successfully created the user";
+        $returnData->message = "We've managed to add you to our mailing list! You'll get an email from us shortly :)";
         exec("php newUser.php $email");
       } else {
-        echo "something failed when creating the user";
+        $returnData->success = false;
+        $returnData->message = "Unfortunately we couldn't add you to our mailing list, please try again later";
+        //echo "something failed when creating the user";
       }
+    } else if(strcmp($authentication, '0') !== 0){
+      //user exists and some authentication is attempted
 
-    // otherwise we see if the authorisation checks out and then update
-    } else {
-
-      $sql    = "SELECT * FROM Users WHERE UserSalt = '$authentication';";
+      $sql    = "SELECT * FROM Users WHERE UserSalt = '$authentication' AND UserEmailAddress = '$email';";
       $result = mysqli_query($conn, $sql);
 
       // if there are results for the salt, and the email address in the result is the same as the one passed in, we succeed
-      if ((mysqli_num_rows($result) != 0) && (strcmp($email, mysqli_fetch_assoc($result)['UserEmailAddress']) == 0)){
+      if (mysqli_num_rows($result) !== 0){
 
-        echo "salt and address are good\n";
+        //echo "salt and address are good\n";
         if(updateUserData($data,$conn)){
-          echo "successfully updated everything\n";
+          $returnData->message = "Your preferences have been updated!";
+          //echo "successfully updated everything\n";
         } else {
-          echo "something failed when updating everything\n";
+          $returnData->success = false;
+          $returnData->message = "Unfortunately we had some trouble updating your preferences, please try again later, sorry!";
+          //echo "something failed when updating everything\n";
         }
       } else {
-        echo "salt and address are not good\n";
+        $returnData->success = false;
+        $returnData->message = "To update your preferences, please follow the link from one of the emails we send you! (This is to stop anybody changing your preferences!)";
+        echo "salt not good\n";
       }
+    } else {
+      $returnData->success = false;
+      $returnData->message = "To update your preferences, please follow the link from one of the emails we send you! (This is to stop anybody changing your preferences!)";
     }
   }
+
+  print_r(json_encode($returnData));
 
   // close the connection to the database
   $conn->close();
@@ -81,8 +94,8 @@
     $sql = "UPDATE Users SET UserBudget=$budget, UserTripMin=$tripMin, UserTripMax=$tripMax WHERE UserEmailAddress='$email';";
 
     if ($conn->query($sql) !== TRUE) {
-        echo $sql . "\n";
-        echo "Failed to update the user\n";
+        //echo $sql . "\n";
+        //echo "Failed to update the user\n";
         mysqli_rollback($conn);
         return false;
     }
@@ -90,7 +103,7 @@
     $sql = "DELETE FROM UserTravelMonths WHERE UserEmailAddress = '$email';";
 
     if ($conn->query($sql) !== TRUE) {
-        echo "Failed to delete user travel months\n";
+        //echo "Failed to delete user travel months\n";
         mysqli_rollback($conn);
         return false;
     }
@@ -98,7 +111,7 @@
     $sql = "DELETE FROM UserSourceAirports WHERE UserEmailAddress = '$email';";
 
     if ($conn->query($sql) !== TRUE) {
-        echo "Failed to delete user source airports\n";
+        //echo "Failed to delete user source airports\n";
         mysqli_rollback($conn);
         return false;
     }
@@ -110,7 +123,7 @@
         $sql = "INSERT INTO UserTravelMonths (UserEmailAddress, TravelMonth) VALUES ('$email', $month);";
 
         if ($conn->query($sql) !== TRUE) {
-            echo "Failed to add a new month to the user\n";
+            //echo "Failed to add a new month to the user\n";
             mysqli_rollback($conn);
             return false;
         }
@@ -121,12 +134,12 @@
       if($val == true){
 
         $airport = $conn->real_escape_string($airport);
-        echo $airport . "\n";
-        echo $email . "\n";
+        //echo $airport . "\n";
+        //echo $email . "\n";
         $sql = "INSERT INTO UserSourceAirports (UserEmailAddress, SourceAirportCode) VALUES ('$email', '$airport');";
 
         if ($conn->query($sql) !== TRUE) {
-            echo "Failed to add a new airport to the user\n";
+            //echo "Failed to add a new airport to the user\n";
             mysqli_rollback($conn);
             return false;
         }
@@ -142,7 +155,7 @@
   // creates a new user in the database
   function createUserData($data, $conn) {
 
-    echo "entered create user \n";
+    //echo "entered create user \n";
 
     $email          = $conn->real_escape_string($data['emailAddress']);
     $budget         = $conn->real_escape_string($data['budget']);
@@ -160,10 +173,10 @@
 
     $sql = "INSERT INTO Users (UserEmailAddress, UserBudget, UserTripMin, UserTripMax, UserReportFrequency, UserSalt) VALUES ('$email',$budget,$tripMin,$tripMax,$frequency,'$salt');";
 
-    echo $sql . "\n";
+    //echo $sql . "\n";
 
     if ($conn->query($sql) !== TRUE) {
-        echo "Failed to add a new record\n";
+        //echo "Failed to add a new record\n";
         mysqli_rollback($conn);
         return false;
     }
@@ -175,7 +188,7 @@
         $sql = "INSERT INTO UserTravelMonths (UserEmailAddress, TravelMonth) VALUES ('$email', $month);";
 
         if ($conn->query($sql) !== TRUE) {
-            echo "Failed to add a new month to the user\n";
+            //echo "Failed to add a new month to the user\n";
             mysqli_rollback($conn);
             return false;
         }
@@ -189,7 +202,7 @@
         $sql = "INSERT INTO UserSourceAirports (UserEmailAddress, SourceAirportCode) VALUES ('$email', '$airport');";
 
         if ($conn->query($sql) !== TRUE) {
-            echo "Failed to add a new airport to the user\n";
+            //echo "Failed to add a new airport to the user\n";
             mysqli_rollback($conn);
             return false;
         }
@@ -202,6 +215,18 @@
     return true;
   }
 
+
+  //function to check the IP address isn't overloading the server
+  function userExists($conn, $emailAddress){
+
+    $sql    = "SELECT * FROM Users WHERE UserEmailAddress = '$emailAddress';";
+    $result = mysqli_query($conn, $sql);
+
+    // if there are results for the salt, and the email address in the result is the same as the one passed in, we succeed
+    return mysqli_num_rows($result) !== 0;
+
+  }
+
   //function to check the IP address isn't overloading the server
   function checkIP($conn, $ipAddress){
 
@@ -210,8 +235,8 @@
     //updating the count for this IP address
     $sql = "INSERT INTO IPStore (IPAddress, IPCount) VALUES ('$ipAddress', 1) ON DUPLICATE KEY UPDATE IPCount = IPCount + 1;";
     if ($conn->query($sql) !== TRUE) {
-        echo $sql . "\n";
-        echo "Failed to update the IP count\n";
+        //echo $sql . "\n";
+        //echo "Failed to update the IP count\n";
         mysqli_rollback($conn);
         return false;
     }
@@ -222,7 +247,7 @@
 
     //checking that no IP is creating too many users
     if ($result['IPCount'] > $MAX_ACCOUNTS_PER_IP) {
-        echo "Contact the server admin at ryankrol@hotmail.co.uk to get you IP cleared\n";
+        //echo "Contact the server admin at ryankrol@hotmail.co.uk to get you IP cleared\n";
         mysqli_rollback($conn);
         return false;
     }
@@ -274,7 +299,7 @@
     $response = json_decode(curl_exec($ch), true);
 
     if(!$response['success']){
-      echo "Sorry, your CAPTCHA token is invalid\n";
+      //echo "Sorry, your CAPTCHA token is invalid\n";
     }
 
     $success = $response['success'] === true;

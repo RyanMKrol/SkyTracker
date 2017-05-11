@@ -1,6 +1,6 @@
 <?php
   //globals and includes
-  include './Go/src/Credentials/credentials.php';
+  include './../Go/src/Credentials/credentials.php';
 
 ?>
 <?php
@@ -50,21 +50,18 @@
 
         $sql   = "DELETE FROM UserTravelMonths WHERE UserEmailAddress = '$email'";
         if ($conn->query($sql) !== TRUE) {
-            echo "Failed to delete the travel months\n";
             mysqli_rollback($conn);
             return $returnData;
         }
 
         $sql   = "DELETE FROM UserSourceAirports WHERE UserEmailAddress = '$email'";
         if ($conn->query($sql) !== TRUE) {
-            echo "Failed to delete the source airports\n";
             mysqli_rollback($conn);
             return $returnData;
         }
 
         $sql   = "DELETE FROM Users WHERE UserEmailAddress = '$email'";
         if ($conn->query($sql) !== TRUE) {
-            echo "Failed to delete the user\n";
             mysqli_rollback($conn);
             return $returnData;
         }
@@ -72,12 +69,9 @@
         mysqli_commit($conn);
 
       } else {
-        echo $sql . "\n";
-        echo "couldn't find the user to begin with\n";
         return $returnData;
       }
     } else {
-      echo "tokens and emails weren't set\n";
       return $returnData;
     }
 
@@ -85,7 +79,6 @@
     $returnData->message = "Success! You have been unsubscribed from our mailing list, hopefully you found a great flight!";
 
     return $returnData;
-
   }
 
 ?>
