@@ -32,8 +32,8 @@ const paragraphHeaderFormat string = "<p style = \"padding: 5px 5px 5px 5px; mar
 const paddingStyle string = "padding:0 10px 0 10px;"
 const centreAlignStyle string = "text-align: center;"
 
-const baseLink string = "http://www.skytracker.co/index2.html?"
-const unsubLink string = "http://www.skytracker.co/unsubscribe.php?"
+const baseLink string = "http://www.skytracker.co?"
+const unsubLink string = "http://www.skytracker.co?unsubscribe&"
 
 // main function for generating the report itself
 func generatePrettyReport(flights []Flight, file *os.File, user User) {
