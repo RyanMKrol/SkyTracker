@@ -11,4 +11,5 @@ type User struct {
 	sources         []string
 	ReportFrequency int
 	ReportLoc       string
+	HasReport 			bool
 }

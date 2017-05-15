@@ -4,6 +4,8 @@
 
   $files = scandir($raw_file_dir);
 
+  exec("mysql -u $user -p\"$password\" -f \"$database\" < $truncateLoc");
+
   foreach($files as $file) {
     if(substr($file, 0,1) !== ".") {
       $fullFilePath = $raw_file_dir . $file;

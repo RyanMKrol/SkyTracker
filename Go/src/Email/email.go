@@ -18,13 +18,14 @@ func EmailUsers(users []Reports.User) {
 
 	for _, user := range users {
 
-		cmd := exec.Command(PHP_BINARY, fmt.Sprintf(SystemConfig.DOC_ROOT, EMAIL_PHP_LOC), fmt.Sprintf(SystemConfig.DOC_ROOT, TITLE_FILE), user.ReportLoc, user.EmailAddress)
+		if user.HasReport {
+			cmd := exec.Command(PHP_BINARY, fmt.Sprintf(SystemConfig.DOC_ROOT, EMAIL_PHP_LOC), fmt.Sprintf(SystemConfig.DOC_ROOT, TITLE_FILE), user.ReportLoc, user.EmailAddress)
 
-		err := cmd.Run()
-		if err != nil {
-			fmt.Println("failed to execute command in email.go")
-			log.Fatal(err)
+			err := cmd.Run()
+			if err != nil {
+				fmt.Println("failed to execute command in email.go")
+				log.Fatal(err)
+			}
 		}
-
 	}
 }

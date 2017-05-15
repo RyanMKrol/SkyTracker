@@ -97,12 +97,14 @@ func main() {
 		wg.Wait()
 	}
 
+	fmt.Println("finished gathering")
 	// at this point all of the files will be setup, now I need to persist it with the server
 
 	DataUtils.PersistData()
 	fmt.Println("finished persisting")
 
 	users := Reports.GenerateReports(db)
+	_ = users
 	fmt.Println("finished generating")
 
 	Email.EmailUsers(users)

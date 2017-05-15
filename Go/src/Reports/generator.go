@@ -49,6 +49,7 @@ func GenerateReports(db *sql.DB) []User {
 	users := getUsers(db)
 
 	for i, _ := range users {
+		users[i].HasReport = false
 
 		var filename string = fmt.Sprintf(fmt.Sprintf(SystemConfig.DOC_ROOT, REPORT_LOC), users[i].budget, users[i].tripMin, users[i].tripMax, getAirportsString(users[i].sources), getMonthsString(users[i].months), currentDate.Format(DATE_FORMAT))
 
@@ -64,17 +65,13 @@ func GenerateReports(db *sql.DB) []User {
 			wg.Add(1)
 
 			// parallelising the meat of the file
-			go func(u User, f *os.File) {
-				fmt.Println("building intervals")
-				intervals := intervalBuilder(u, db)
-				fmt.Println("getting min flights")
-				minFlights := reportForUser(u, db, intervals)
-				fmt.Println("getting nice report")
+			go func(u *User, f *os.File) {
+				intervals := intervalBuilder(*u, db)
+				minFlights := reportForUser(*u, db, intervals)
 				generatePrettyReport(minFlights, f, u)
 				f.Close()
-				fmt.Println("done")
 				wg.Done()
-			}(users[i], file)
+			}(&users[i], file)
 		}
 
 		users[i].ReportLoc = filename
@@ -94,7 +91,6 @@ func GenerateReports(db *sql.DB) []User {
 
 //convert an arry of airport strings to a single string
 func getAirportsString(arr []string) string {
-	fmt.Println(strings.Join(arr, ""))
 	return strings.Join(arr, "")
 }
 
@@ -105,8 +101,6 @@ func getMonthsString(arr []int) string {
 	for _, i := range arr {
 		intString += strconv.Itoa(i)
 	}
-
-	fmt.Println(intString)
 
 	return intString
 }
@@ -371,8 +365,6 @@ func reportForUser(user User, db *sql.DB, intervals []Interval) []Flight {
 
 		minFlights = append(minFlights, tempFlight)
 	}
-
-	fmt.Println("finished getting my min flights in order")
 
 	return minFlights
 }

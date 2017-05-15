@@ -17,11 +17,17 @@ func PersistData() {
 
 	cmd := exec.Command(PHP_BINARY, fmt.Sprintf(SystemConfig.DOC_ROOT, PERSIST_PHP_LOC))
 
+	fmt.Println("running the persist command")
+
+	fmt.Println(fmt.Sprintf(SystemConfig.DOC_ROOT, PERSIST_PHP_LOC))
+
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println("failed to run command persist.go")
 		log.Fatal(err)
 	}
+
+	fmt.Println("done running the persist")
 
 	return
 }
