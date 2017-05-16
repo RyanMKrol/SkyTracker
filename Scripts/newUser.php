@@ -43,17 +43,12 @@
   $emailBody .= "</table><br>";
   $emailBody .= "<a href = \"https://github.com/RyanMKrol/SkyTracker\"><img style = \"display: block; margin: 0 auto;\" src = \"http://skytracker.co/Images/GitHub-Mark-32px.png\"></img></a><br>";
   $emailBody .= "<div style = \"font-size: 9pt; width: 500px; margin: auto;text-align:Center;\">";
-  $emailBody .= "Our mailing address is: <br><a style = \"color:#5C596B;font-weight: normal;\" href = \"mailto:root@skytracker.co\">root@skytracker.co</a><br><br>";
-  $emailBody .= "</div></div>";
+  $emailBody .= "Our mailing address is: <br><a style = \"color:#5C596B;font-weight: normal;\" href = \"mailto:root@skytracker.co\">root@skytracker.co</a><br>";
+  $emailBody .= "</div></div><br><br>";
   $emailBody .= "</body>";
   $emailBody .= "</html>";
 
-  echo $emailBody . "\n";
-  file_put_contents("temp.txt", $emailBody);
-
-  exec("cat temp.txt | mail -a \"From: SkyTracker <no-reply@skytracker.co>\" -a \"Content-type: text/html\" -s \"$title\" $emailAddress");
-
-  exec("rm temp.txt");
+  exec("echo '$emailBody' | mail -a \"From: SkyTracker <no-reply@skytracker.co>\" -a \"Content-type: text/html\" -s \"$title\" $emailAddress");
 
   $conn->close();
 
