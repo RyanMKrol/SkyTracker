@@ -126,12 +126,15 @@ func writeHTMLHeadings(file *os.File) {
 	writeToFile("</head>\n", htmlHeadersWriteErrors, file)
 	writeToFile("<body style = \"font-family: Georgia; background-color: #eee; color:#111111\">\n", htmlHeadersWriteErrors, file)
 
-writeToFile("<div style = \"width: 700px; margin: auto;\">\n", htmlHeadersWriteErrors, file)
-writeToFile("<h1>We scour the internet for great flight deals, so you don't have to -</h1>\n", htmlHeadersWriteErrors, file)
-writeToFile("<h3>Take a look at what we found for you today</h3>\n", htmlHeadersWriteErrors, file)
-writeToFile("<table style = \"width: 600px; margin: auto; border-bottom-style: solid; border-bottom-color: white; border-bottom-width: 2px;\">\n", htmlHeadersWriteErrors, file)
-writeToFile("</table><br>\n", htmlHeadersWriteErrors, file)
-writeToFile("</div>\n", htmlHeadersWriteErrors, file)
+	writeToFile("<div style = \"width: 700px; margin: auto;\">\n", htmlHeadersWriteErrors, file)
+	writeToFile("<div style = \"width: 700px; margin: auto;\">\n", htmlHeadersWriteErrors, file)
+	writeToFile("<img style = \"width: 700px; height: 400px;object-fit: cover;\" src = \"http://skytracker.co/Images/adventure.jpg\">\n", htmlHeadersWriteErrors, file)
+	writeToFile("<h1 style = \"position: absolute;text-align:center;width: 700px; top: 150px;font-family:Georgia; color: #ddd;font-size:48px;font-weight:lighter;\">FLIGHT DEALS</h1>\n", htmlHeadersWriteErrors, file)
+	writeToFile("</img>\n", htmlHeadersWriteErrors, file)
+	writeToFile("<h3>Take a look at what we found for you today</h3><br>\n", htmlHeadersWriteErrors, file)
+	writeToFile("<table style = \"width: 600px; margin: auto; border-bottom-style: solid; border-bottom-color: white; border-bottom-width: 2px;\">\n", htmlHeadersWriteErrors, file)
+	writeToFile("</table><br>\n", htmlHeadersWriteErrors, file)
+	writeToFile("</div>\n", htmlHeadersWriteErrors, file)
 }
 
 // writes individual flight info to the reports
