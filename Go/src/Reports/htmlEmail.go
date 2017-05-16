@@ -127,7 +127,6 @@ func writeHTMLHeadings(file *os.File) {
 	writeToFile("<body style = \"font-family: Georgia; background-color: #eee; color:#111111\">\n", htmlHeadersWriteErrors, file)
 
 	writeToFile("<div style = \"width: 700px; margin: auto;\">\n", htmlHeadersWriteErrors, file)
-	writeToFile("<div style = \"width: 700px; margin: auto;\">\n", htmlHeadersWriteErrors, file)
 	writeToFile("<img style = \"width: 700px; height: 400px;object-fit: cover;\" src = \"http://skytracker.co/Images/adventure.jpg\">\n", htmlHeadersWriteErrors, file)
 	writeToFile("<h1 style = \"position: absolute;text-align:center;width: 700px; top: 150px;font-family:Georgia; color: #ddd;font-size:48px;font-weight:lighter;\">FLIGHT DEALS</h1>\n", htmlHeadersWriteErrors, file)
 	writeToFile("</img>\n", htmlHeadersWriteErrors, file)
