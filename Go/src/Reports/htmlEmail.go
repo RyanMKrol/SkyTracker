@@ -109,8 +109,9 @@ func writeEndStatements(file *os.File, user User) {
 	writeToFile("<br><div style = \"width: 700px; margin: auto;\">\n", "failed to finish", file)
 	writeToFile("<table style = \"width: 600px; margin: auto; border-bottom-style: solid; border-bottom-color: white; border-bottom-width: 2px;\">\n", "failed to finish", file)
 	writeToFile("</table><br>\n", "failed to finish", file)
-	writeToFile("<a href = \"https://github.com/RyanMKrol/SkyTracker\"><img style = \"display: block; margin: 0 auto;\" src = \"http://skytracker.co/Images/GitHub-Mark-32px.png\"></img></a><br>\n", "failed to finish", file)
+	// writeToFile("<a href = \"https://github.com/RyanMKrol/SkyTracker\"><img style = \"display: block; margin: 0 auto;\" src = \"http://skytracker.co/Images/GitHub-Mark-32px.png\"></img></a><br>\n", "failed to finish", file)
 	writeToFile("<div style = \"font-size: 9pt; width: 500px; margin: auto;text-align:Center;\">\n", "failed to finish", file)
+	writeToFile("<a style = \"margin: 0 auto;\" href = \"https://github.com/RyanMKrol/SkyTracker\"><img src = \"http://skytracker.co/Images/GitHub-Mark-32px.png\"></a><br><br>\n", "failed to finish", file)
 	writeToFile("Our mailing address is: <br><a style = \"color:#5C596B;font-weight: normal;\" href = \"mailto:root@skytracker.co\">root@skytracker.co</a><br><br>\n", "failed to finish", file)
 	writeToFile("Want to change how you receive these emails?<br>\n", "failed to finish", file)
 	writeToFile(fmt.Sprintf("You can update your preferences %s or <a style = \"color:#5C596B;font-weight: normal;\"href = '%semail=%s&token=%s'>unsubscribe</a> from this list\n", anchorTag,unsubLink, user.EmailAddress, user.salt), "failed to finish", file)
@@ -127,10 +128,8 @@ func writeHTMLHeadings(file *os.File) {
 	writeToFile("<body style = \"font-family: Georgia; background-color: #eee; color:#111111\">\n", htmlHeadersWriteErrors, file)
 
 	writeToFile("<div style = \"width: 700px; margin: auto;\">\n", htmlHeadersWriteErrors, file)
-	writeToFile("<img style = \"width: 700px; height: 400px;object-fit: cover;\" src = \"http://skytracker.co/Images/adventure.jpg\">\n", htmlHeadersWriteErrors, file)
-	writeToFile("<h1 style = \"position: absolute;text-align:center;width: 700px; top: 150px;font-family:Georgia; color: #ddd;font-size:48px;font-weight:lighter;\">FLIGHT DEALS</h1>\n", htmlHeadersWriteErrors, file)
-	writeToFile("</img>\n", htmlHeadersWriteErrors, file)
-	writeToFile("<h3>Take a look at what we found for you today</h3><br>\n", htmlHeadersWriteErrors, file)
+	writeToFile("<h1 style = \"text-align: center;font-weight:lighter;\">We scour the internet for great flight deals, so you don't have to -</h1>\n", htmlHeadersWriteErrors, file)
+	writeToFile("<h3>Take a look at what we found for you today</h3>\n", htmlHeadersWriteErrors, file)
 	writeToFile("<table style = \"width: 600px; margin: auto; border-bottom-style: solid; border-bottom-color: white; border-bottom-width: 2px;\">\n", htmlHeadersWriteErrors, file)
 	writeToFile("</table><br>\n", htmlHeadersWriteErrors, file)
 	writeToFile("</div>\n", htmlHeadersWriteErrors, file)
@@ -152,11 +151,12 @@ func writeFlightInfo(file *os.File, flight Flight) {
 // write headings for each table
 func writeTableHeadings(file *os.File) {
 	writeToFile(fmt.Sprintf("<table style = \"width: %dpx\">\n", tableWidth), tableHeadingsWriteError, file)
-	writeToFile(fmt.Sprintf("<th width = %d style = \"%s text-align: left; min-width = %d;\" >To</th>\n", toWidth, paddingStyle, toWidth), tableHeadingsWriteError, file)
-	writeToFile(fmt.Sprintf("<th width = %d style = \"%s%s min-width = %d;\" >Leaving</th>\n", paddingStyle, centreAlignStyle, leavingWidth, leavingWidth), tableHeadingsWriteError, file)
-	writeToFile(fmt.Sprintf("<th width = %d style = \"%s%s min-width = %d;\" >Returning</th>\n", paddingStyle, centreAlignStyle, returningWidth, returningWidth), tableHeadingsWriteError, file)
-	writeToFile(fmt.Sprintf("<th width = %d style = \"%s%s min-width = %d;\" >Days</th>\n", paddingStyle, centreAlignStyle, tripLengthWidth, tripLengthWidth), tableHeadingsWriteError, file)
-	writeToFile(fmt.Sprintf("<th width = %d style = \"%s%s min-width = %d;\" >Cost</th>\n", paddingStyle, centreAlignStyle, costWidth, costWidth), tableHeadingsWriteError, file)
+	writeToFile("<tr>\n", tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th style = \"%s text-align: left; min-width = %d;\" >To</th>\n", paddingStyle, toWidth), tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th style = \"%s%s min-width = %d;\" >Leaving</th>\n", paddingStyle, centreAlignStyle, leavingWidth), tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th style = \"%s%s min-width = %d;\" >Returning</th>\n", paddingStyle, centreAlignStyle, returningWidth), tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th style = \"%s%s min-width = %d;\" >Days</th>\n", paddingStyle, centreAlignStyle, tripLengthWidth), tableHeadingsWriteError, file)
+	writeToFile(fmt.Sprintf("<th style = \"%s%s min-width = %d;\" >Cost</th>\n", paddingStyle, centreAlignStyle, costWidth), tableHeadingsWriteError, file)
 	writeToFile("</tr>\n", tableHeadingsWriteError, file)
 }
 
