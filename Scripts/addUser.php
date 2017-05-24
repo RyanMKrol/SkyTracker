@@ -13,27 +13,30 @@
   // Create connection
   $conn = new mysqli($server, $user, $password, $database);
 
+  // echo "connection fine";
+
   // Check connection
   if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
   }
+
+  // echo "connection still fine";
 
   // stop this connection from committing unless we tell it to.
   mysqli_autocommit($conn, FALSE);
   // commit here before anything happens. When we rollback, nothing will have changed in the database
   mysqli_commit($conn);
 
-
   $data           = json_decode($_POST["_data"], true);
   $authentication = $conn->real_escape_string($data['salt']);
   $email          = $conn->real_escape_string($data['emailAddress']);
-  $ipAddress      = getRealIpAddr();
   $captchaToken   = $data["captcha"];
 
-
-  if(checkCaptcha($captchaToken) && checkIP($conn, $ipAddress)){
+  if(checkCaptcha($captchaToken)){
+    // echo "captcha and IP fine";
 
     if(!userExists($conn, $email)){
+      // echo "user does not exist so create one";
       //no user exists so we create one
 
       if(createUserData($data,$conn)){
@@ -227,53 +230,10 @@
 
   }
 
-  //function to check the IP address isn't overloading the server
-  function checkIP($conn, $ipAddress){
-
-    global $MAX_ACCOUNTS_PER_IP;
-
-    //updating the count for this IP address
-    $sql = "INSERT INTO IPStore (IPAddress, IPCount) VALUES ('$ipAddress', 1) ON DUPLICATE KEY UPDATE IPCount = IPCount + 1;";
-    if ($conn->query($sql) !== TRUE) {
-        //echo $sql . "\n";
-        //echo "Failed to update the IP count\n";
-        mysqli_rollback($conn);
-        return false;
-    }
-
-    $sql = "SELECT IPCount FROM IPStore WHERE IPAddress = '$ipAddress';";
-    $result = mysqli_query($conn, $sql);
-    $result = mysqli_fetch_assoc($result);
-
-    //checking that no IP is creating too many users
-    if ($result['IPCount'] > $MAX_ACCOUNTS_PER_IP) {
-        //echo "Contact the server admin at ryankrol@hotmail.co.uk to get you IP cleared\n";
-        mysqli_rollback($conn);
-        return false;
-    }
-
-    return true;
-  }
-
-  //http://itman.in/en/how-to-get-client-ip-address-in-php/
-  function getRealIpAddr() {
-    if (!empty($_SERVER['HTTP_CLIENT_IP']))   //check ip from share internet
-    {
-      $ip=$_SERVER['HTTP_CLIENT_IP'];
-    }
-    elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))   //to check ip is pass from proxy
-    {
-      $ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
-    }
-    else
-    {
-      $ip=$_SERVER['REMOTE_ADDR'];
-    }
-    return $ip;
-  }
-
   // curl functionality pulled from https://www.madebymagnitude.com/blog/sending-post-data-from-php/
   function checkCaptcha($captchaToken){
+
+    // echo "checkign captcha";
 
     global $secretCaptcha;
 
@@ -303,6 +263,9 @@
     }
 
     $success = $response['success'] === true;
+
+    // echo "\nreturning: $success\n";
+
     return $success;
   }
 
