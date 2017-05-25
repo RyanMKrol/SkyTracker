@@ -65,9 +65,7 @@ func GenerateReports(db *sql.DB) []User {
 			wg.Add(1)
 
 			// parallelising the meat of the file
-
-			//FOR THE LOVE OF GOD ADD GO BACK HERE
-			func(u *User, f *os.File) {
+			go func(u *User, f *os.File) {
 
 				fmt.Println((*u).EmailAddress)
 				intervals := intervalBuilder(*u, db)
@@ -85,11 +83,11 @@ func GenerateReports(db *sql.DB) []User {
 	wg.Wait()
 
 	// updates the users LastReportDate to today
-	// _, err := db.Exec(UPDATE_REPORT)
-	// if err != nil {
-	// 	fmt.Println("failed to update user last report dates generate.go")
-	// 	panic(err.Error())
-	// }
+	_, err := db.Exec(UPDATE_REPORT)
+	if err != nil {
+		fmt.Println("failed to update user last report dates generate.go")
+		panic(err.Error())
+	}
 
 	return users
 }
