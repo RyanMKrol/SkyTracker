@@ -34,6 +34,8 @@ func Collect(url string) (body []byte) {
 	} else if responseCode != GOOD_RESPONSE {
 		fmt.Println("just not a good response")
 		fmt.Println(responseCode)
+		fmt.Println(url)
+		fmt.Println(resp.Status)
 		log.Fatal(err)
 	}
 

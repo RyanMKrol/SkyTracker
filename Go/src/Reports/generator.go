@@ -65,8 +65,13 @@ func GenerateReports(db *sql.DB) []User {
 			wg.Add(1)
 
 			// parallelising the meat of the file
-			go func(u *User, f *os.File) {
+
+			//FOR THE LOVE OF GOD ADD GO BACK HERE
+			func(u *User, f *os.File) {
+
+				fmt.Println((*u).EmailAddress)
 				intervals := intervalBuilder(*u, db)
+				fmt.Println(intervals)
 				minFlights := reportForUser(*u, db, intervals)
 				generatePrettyReport(minFlights, f, u)
 				f.Close()
@@ -80,11 +85,11 @@ func GenerateReports(db *sql.DB) []User {
 	wg.Wait()
 
 	// updates the users LastReportDate to today
-	_, err := db.Exec(UPDATE_REPORT)
-	if err != nil {
-		fmt.Println("failed to update user last report dates generate.go")
-		panic(err.Error())
-	}
+	// _, err := db.Exec(UPDATE_REPORT)
+	// if err != nil {
+	// 	fmt.Println("failed to update user last report dates generate.go")
+	// 	panic(err.Error())
+	// }
 
 	return users
 }
@@ -299,18 +304,49 @@ func findIntervals(startPos int, months [MONTHS_IN_YEAR]bool) (intervals []Inter
 
 		}
 	}
+
+	//the following mechanism splits up an interval if it spands over the current month in the years
+	// this means april - june when ran in may will become april - may and may - june
+	//  later on the first interval will look in the next year, the latter looking in this years
+	currentmonth := int(time.Now().Month())
+	for i, interval := range intervals {
+		if (interval.StartMonth < currentmonth && interval.EndMonth >= currentmonth) || (interval.StartMonth < currentmonth && interval.EndMonth < interval.StartMonth) {
+			intervalsTail := intervals[i+1:]
+			intervals = intervals[:i]
+			intervals = append(intervals, intervalsTail...)
+			var intervalTemp Interval = Interval{StartMonth: interval.StartMonth, EndMonth: currentmonth}
+			intervals = append(intervals, intervalTemp)
+			intervalTemp = Interval{StartMonth: currentmonth, EndMonth: interval.EndMonth}
+			intervals = append(intervals, intervalTemp)
+			break
+		}
+	}
+
+	fmt.Println(intervals)
 	return
 }
 
 // sets the years of the interval start and end depending on the ordering of the months
 func setIntervalYears(intervals []Interval) []Interval {
 
+	currentmonth := int(time.Now().Month())
+	currentyear := int(time.Now().Year())
+
 	for i, _ := range intervals {
-		intervals[i].StartYear = int(time.Now().Year())
-		if intervals[i].StartMonth < intervals[i].EndMonth {
-			intervals[i].EndYear = intervals[i].StartYear
+
+		if intervals[i].StartMonth < currentmonth {
+
+			intervals[i].StartYear = currentyear + 1
+			intervals[i].EndYear = currentyear + 1
+
 		} else {
-			intervals[i].EndYear = intervals[i].StartYear + 1
+			intervals[i].StartYear = currentyear
+
+			if intervals[i].StartMonth <= intervals[i].EndMonth {
+				intervals[i].EndYear = currentyear
+			} else {
+				intervals[i].EndYear = currentyear + 1
+			}
 		}
 	}
 
